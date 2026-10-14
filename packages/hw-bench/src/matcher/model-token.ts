@@ -6,7 +6,7 @@ const NOT_A_MODEL =
 
 /** A token right after one of these words names a graphics chip ("RTX 4060Ti", "Radeon RX 6800M"), not a CPU. */
 const AFTER_GPU_WORD =
-  /(?<![a-z0-9])(?:nvidia|geforce|rtx|gtx|gt|mx|quadro|radeon|rx|arc|iris|uhd|hd|graphics|gpu)[\s-]*$/;
+  /(?<![a-z0-9])(?:nvidia|geforce|rtx|gtx|gts|gt|mx|fx|nvs|quadro|firepro|radeon|rx|igp|arc|iris|uhd|hd|graphics|gpu|r[579]|(?:iris|radeon|quadro)\s+pro)[\s-]*$/;
 
 /** Letters and digits only, at least one letter, at least three digits: never a pure number, a capacity or a resolution. */
 const isBareModelToken = (token: string): boolean =>

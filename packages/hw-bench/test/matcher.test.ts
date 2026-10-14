@@ -263,6 +263,25 @@ describe("matchText with brandless model tokens", () => {
     for (const text of texts) expect(matcher.matchText(text).status).toBe("no_match");
   });
 
+  it("skips tokens that follow older graphics-chip words too", () => {
+    const old = createCanonicalKeyMatcher(
+      namedCpus(
+        "Intel Core i3-350M @ 2.27GHz",
+        "Intel Pentium P6300 @ 2.27GHz",
+        "AMD Ryzen 5 5600XT",
+      ),
+    );
+    for (const text of [
+      "Laptop NVIDIA GeForce GTS 350M",
+      "Quadro FX 350M",
+      "Intel Iris Pro P6300",
+      "GeForce FX 5600XT",
+    ]) {
+      expect(old.matchText(text).status).toBe("no_match");
+    }
+    expect(old.matchText("Notebook 350M 4GB")).toMatchObject({ status: "matched" });
+  });
+
   it("skips a token that names a graphics chip, but not the same token elsewhere", () => {
     const clash = createCanonicalKeyMatcher(
       namedCpus("Testcorp Delta 6800M", "Testcorp Delta 7700S"),
