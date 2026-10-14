@@ -12,7 +12,7 @@ export interface WantedChip<K> {
 }
 
 /** What to do for one wanted chip: leave it, redraw it, create it, or drop the orphan and create it again. */
-export type ChipAction = "keep" | "update" | "add" | "replace";
+type ChipAction = "keep" | "update" | "add" | "replace";
 
 export interface ChipDiff<K> {
   /** One action per wanted chip, in the order they were wanted. */

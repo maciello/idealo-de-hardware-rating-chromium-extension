@@ -1,17 +1,10 @@
-import { type FacetGroup, type FilterCatalog, facetsOf } from "../../catalog";
-import type { FilterId } from "../../ids";
-import { type IdealoQuery, normalizeQuery } from "../../query";
+import { type FilterCatalog, facetsOf } from "../../catalog";
+import type { IdealoQuery } from "../../query";
 import type { ModelScorer } from "../port";
 import { type RequirementsInput, RequirementsSchema } from "../schema";
-import type { FacetPlan, RequirementsPlan } from "../types";
-import { type Candidate, chooseAlternative } from "./alternatives";
-import { entriesOf } from "./entries";
-import { hitsOf } from "./hits";
-import { planLabel } from "./label";
-import { planModel } from "./model";
-import { planNumeric } from "./numeric";
-
-const empty = { selected: [], partial: [], unmatched: [], unknownLabels: [] } as const;
+import type { RequirementsPlan } from "../types";
+import { composeQuery, hitsUpperBoundOf } from "./compose";
+import { planFacets } from "./facet-plans";
 
 /**
  * Plans `requirements` against one category's catalog. Pure; the catalog and `base` must share a
@@ -27,79 +20,10 @@ export function planRequirements(
     throw new Error(`catalog ${catalog.categoryId} does not match query ${base.categoryId}`);
   const requirements = RequirementsSchema.parse(input);
   const groups = facetsOf(catalog);
-  const groupsOf = (facet: FacetPlan["facet"]) => groups.filter((g) => g.facet === facet);
-
-  const facets: FacetPlan[] = [];
-  const plan = <G extends FacetGroup>(
-    facet: FacetPlan["facet"],
-    pick: (g: FacetGroup) => g is G,
-    run: (group: G, alone: boolean) => FacetPlan,
-  ): void => {
-    const found = groupsOf(facet).filter(pick);
-    const results = found.map((g) => run(g, found.length === 1));
-    // Groups AND, so a facet split over groups (PC storage in GB and TB groups) is expressible
-    // only when a single group holds every option that meets the requirement; groups of one name
-    // are alternatives and chooseAlternative picks one.
-    const meeting = found.flatMap((group, i): Candidate[] => {
-      const result = results[i];
-      return result === undefined || result.status === "unsatisfiable"
-        ? []
-        : [{ group, plan: result }];
-    });
-    const chosen = meeting.length === 0 ? results[0] : chooseAlternative(meeting);
-    facets.push(
-      chosen ?? {
-        facet,
-        status: "not_expressible",
-        reason: found.length === 0 ? "no_group" : "split_across_groups",
-        capped: false,
-        ...empty,
-      },
-    );
-  };
-
-  for (const [facet, bound] of entriesOf(requirements.numeric))
-    plan(
-      facet,
-      (g): g is Extract<FacetGroup, { kind: "numeric" }> => g.kind === "numeric",
-      (g, alone) => planNumeric(facet, g, bound, alone),
-    );
-  for (const [facet, requirement] of entriesOf(requirements.models))
-    plan(
-      facet,
-      (g): g is Extract<FacetGroup, { kind: "model" }> => g.kind === "model",
-      (g, alone) => planModel(facet, g, requirement, scorer, alone),
-    );
-  for (const [facet, wanted] of entriesOf(requirements.labels))
-    plan(
-      facet,
-      (g): g is Extract<FacetGroup, { kind: "label" }> => g.kind === "label",
-      (g, alone) => planLabel(facet, g, wanted, alone),
-    );
-
-  const planned = new Set(facets.filter((f) => f.status !== "not_expressible").map((f) => f.facet));
-  const replaced = new Set<string>(
-    groups
-      .filter((g) => planned.has(g.facet))
-      .flatMap((g) => g.group.filters.map((f) => f.filterId)),
-  );
-  const applied = facets.filter((f) => f.status === "applied");
-  const filterIds: FilterId[] = [
-    ...base.filterIds.filter((id) => !replaced.has(id)),
-    ...applied.flatMap((f) => f.selected.map((o) => o.filterId)),
-  ];
-  const groupHits = applied.map((f) => hitsOf(f.selected));
-  const knownHits = groupHits.filter((h): h is number => h !== null);
-  const hitsUpperBound =
-    groupHits.length === 0 || knownHits.length < groupHits.length ? null : Math.min(...knownHits);
-
+  const facets = planFacets(requirements, groups, scorer);
   return {
-    query: normalizeQuery({
-      ...base,
-      filterIds,
-      ...(requirements.price === undefined ? {} : { price: requirements.price }),
-    }),
+    query: composeQuery(base, requirements.price, groups, facets),
     facets,
-    hitsUpperBound,
+    hitsUpperBound: hitsUpperBoundOf(facets),
   };
 }
