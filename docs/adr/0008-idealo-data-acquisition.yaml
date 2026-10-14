@@ -20,9 +20,17 @@ adr.0008:
         - "GET /suggest?q=<text>&max=10 -> JSON product and query suggestions with OffersOfProduct URLs"
         - "4x POST to obfuscated path /VlzSZFrXQ-8-_VLmYKNKlQwtVKs/... -> 202, empty body"
       conclusion: listing grid and filter sidebar are server-rendered; no product/filter JSON over fetch/XHR on this flow; obfuscated POSTs are likely a bot-manager sensor, so patching fetch/XHR on every page is a detection risk
+    - id: capture-2026-10-14-product-pages
+      source: user capture export, 6 OffersOfProduct pages opened from Notebooks search
+      observed:
+        - "GET /price-chart/sites/1/products/<productId>/history?period=3M -> {siteId, startDate, data: [{x: YYYY-MM-DD, y: <euro cents>, date: [y, m, d]}]}; days without data omitted"
+        - "POST /offerpage/api/sponsored-slider -> {items: [{offer: {productId, title, variantName, price (de-DE string), shopName, relocateUrl (categoryId=3751), ...}}]}; ads, request body not captured"
+        - "no spec/offer-list JSON; Produktdetails block is server-rendered"
+      conclusion: price history is a clean same-origin GET keyed by productId (the id in OffersOfProduct/<id>_ URLs); calling it from listing tiles would be extra requests, so it stays unused until a feature needs it and no_extra_requests_to_idealo is revisited
   unknowns:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
-    - location of spec table (Prozessor/Grafikkarte) on product pages
+    - DOM location of spec table (Prozessor/Grafikkarte) on product pages (text shape known from fixture captiva-r10-1257ge.spec.txt)
+    - valid price-chart period values besides 3M
     - meaning of opaque URL suffix like "oE0oJ1"
   consequences:
     - FilterCatalog and spec extraction are ports; first real adapters written from capture-mode exports.
