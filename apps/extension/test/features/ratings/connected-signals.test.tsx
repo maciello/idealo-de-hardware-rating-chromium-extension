@@ -105,7 +105,7 @@ describe("power signal presentation", () => {
     expect(cardRows(rating, signals).at(-1)).toEqual({
       id: "power",
       label: "Very low power",
-      value: "9 W TDP · 3,333 CPU Mark per W",
+      value: "9 W TDP · 3.333 CPU Mark per W",
       title: "TDP: 9 W · TDP source: benchmark",
       meter: null,
     });

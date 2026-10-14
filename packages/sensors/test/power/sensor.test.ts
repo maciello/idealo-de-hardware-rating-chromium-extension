@@ -109,7 +109,7 @@ describe("powerSensor signal content", () => {
         kind: "badge",
         severity: "info",
         label: "Very low power",
-        detail: "9 W TDP · 1,020 CPU Mark per W",
+        detail: "9 W TDP · 1.020 CPU Mark per W",
         evidence: [
           { field: "TDP", value: "9 W" },
           { field: "TDP source", value: "benchmark" },

@@ -3,7 +3,7 @@ import { type FlagId, RED_FLAG_IDS as ID } from "./ids";
 import { RED_FLAG_THRESHOLDS as T } from "./thresholds";
 
 /** The one place that fixes how numbers read. */
-const NUMBER = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+const NUMBER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
 const n = (value: number | undefined): string => (value === undefined ? "?" : NUMBER.format(value));
 
 export interface FlagCopy {

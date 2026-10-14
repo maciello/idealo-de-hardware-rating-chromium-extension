@@ -9,8 +9,8 @@ describe("GPU score strategies", () => {
     expect(g3dScore.rate({ gpu })).toEqual({
       strategyId: "gpu_g3d_score",
       value: 16_000,
-      display: "16,000",
-      explanation: "PassMark G3D Mark of GeForce RTX 9060 Laptop GPU: 16,000.",
+      display: "16.000",
+      explanation: "PassMark G3D Mark of GeForce RTX 9060 Laptop GPU: 16.000.",
     });
   });
 
@@ -19,7 +19,7 @@ describe("GPU score strategies", () => {
     expect(gpuValuePerEuro.rate({ gpu, priceEur: 800 })).toMatchObject({
       strategyId: "gpu_value_per_euro",
       value: 20,
-      display: "20.0/€",
+      display: "20,0/€",
     });
   });
 

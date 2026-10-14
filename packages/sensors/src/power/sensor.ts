@@ -20,7 +20,7 @@ const tdpOf = (input: SensorInput): { watts: number; source: Source } | null => 
   return usable(benchmark) ? { watts: benchmark, source: "benchmark" } : null;
 };
 
-const INTEGER = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const INTEGER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
 
 const detailOf = (watts: number, cpuMark: number | undefined): string => {
   const tdp = `${INTEGER.format(watts)} W TDP`;

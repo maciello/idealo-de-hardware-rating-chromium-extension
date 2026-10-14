@@ -1,5 +1,5 @@
-const NUMBER = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const DECIMAL = new Intl.NumberFormat("en-US", {
+const NUMBER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
+const DECIMAL = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 1,
   minimumFractionDigits: 1,
 });
