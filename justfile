@@ -7,8 +7,8 @@ default:
 install:
     pnpm install
 
-# Lint + format check, typecheck, tests, docs YAML parse, module boundaries.
-check: lint typecheck test docs-check boundaries
+# Lint + format check, typecheck, tests, docs YAML parse, module boundaries, dead code.
+check: lint typecheck test docs-check boundaries deadcode
 
 lint:
     pnpm exec biome check .
@@ -31,9 +31,13 @@ docs-check:
 boundaries:
     pnpm exec depcruise --config .dependency-cruiser.cjs apps packages
 
+# Dead code (knip, see knip.jsonc): unused files, exports, types and dependencies; exits non-zero on a finding.
+deadcode:
+    pnpm exec knip
+
 # Source files over 150 lines (Biome style/noExcessiveLinesPerFile, level error in biome.json); exits non-zero on a violation.
 godfiles:
-    pnpm exec biome lint --only=style/noExcessiveLinesPerFile --max-diagnostics=none apps packages
+    pnpm exec biome lint --only=style/noExcessiveLinesPerFile --diagnostic-level=error --max-diagnostics=none apps packages
 
 # Rebuild the extension and diff its manifest against docs/baselines/manifest.chrome-mv3.json.
 manifest-check: build

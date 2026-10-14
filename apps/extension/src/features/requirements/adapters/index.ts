@@ -1,2 +1,2 @@
 export { loadRequirements, saveRequirements } from "./requirements-store";
-export { loadScorerSource, type ScorerSource } from "./scorer-source";
+export { loadScorerSource } from "./scorer-source";

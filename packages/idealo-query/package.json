@@ -2,6 +2,7 @@
   "name": "@idealo-hw/idealo-query",
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./url/constants": "./src/url/constants.ts",

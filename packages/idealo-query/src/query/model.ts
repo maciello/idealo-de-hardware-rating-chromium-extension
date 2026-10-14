@@ -4,7 +4,7 @@ import { CategoryIdSchema, FilterIdSchema, ManufacturerIdSchema, unique } from "
 export const KNOWN_SORT_KEYS = ["minPrice"] as const;
 export type SortKey = (typeof KNOWN_SORT_KEYS)[number] | (string & {});
 
-export const MAX_PRICE = 1_000_000_000;
+const MAX_PRICE = 1_000_000_000;
 export const MAX_OFFSET = 1_000_000_000;
 
 const SortKeySchema = z.string().min(1) as z.ZodType<SortKey>;

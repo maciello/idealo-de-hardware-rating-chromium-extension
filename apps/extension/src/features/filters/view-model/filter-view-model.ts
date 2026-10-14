@@ -29,12 +29,12 @@ export interface FilterViewInput {
   urlOf: (query: IdealoQuery) => string;
 }
 
-export interface SortOption {
+interface SortOption {
   value: string;
   label: string;
 }
 
-export type FilterGroupView = FilterCatalog["groups"][number];
+type FilterGroupView = FilterCatalog["groups"][number];
 
 export interface FilterViewModel {
   text: string;

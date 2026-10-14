@@ -4,7 +4,7 @@ import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 export type GpuKind = "dedicated" | "integrated";
 
 /** Where a memory figure comes from; the chip says so for everything but the tile's own words. */
-export type GpuMemorySource =
+type GpuMemorySource =
   /** The tile or datasheet states it ("Grafikspeicher 16 GB"). */
   | "stated"
   /** PassMark's memory size for the matched card: what the card usually has, not what this product has. */

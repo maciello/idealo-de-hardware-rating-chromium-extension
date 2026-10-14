@@ -18,5 +18,4 @@ export type {
   MatchedRating,
   PageRank,
   RatingEngine,
-  StrategyInfo,
 } from "./types";

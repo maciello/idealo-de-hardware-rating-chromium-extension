@@ -17,7 +17,7 @@ interface SliderBase {
   format: (value: number) => string;
 }
 
-export interface RangeSliderModel extends SliderBase {
+interface RangeSliderModel extends SliderBase {
   kind: "range";
   value: [number, number];
   thumbFromLabel: string;
@@ -25,7 +25,7 @@ export interface RangeSliderModel extends SliderBase {
   toBound: (range: [number, number]) => Bound;
 }
 
-export interface SingleSliderModel extends SliderBase {
+interface SingleSliderModel extends SliderBase {
   kind: "single";
   value: number;
   /** A minimum fills from the right. */

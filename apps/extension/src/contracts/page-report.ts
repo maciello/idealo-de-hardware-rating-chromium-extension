@@ -5,7 +5,7 @@ export const MAX_UNRATED = 20;
 
 const count = z.number().int().nonnegative();
 
-export const InspectedItemSchema = z.object({
+const InspectedItemSchema = z.object({
   adapterId: z.string(),
   productId: z.string().nullable(),
   /** Whether the spec text came from the page's embedded payload or from the rendered markup. */
@@ -17,7 +17,7 @@ export const InspectedItemSchema = z.object({
 export type InspectedItem = z.infer<typeof InspectedItemSchema>;
 
 /** What the ratings controller read on the page and which items it could rate. */
-export const PageInspectionSchema = z.object({
+const PageInspectionSchema = z.object({
   kind: PageKindSchema,
   items: z.array(InspectedItemSchema),
 });
