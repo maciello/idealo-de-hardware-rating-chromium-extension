@@ -1,4 +1,5 @@
 import { Popover } from "@mantine/core";
+import { IconFlame, IconLeaf } from "@tabler/icons-react";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
 import type { ItemRating } from "./engine";
 import { type CardRow, cardRows, chipModel, formatImportDate, OLD_MEMORY_HINT } from "./present";
@@ -169,6 +170,22 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
                 {model.value}
               </span>
               <span className="hw-chip__label">{model.label}</span>
+              {model.power !== null && (
+                <span
+                  className="hw-chip__power"
+                  data-level={model.power.level}
+                  role="img"
+                  aria-label={model.power.label}
+                  title={model.power.label}
+                  data-testid="chip-power"
+                >
+                  {model.power.level === "low" ? (
+                    <IconLeaf aria-hidden />
+                  ) : (
+                    <IconFlame aria-hidden />
+                  )}
+                </span>
+              )}
               {model.memoryWarning !== null && (
                 <span className="hw-chip__tag" title={OLD_MEMORY_HINT} data-testid="chip-memory">
                   {model.memoryWarning}

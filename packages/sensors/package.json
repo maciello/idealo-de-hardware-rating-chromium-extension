@@ -1,0 +1,14 @@
+{
+  "name": "@idealo-hw/sensors",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5"
+  }
+}

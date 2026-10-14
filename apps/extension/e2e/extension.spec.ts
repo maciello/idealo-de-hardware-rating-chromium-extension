@@ -122,6 +122,23 @@ test("listing: badges for known CPUs only, idempotent for new items", async () =
   await page.close();
 });
 
+test("listing: only a power extreme gets an icon, in the chip and in the card", async () => {
+  const page = await context.newPage();
+  await page.goto(NOTEBOOKS_LISTING_URL);
+  await expect(page.locator("idealo-hw-badge")).toHaveCount(3);
+
+  const hx = badgeOf(page, "1003");
+  await expect(hx.getByTestId("chip-power")).toHaveAttribute("aria-label", "Very high power");
+  await expect(hx.getByTestId("chip-power")).toHaveAttribute("title", "Very high power");
+  await expect(badgeOf(page, "1001").getByTestId("chip-power")).toHaveCount(0);
+  await expect(badgeOf(page, "1002").getByTestId("chip-power")).toHaveCount(0);
+
+  await hx.getByTestId("rating-badge").hover();
+  await expect(page.getByTestId("card-row-power")).toContainText("Very high power");
+  await expect(page.getByTestId("card-row-power")).toContainText("55 W TDP · 818 CPU Mark per W");
+  await page.close();
+});
+
 test("listing: tap leaves the page's own fetch untouched and capture mode records it", async () => {
   const page = await context.newPage();
   await page.goto(LISTING_URL);

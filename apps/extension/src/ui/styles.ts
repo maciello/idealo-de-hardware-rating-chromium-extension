@@ -47,6 +47,11 @@ const COMPONENTS = `
   .hw-chip__label { color: var(--hw-ink-muted); }
   .hw-chip__tag { padding: 1px 4px; border-radius: 3px; background: var(--hw-warn-weak); color: var(--hw-warn); font-size: var(--hw-font-s); font-weight: 600; line-height: 1.1; }
 
+  .hw-chip__power { display: inline-flex; align-items: center; flex: none; color: var(--hw-ink-muted); }
+  .hw-chip__power svg { display: block; width: 14px; height: 14px; }
+  .hw-chip__power[data-level="low"] { color: var(--hw-accent); }
+  .hw-chip__power[data-level="high"] { color: var(--hw-warn); }
+
   .hw-card { display: block; width: 100%; color: var(--hw-ink); font-size: var(--hw-font-m); }
   .hw-card__head { padding: 12px 14px 10px; }
   .hw-card__title { font-size: var(--hw-font-l); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }

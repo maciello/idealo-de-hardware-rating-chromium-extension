@@ -68,7 +68,8 @@ const signatureOf = (rating: ItemRating): string => {
       .map((r) => `${r.strategyId}=${r.value}:${r.explanation}`)
       .join(",");
     const rank = rating.pageRank ? `${rating.pageRank.rank}/${rating.pageRank.total}` : "-";
-    return `m:${rating.record.id}:${rating.formFactor}:${rating.ramType?.label ?? "-"}:${values}:${rank}`;
+    const signals = rating.signals.map((s) => s.id).join(",");
+    return `m:${rating.record.id}:${rating.formFactor}:${rating.ramType?.label ?? "-"}:${values}:${rank}:${signals}`;
   }
   return rating.status === "ambiguous" ? `a:${rating.candidates.map((c) => c.id).join(",")}` : "n";
 };

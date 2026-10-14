@@ -62,8 +62,16 @@ module.exports = {
       name: "pure-packages-no-platform",
       comment: "IO-free packages must not touch extension, UI or framework runtimes (adr.0005).",
       severity: "error",
-      from: { path: "^packages/(hw-bench|idealo-query|decide)/src/" },
+      from: { path: "^packages/(hw-bench|idealo-query|decide|sensors)/src/" },
       to: { path: UI_RUNTIME },
+    },
+    {
+      name: "sensors-not-to-hw-bench",
+      comment:
+        "Sensors take plain input; the extension maps benchmark records onto it (docs/adr/0015).",
+      severity: "error",
+      from: { path: "^packages/sensors/" },
+      to: { path: ["^packages/hw-bench/", "node_modules/@idealo-hw/hw-bench/"] },
     },
     {
       name: "sdk-only-in-jev-client",

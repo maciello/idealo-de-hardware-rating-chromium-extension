@@ -9,7 +9,9 @@ import {
   type Rating,
   type RatingStrategy,
 } from "@idealo-hw/hw-bench";
+import { type Signal, senseAll } from "@idealo-hw/sensors";
 import { type RamType, ramTypeOf } from "./ram-type";
+import { sensorInputOf } from "./sensor-input";
 
 export interface RatingQuery {
   title: string;
@@ -29,6 +31,8 @@ export type ItemRating =
       /** System memory type the item states; null when it names none. */
       ramType: RamType | null;
       ratings: readonly Rating[];
+      /** Badges and flags the product sensors raised; empty when nothing stands out. */
+      signals: readonly Signal[];
       /** Position among the matched products of the same page (1 = fastest); null below two peers. */
       pageRank: PageRank | null;
     }
@@ -148,6 +152,7 @@ export function createRatingEngine(
           formFactor: formFactorOf(queries[i]),
           ramType: ramTypeOf(queries[i]?.text ?? ""),
           ratings,
+          signals: senseAll(sensorInputOf(match.record, formFactorOf(queries[i]))),
           pageRank: pageRankOf(match.record.cpuMark, peers),
         };
       });

@@ -1,4 +1,5 @@
 import type { Rating } from "@idealo-hw/hw-bench";
+import { POWER_SENSOR_ID, POWER_SIGNAL_IDS, type Signal } from "@idealo-hw/sensors";
 import type { ItemRating, PageRank } from "./engine";
 
 export const MULTI = "raw_multithread_score";
@@ -131,12 +132,30 @@ export const meterOf = (rating: Matched): MeterInfo | null =>
 /** What the chip says when the item's memory is DDR4 or older; DDR5 and LPDDR5(X) are the baseline. */
 export const OLD_MEMORY_HINT = "Older memory generation";
 
+export interface PowerBadge {
+  level: "low" | "high";
+  /** Icon title and accessible name. */
+  label: string;
+}
+
+const powerSignalOf = (rating: Matched): Signal | undefined =>
+  rating.signals.find((s) => s.sensorId === POWER_SENSOR_ID);
+
+const powerBadgeOf = (rating: Matched): PowerBadge | null => {
+  const signal = powerSignalOf(rating);
+  return signal
+    ? { level: signal.id === POWER_SIGNAL_IDS.veryLow ? "low" : "high", label: signal.label }
+    : null;
+};
+
 export interface ChipModel {
   filled: number | null;
   value: string;
   label: string;
   /** Memory type to flag next to the rating ("DDR4"); null for current memory or none stated. */
   memoryWarning: string | null;
+  /** Power extreme to show as an icon; null for everything in between. */
+  power: PowerBadge | null;
   /** Spoken summary for the button. */
   aria: string;
 }
@@ -149,14 +168,18 @@ export function chipModel(rating: Matched, primaryId: string): ChipModel | null 
   const meter = meterOf(rating);
   const value = valueText(primary, rating.pageRank);
   const memoryWarning = rating.ramType?.outdated ? rating.ramType.label : null;
+  const power = powerBadgeOf(rating);
   return {
     filled: meter?.filled ?? null,
     value,
     label: "CPU",
     memoryWarning,
+    power,
     aria: `CPU rating ${ROW_LABELS[primary.strategyId] ?? primary.strategyId} ${value}${
       meter ? `, ${meter.context}` : ""
-    }${memoryWarning ? `, ${memoryWarning}: ${OLD_MEMORY_HINT.toLowerCase()}` : ""}. Show details`,
+    }${memoryWarning ? `, ${memoryWarning}: ${OLD_MEMORY_HINT.toLowerCase()}` : ""}${
+      power ? `, ${power.label.toLowerCase()}` : ""
+    }. Show details`,
   };
 }
 
@@ -202,6 +225,16 @@ export function cardRows(rating: Matched): CardRow[] {
       value: valueText(segmentRating, null),
       title: segmentRating.explanation,
       meter: segment ? { filled: segment.filled, text: `of ${segmentNoun(rating)}` } : null,
+    });
+  }
+  const power = powerSignalOf(rating);
+  if (power) {
+    rows.push({
+      id: "power",
+      label: power.label,
+      value: power.detail,
+      title: power.evidence.map((e) => `${e.field}: ${e.value}`).join(" · "),
+      meter: null,
     });
   }
   return rows;

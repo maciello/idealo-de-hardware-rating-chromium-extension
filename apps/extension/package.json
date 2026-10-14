@@ -16,6 +16,7 @@
     "@idealo-hw/decide": "workspace:*",
     "@idealo-hw/hw-bench": "workspace:*",
     "@idealo-hw/idealo-query": "workspace:*",
+    "@idealo-hw/sensors": "workspace:*",
     "@mantine/core": "^9.7.2",
     "@mantine/dropzone": "^9.7.2",
     "@mantine/hooks": "^9.7.2",
