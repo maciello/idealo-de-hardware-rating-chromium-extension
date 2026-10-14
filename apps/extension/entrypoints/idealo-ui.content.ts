@@ -6,7 +6,7 @@ import {
   firstCatalog,
   idealoAdapter,
 } from "@idealo-hw/idealo-page";
-import { buildPageReport } from "../src/diagnostics/page-report";
+import { buildPageReport } from "../src/features/diagnostics";
 import { RATING_CARD_STYLES, startRatings } from "../src/features/ratings";
 import { startFilterBuilder } from "../src/filters/controller";
 import { rememberingCatalog } from "../src/filters/remembering-catalog";

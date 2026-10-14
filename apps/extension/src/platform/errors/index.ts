@@ -1,6 +1,4 @@
 export {
-  type ErrorEntry,
-  ErrorEntrySchema,
   type ErrorSource,
   MAX_ERRORS,
   readErrorLog,
