@@ -1,20 +1,9 @@
-import {
-  createCandidateIndex,
-  createCanonicalKeyMatcher,
-  createGpuMatcher,
-} from "@idealo-hw/hw-bench";
+import { createCandidateIndex, createCanonicalKeyMatcher } from "@idealo-hw/hw-bench";
 import type { SystemOneRequest } from "@typesafe-ai/sdk";
 import { describe, expect, it } from "vitest";
-import {
-  createJevDecider,
-  type Decider,
-  noopDecider,
-  type RecordChoice,
-  resolveCpu,
-  resolveGpu,
-} from "../src";
-import { choiceOf, fakeClient, pickByLabel, pickNone } from "./fake-client";
-import { cpuSnapshot, gpuSnapshot } from "./records-fixture";
+import { type Decider, noopDecider, type RecordChoice, resolveCpu } from "../../src";
+import { cpuSnapshot } from "../records-fixture";
+import { labelsAsked, scriptedDecider } from "./scripted-decider";
 
 const cpus = cpuSnapshot(
   "Testcorp Ryzen AI Max+ 395",
@@ -28,31 +17,6 @@ const cpuDeps = {
   matcher: createCanonicalKeyMatcher(cpus),
   candidates: createCandidateIndex(cpus.records, { nameOf: (r) => r.name }),
 };
-
-const gpus = gpuSnapshot(
-  ["GeForce RTX 9080", "Desktop", "36,001"],
-  ["GeForce RTX 9080 Laptop GPU", "Mobile", "26,002"],
-  ["Radeon 9060S", "Desktop", "18,013"],
-  ["Quadro Z1000 Mobile Edition", "Mobile", "2,019"],
-);
-const gpuDeps = {
-  matcher: createGpuMatcher(gpus),
-  candidates: createCandidateIndex(gpus.records, { nameOf: (r) => r.name }),
-};
-
-/** Records every call; answers with a scripted choice by label. */
-function scriptedDecider(label: string | null, confidence = 0.9) {
-  const client = fakeClient((req: SystemOneRequest) =>
-    label === null ? pickNone(req, confidence) : pickByLabel(req, label, confidence),
-  );
-  return { client, decider: createJevDecider({ client }) };
-}
-
-const labelsAsked = (client: ReturnType<typeof fakeClient>): string[] =>
-  Object.values(choiceOf(client.requests[0] as SystemOneRequest).criteria)
-    .map(String)
-    .filter((l) => !l.startsWith("None of"))
-    .sort();
 
 describe("resolveCpu", () => {
   it("returns deterministic matches without consulting the decider", async () => {
@@ -165,62 +129,5 @@ describe("resolveCpu", () => {
       status: "ambiguous",
       source: "none",
     });
-  });
-});
-
-describe("resolveGpu", () => {
-  it("resolves laptop and desktop variants deterministically", async () => {
-    const { client, decider } = scriptedDecider(null);
-    expect(
-      await resolveGpu("NVIDIA GeForce RTX 9080", "laptop", { ...gpuDeps, decider }),
-    ).toMatchObject({
-      status: "matched",
-      source: "deterministic",
-      record: { name: "GeForce RTX 9080 Laptop GPU" },
-    });
-    expect(
-      await resolveGpu("NVIDIA GeForce RTX 9080", "desktop", { ...gpuDeps, decider }),
-    ).toMatchObject({
-      record: { name: "GeForce RTX 9080" },
-    });
-    expect(await resolveGpu("AMD Radeon 9060S", "laptop", { ...gpuDeps, decider })).toMatchObject({
-      record: { name: "Radeon 9060S" },
-    });
-    expect(client.requests).toHaveLength(0);
-  });
-
-  it("asks the decider with both variants and the form factor when it is unknown", async () => {
-    const { client, decider } = scriptedDecider("GeForce RTX 9080 Laptop GPU [mobile]");
-    const result = await resolveGpu("NVIDIA GeForce RTX 9080", "unknown", {
-      ...gpuDeps,
-      decider,
-      context: { product_title: "Gaming Notebook 16 Zoll" },
-    });
-    expect(result).toMatchObject({
-      status: "matched",
-      source: "jev",
-      record: { name: "GeForce RTX 9080 Laptop GPU" },
-    });
-    expect(labelsAsked(client)).toEqual(
-      ["GeForce RTX 9080 Laptop GPU [mobile]", "GeForce RTX 9080 [desktop]"].sort(),
-    );
-    expect((client.requests[0] as SystemOneRequest).state).toEqual({
-      gpu_text: "NVIDIA GeForce RTX 9080",
-      form_factor: "unknown",
-      product_title: "Gaming Notebook 16 Zoll",
-    });
-  });
-
-  it("uses the candidate index for unrecognised GPU text", async () => {
-    const { client, decider } = scriptedDecider("Quadro Z1000 Mobile Edition [mobile]");
-    const result = await resolveGpu("Quadro Z1000 OC", "laptop", { ...gpuDeps, decider });
-    expect(result).toMatchObject({ status: "matched", source: "jev" });
-    expect(client.requests).toHaveLength(1);
-  });
-
-  it("stays ambiguous offline", async () => {
-    expect(
-      await resolveGpu("GeForce RTX 9080", "unknown", { ...gpuDeps, decider: noopDecider }),
-    ).toMatchObject({ status: "ambiguous", source: "none" });
   });
 });

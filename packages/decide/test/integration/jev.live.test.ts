@@ -10,7 +10,7 @@ import {
   productContextFromSpecs,
 } from "@idealo-hw/hw-bench";
 import { beforeAll, describe, expect, it } from "vitest";
-import { createJevDecider, type Decider, resolveCpu, resolveGpu } from "../src";
+import { createJevDecider, type Decider, resolveCpu, resolveGpu } from "../../src";
 
 /**
  * Live checks against Jev through OpenRouter. They need the owner's OpenRouter key (OPENROUTER_API_KEY) and
@@ -18,7 +18,7 @@ import { createJevDecider, type Decider, resolveCpu, resolveGpu } from "../src";
  * The key is read here, in the test, and handed to the library; library code never touches the environment.
  */
 const apiKey = process.env.OPENROUTER_API_KEY;
-const dataDir = resolve(import.meta.dirname, "../../../data");
+const dataDir = resolve(import.meta.dirname, "../../../../data");
 const cpuPath = resolve(dataDir, "passmark_cpu.json");
 const gpuPath = resolve(dataDir, "passmark_gpu.csv");
 
