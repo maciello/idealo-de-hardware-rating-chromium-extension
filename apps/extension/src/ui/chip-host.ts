@@ -1,6 +1,6 @@
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
-import { chipHostStyles } from "./styles";
+import { chipHostStyles, HOST_TAG_PREFIX } from "./theme";
 
 export type ChipPlacement = "corner" | "inline";
 
@@ -23,7 +23,7 @@ export async function mountChipHost(
 ): Promise<ChipHost> {
   let container: HTMLElement | undefined;
   const ui = await createShadowRootUi(ctx, {
-    name: "idealo-hw-badge",
+    name: `${HOST_TAG_PREFIX}badge`,
     position: "inline",
     anchor,
     append: placement === "corner" ? "first" : "last",

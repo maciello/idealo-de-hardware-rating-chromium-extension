@@ -38,9 +38,9 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { formatInteger } from "../ratings/present";
 import { RequirementsSection } from "../requirements/RequirementsSection";
 import { emptyRequirements, isEmpty } from "../requirements/state";
+import { formatInteger, Z_INDEX } from "../ui";
 import { useDraftText } from "./draft-text";
 
 export interface FilterPanelProps {
@@ -80,7 +80,6 @@ const NO_CONTEXT: RequirementsContext = {
 };
 
 const SAVE_DELAY_MS = 300;
-const Z_INDEX = 2_147_483_000;
 
 const SORT_LABELS: Readonly<Record<string, string>> = { minPrice: "Lowest price first" };
 

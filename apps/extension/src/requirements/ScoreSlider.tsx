@@ -1,5 +1,5 @@
 import { Slider } from "@mantine/core";
-import { formatInteger } from "../ratings/present";
+import { formatInteger } from "../ui/format";
 import { SliderField } from "./SliderField";
 import type { ScoreSpan } from "./scorer";
 

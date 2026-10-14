@@ -1,8 +1,7 @@
 import type { GpuMatchRating, Rating } from "@idealo-hw/hw-bench";
+import { formatDecimal, formatInteger } from "../ui/format";
 import {
   type CardRow,
-  formatDecimal,
-  formatInteger,
   GPU_AT_LEAST,
   GPU_G3D,
   GPU_LABEL,

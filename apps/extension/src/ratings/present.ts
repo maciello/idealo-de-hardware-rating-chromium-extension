@@ -1,5 +1,6 @@
 import { GPU_PERCENTILE_ID, g3dScore, gpuValuePerEuro, type Rating } from "@idealo-hw/hw-bench";
 import { POWER_SENSOR_ID, POWER_SIGNAL_IDS, type Signal } from "@idealo-hw/sensors";
+import { formatDecimal, formatInteger } from "../ui/format";
 import type { ItemRating, PageRank } from "./engine";
 
 export const MULTI = "raw_multithread_score";
@@ -54,29 +55,6 @@ export const gpuLowerBoundNote = (variants: number): string =>
 type Matched = Extract<ItemRating, { status: "matched" }>;
 
 const SEGMENTS = 5;
-const NUMBER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
-const DECIMAL = new Intl.NumberFormat("de-DE", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-const DATE = new Intl.DateTimeFormat("de-DE", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-/** de-DE, so numbers read like idealo's prices next to them: 9.986 and 17,6. */
-export const formatInteger = (value: number): string => NUMBER.format(value);
-export const formatDecimal = (value: number): string => DECIMAL.format(value);
-
-/** `14.10.2026`; null for a missing or unparsable timestamp. */
-export function formatImportDate(iso: string | null): string | null {
-  if (iso === null) return null;
-  const time = Date.parse(iso);
-  return Number.isNaN(time) ? null : DATE.format(new Date(time));
-}
-
 /** Filled segments of the 5-segment meter: ceil(percentile / 20), clamped. Null hides the meter. */
 export function meterSegments(percentile: number | null | undefined): number | null {
   if (percentile === null || percentile === undefined || !Number.isFinite(percentile)) return null;

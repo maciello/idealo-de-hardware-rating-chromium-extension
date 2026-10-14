@@ -2,6 +2,7 @@ import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import { Popover } from "@mantine/core";
 import { IconFlame, IconLeaf } from "@tabler/icons-react";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
+import { formatImportDate, Meter } from "../ui";
 import type { ItemRating } from "./engine";
 import {
   AMBIGUOUS_CPU_ARIA,
@@ -9,7 +10,6 @@ import {
   cardRows,
   chipAria,
   chipModel,
-  formatImportDate,
   OLD_MEMORY_HINT,
 } from "./present";
 import { gpuCardHead, gpuCardRows, gpuLineModel } from "./present-gpu";
@@ -20,29 +20,6 @@ const CARD_WIDTH = 300;
 
 type Matched = Extract<ItemRating, { status: "matched" }>;
 type Ambiguous = Extract<ItemRating, { status: "ambiguous" }>;
-
-export function Meter({
-  filled,
-  label,
-  testId,
-}: {
-  filled: number;
-  label?: string;
-  testId?: string;
-}) {
-  return (
-    <span
-      className="hw-meter"
-      data-filled={filled}
-      {...(testId ? { "data-testid": testId } : {})}
-      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
-    >
-      {[0, 1, 2, 3, 4].map((i) => (
-        <i key={i} {...(i < filled ? { "data-on": "" } : {})} />
-      ))}
-    </span>
-  );
-}
 
 function Row({ row }: { row: CardRow }) {
   return (
