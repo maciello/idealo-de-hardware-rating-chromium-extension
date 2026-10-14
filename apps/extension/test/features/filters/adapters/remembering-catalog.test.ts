@@ -3,8 +3,8 @@ import type { FilterCatalogSource } from "@idealo-hw/idealo-page";
 import { categoryId, emptyQuery, type FilterCatalog, filterId } from "@idealo-hw/idealo-query";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { rememberingCatalog } from "../src/filters/remembering-catalog";
-import { vocabularyStorage } from "../src/filters/vocabulary-storage";
+import { rememberingCatalog } from "../../../../src/features/filters/adapters/remembering-catalog";
+import { vocabularyStorage } from "../../../../src/features/filters/adapters/vocabulary-storage";
 
 beforeEach(() => fakeBrowser.reset());
 
