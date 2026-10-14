@@ -1,0 +1,166 @@
+{
+  "items": [
+    {
+      "id": "205984319",
+      "title": "Medion SPRCHRGD 14 S2 MD62722",
+      "categoryId": "3751",
+      "subheading": "Multimedia Notebook",
+      "characteristics": [
+        "Multimedia Notebook",
+        "14 Zoll",
+        "2,8K",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 120 Hz",
+        "Intel Core Ultra 7 258V",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Arc Graphics 140V",
+        "Windows 11 Home",
+        "Microsoft Copilot",
+        "Akkulaufzeit 21 h",
+        "1,4 kg"
+      ],
+      "href": "https://www.idealo.de/preisvergleich/OffersOfProduct/205984319_-sprchrgd-14-s2-md62722-medion.html",
+      "offerInfo": {
+        "offerCount": 12,
+        "usedOnly": false
+      },
+      "type": "PRODUCT",
+      "rawPrice": 949
+    },
+    {
+      "id": "212702771",
+      "title": "Dell Latitude 3410 14\" Core i5-10210U, 32GB RAM, 2TB SSD",
+      "categoryId": "3751",
+      "subheading": "Business Notebook",
+      "characteristics": [
+        "Business Notebook",
+        "14 Zoll",
+        "Full HD",
+        "Intel Core i5-10210U",
+        "32 GB RAM",
+        "2.000 GB SSD-Speicher",
+        "Windows 11 Professional"
+      ],
+      "href": "https://www.idealo.de/preisvergleich/OffersOfProduct/212702771_-latitude-3410-14-core-i5-10210u-32gb-ram-2tb-ssd-dell.html",
+      "offerInfo": {
+        "offerCount": 1,
+        "usedOnly": false
+      },
+      "type": "PRODUCT",
+      "rawPrice": 649
+    },
+    {
+      "id": "27b70489e8106ded9e3f5ed05d896811",
+      "title": "Acer Ultra Laptop Intel Core i7-1165G7, 20GB / 32GB / 36GB / 40GB RAM Business-Notebook (43,9 cm/17,3 Zoll, Intel Core i7 1165G7, Intel Iris Xe Graphics, 20 GB, 1000 GB SSD, Laptop 17,3-Zoll-Display f",
+      "categoryId": "3751",
+      "subheading": null,
+      "characteristics": [],
+      "href": "fixture-token",
+      "offerInfo": {
+        "offerCount": 1,
+        "usedOnly": false
+      },
+      "type": "OFFER",
+      "rawPrice": 1099
+    },
+    {
+      "id": "207096746",
+      "title": "Acer Nitro V 17 AI ANV17-41-R7EN",
+      "categoryId": "3751",
+      "subheading": "Gaming Notebook",
+      "characteristics": [
+        "Gaming Notebook",
+        "17,3 Zoll",
+        "Full HD",
+        "Bildformat 16:9",
+        "AMD Ryzen 7 260",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5060",
+        "Grafikspeicher 8 GB",
+        "Windows 11 Home",
+        "Akkulaufzeit 10,5 h",
+        "2,71 kg"
+      ],
+      "href": "fixture-token",
+      "offerInfo": {
+        "offerCount": 2,
+        "usedOnly": true
+      },
+      "type": "PRODUCT",
+      "rawPrice": 1219
+    }
+  ],
+  "filterGroups": [
+    {
+      "id": "1006",
+      "name": "Prozessor",
+      "filters": [
+        {
+          "id": "107301240",
+          "name": "AMD Ryzen 5 150",
+          "hits": 75
+        },
+        {
+          "id": "106655872",
+          "name": "AMD Ryzen 5 220",
+          "hits": 13
+        },
+        {
+          "id": "106745466",
+          "name": "AMD Ryzen 5 230",
+          "hits": 40
+        }
+      ]
+    },
+    {
+      "id": "14670",
+      "name": "Grafikkarte",
+      "filters": [
+        {
+          "id": "104019454",
+          "name": "AMD Radeon 610M",
+          "hits": 4
+        },
+        {
+          "id": "103511893",
+          "name": "AMD Radeon 660M",
+          "hits": 33
+        },
+        {
+          "id": "103494209",
+          "name": "AMD Radeon 680M",
+          "hits": 38
+        }
+      ]
+    },
+    {
+      "id": "manufacturer",
+      "name": "Hersteller",
+      "filters": [
+        {
+          "id": "471878",
+          "name": "Acer",
+          "hits": 1363
+        },
+        {
+          "id": "1200167",
+          "name": "Alienware",
+          "hits": 14
+        },
+        {
+          "id": "104852041",
+          "name": "Ankermann",
+          "hits": 2
+        }
+      ]
+    }
+  ],
+  "selectedFilters": [],
+  "metadata": {
+    "search": {
+      "resultCount": 53609
+    }
+  }
+}

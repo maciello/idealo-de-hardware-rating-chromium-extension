@@ -3,7 +3,7 @@ import { firstCatalog } from "../src/filters/catalog-source";
 import { startFilterBuilder } from "../src/filters/controller";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
 import { onMessage } from "../src/messaging";
-import { heuristicIdealoAdapter } from "../src/page/heuristic-idealo-adapter";
+import { idealoAdapter } from "../src/page/idealo-adapter";
 import { capturePageSnapshot } from "../src/page/snapshot";
 import { startRatings } from "../src/ratings/controller";
 import { mountOverlay, type Overlay } from "../src/ui/overlay";
@@ -18,7 +18,7 @@ export default defineContentScript({
       return overlay;
     };
 
-    const ratings = startRatings(ctx, heuristicIdealoAdapter, getOverlay);
+    const ratings = startRatings(ctx, idealoAdapter, getOverlay);
     const filters = startFilterBuilder(
       ctx,
       firstCatalog([capturedJsonCatalog, domLinkCatalog]),

@@ -5,9 +5,13 @@ export interface ListingItem {
   element: Element;
   productId?: string;
   title: string;
-  /** Whole-item text, whitespace-collapsed; used when the title carries no CPU. */
+  /** Spec text, whitespace-collapsed; used when the title carries no CPU. */
   text: string;
+  /** Where `text` came from: the page's embedded search payload or the rendered markup. */
+  textSource: "embedded" | "dom";
   priceEur?: number;
+  /** `PageAdapter.id` of the adapter that found this item (the composite adapter delegates). */
+  adapterId: string;
 }
 
 export interface ProductInfo {
@@ -18,8 +22,9 @@ export interface ProductInfo {
 }
 
 /**
- * Port: everything the extension knows about idealo's markup. Selectors are unverified guesses
- * (see unverified_idealo_assumptions); swapping the adapter must not touch rating or UI code.
+ * Port: everything the extension knows about idealo's markup. Swapping the adapter must not touch
+ * rating or UI code. Listing selectors are verified against real server-rendered pages; product
+ * page selectors are still guesses (see unverified_idealo_assumptions).
  */
 export interface PageAdapter {
   readonly id: string;

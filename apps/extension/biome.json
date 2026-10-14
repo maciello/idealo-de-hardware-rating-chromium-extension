@@ -1,0 +1,7 @@
+{
+  "root": false,
+  "extends": "//",
+  "files": {
+    "includes": ["**", "!test/fixtures/idealo-ssr", "!test/fixtures/listing.idealo-ssr.html"]
+  }
+}

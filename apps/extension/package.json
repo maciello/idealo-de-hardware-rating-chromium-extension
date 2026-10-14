@@ -9,7 +9,8 @@
     "zip": "wxt zip",
     "typecheck": "tsc -p . --noEmit",
     "postinstall": "wxt prepare",
-    "e2e": "wxt build && playwright test --config e2e/playwright.config.ts"
+    "e2e": "wxt build && playwright test --config e2e/playwright.config.ts",
+    "fixtures": "node test/fixtures/build-idealo-ssr.ts"
   },
   "dependencies": {
     "@idealo-hw/hw-bench": "workspace:*",

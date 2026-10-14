@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { ListingItem, PageAdapter, PageKind, ProductInfo } from "./adapter";
 import { parseGermanPrice } from "./german-price";
 
+const ID = "heuristic_idealo";
 const OFFERS_LINK = 'a[href*="/OffersOfProduct/"]';
 const HEART = "[data-wishlist-heart]";
 const PRICE = ".sr-detailedPriceInfo__price";
@@ -133,7 +134,7 @@ function specTextOf(root: ParentNode): string {
 }
 
 export const heuristicIdealoAdapter: PageAdapter = {
-  id: "heuristic_idealo",
+  id: ID,
 
   detect(url): PageKind {
     const { kind } = parseIdealoUrl(url);
@@ -156,6 +157,8 @@ export const heuristicIdealoAdapter: PageAdapter = {
         productId,
         title: titleOf(element, text),
         text,
+        textSource: "dom" as const,
+        adapterId: ID,
         ...(priceEur === undefined ? {} : { priceEur }),
       };
     });
