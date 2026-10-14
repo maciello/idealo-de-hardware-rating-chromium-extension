@@ -20,10 +20,27 @@ export {
   readRows,
 } from "./benchmark/source";
 export {
+  type Candidate,
+  type CandidateIndex,
+  type CandidateIndexOptions,
+  type CandidatesOptions,
+  createCandidateIndex,
+  DEFAULT_CANDIDATE_LIMIT,
+  isModelNumberLike,
+  tokenize,
+} from "./candidates";
+export {
+  extractGpuIdentity,
+  type GpuIdentity,
+  normalizeGpuName,
+} from "./gpu/identity";
+export { createGpuMatcher, type GpuMatcher, type GpuMatchOptions } from "./gpu/matcher";
+export {
   type CpuIdentity,
   extractCpuIdentity,
   normalizeCpuName,
 } from "./identity/cpu-identity";
+export type { FormFactor } from "./identity/form-factor";
 export { createCanonicalKeyMatcher } from "./matcher/canonical-key";
 export type { Matcher, MatchResult } from "./matcher/matcher";
 export { createStrategies, defaultStrategies } from "./rating/defaults";
@@ -36,3 +53,12 @@ export {
   valuePerEuro,
 } from "./rating/strategies";
 export type { PeerSample, Rating, RatingInput, RatingStrategy } from "./rating/strategy";
+export {
+  DESKTOP_TITLE_WORDS,
+  LAPTOP_TITLE_WORDS,
+  type ProductContext,
+  type ProductContextOptions,
+  parseSpecBlock,
+  productContextFromSpecs,
+  SPEC_LABELS,
+} from "./specs/specs";
