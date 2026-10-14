@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/.output", "!**/.wxt", "!data", "!docs/baselines"]
+    "includes": ["**", "!**/.output", "!**/.wxt", "!data", "!docs/baselines", "!tools/oxlint"]
   },
   "formatter": {
     "indentStyle": "space",

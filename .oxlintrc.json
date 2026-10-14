@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [],
+  "categories": { "correctness": "off" },
+  "ignorePatterns": [
+    ".claude/**",
+    "tools/oxlint/anti-slop/**",
+    "**/.output/**",
+    "**/.wxt/**",
+    "data/**",
+    "docs/baselines/**"
+  ],
+  "jsPlugins": [{ "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" }],
+  "rules": {
+    "anti-slop/no-object-parameters": "error",
+    "anti-slop/no-reduce-accumulator-copy": "error",
+    "anti-slop/no-reflect-apply": "error",
+    "anti-slop/no-unknown-type-aliases": "error",
+    "anti-slop/no-widen-then-assert": "error",
+    "anti-slop/no-unknown-returns": "error",
+    "anti-slop/no-chained-type-assertions": "error",
+    "anti-slop/no-reflect-get": "error",
+    "anti-slop/no-module-mocking": "error",
+    "anti-slop/require-safety-comment-for-type-assertion": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/test/**", "**/e2e/**", "**/*.test.ts", "**/*.test.tsx"],
+      "rules": { "anti-slop/require-safety-comment-for-type-assertion": "off" }
+    }
+  ]
+}

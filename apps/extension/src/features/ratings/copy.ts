@@ -3,7 +3,9 @@ import type { GpuKind, GpuMemory } from "./model/gpu";
 import { GPU_G3D, GPU_PER_EURO, GPU_PERCENTILE } from "./model/gpu/strategy-ids";
 
 /** Names looked up by an id the engine reports as a plain string; a miss falls back to the id. */
-type LabelTable = Readonly<Record<string, string>>;
+interface LabelTable {
+  readonly [id: string]: string;
+}
 
 const PRIMARY_LABELS: LabelTable = {
   [MULTI]: "Multi",

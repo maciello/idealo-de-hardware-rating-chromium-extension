@@ -1,7 +1,11 @@
 import type { NumericFacet } from "@idealo-hw/idealo-query";
 
 /** Looked up by the facet name of a plan; a facet without an entry has no noun. */
-const MODEL_NOUNS: Readonly<Record<string, string>> = { cpu_model: "CPUs", gpu_model: "GPUs" };
+interface NounTable {
+  readonly [facet: string]: string;
+}
+
+const MODEL_NOUNS: NounTable = { cpu_model: "CPUs", gpu_model: "GPUs" };
 
 /** Slider labels; facets without a slider (RAM speed, core counts, ...) have none. */
 const NUMERIC_LABELS: Readonly<Partial<Record<NumericFacet, string>>> = {
