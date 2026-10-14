@@ -339,9 +339,10 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath) || !existsSync(mcpL
         : result.status === "ambiguous"
           ? (result.candidates?.map((c) => c.name) ?? null)
           : null;
-    const unseen: Readonly<Record<string, { cpu: string[]; gpu: string[] }>> = JSON.parse(
-      readFileSync(mcpLabelsPath, "utf8"),
-    ).categories;
+    let unseen: Readonly<Record<string, { cpu: string[]; gpu: string[] }>>;
+    beforeAll(() => {
+      unseen = JSON.parse(readFileSync(mcpLabelsPath, "utf8")).categories;
+    });
     const formFactorOfCategory = (category: string): FormFactor =>
       FORM_FACTOR_BY_CATEGORY[category] ?? "unknown";
 

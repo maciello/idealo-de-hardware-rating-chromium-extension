@@ -24,7 +24,7 @@ adr.0013:
       pre-2019 generations (Intel Core gen <= 8 such as i3-4100U, i3-8140U; Ryzen 5 2600E; AMD A10-6790B, A4-1350,
       Athlon X2/X4, Turion X2). The cutoff mechanism is unchanged; replacing it is a separate decision.
   decision:
-    port: CohortPolicy (packages/hw-bench/src/rating/cohort.ts), zod-parsed at storage/options boundary
+    port: CohortPolicy (packages/hw-bench/src/rating/cohort/policy.ts), zod-parsed at storage/options boundary
     year_cutoff: [none, since_year <Y>, rolling <N> calendar years anchored to the snapshot's newest record]
     min_score: optional absolute floor, default off (null). Kept for experiments, not used to define a comparison group.
     default: {year_cutoff: rolling 5, min_score: null}
@@ -32,7 +32,7 @@ adr.0013:
     undated_records: excluded whenever a year cutoff applies
     rolling_anchor_reason: tracks re-imports without a clock read and without a hard-coded year rotting
     cohort_sets:
-      module: packages/hw-bench/src/rating/device-class.ts (classifyCpu, classifyGpu)
+      module: packages/hw-bench/src/rating/device-class/ (classifyCpu, classifyGpu)
       principle: >-
         comparison groups are what a buyer on idealo can choose, PC client devices. Phone, embedded, server and virtual
         silicon is outside the domain by definition. Membership is a function of the parsed chip identity (vendor, family,
