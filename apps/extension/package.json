@@ -1,0 +1,26 @@
+{
+  "name": "@idealo-hw/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "typecheck": "tsc -p . --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@idealo-hw/hw-bench": "workspace:*",
+    "@idealo-hw/idealo-query": "workspace:*",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@wxt-dev/module-react": "^1.2.2",
+    "wxt": "^0.21.4"
+  }
+}

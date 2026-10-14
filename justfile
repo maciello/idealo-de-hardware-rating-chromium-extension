@@ -30,3 +30,11 @@ docs-check:
 # Fetch PassMark CPU+GPU data into data/ (private use only, see docs/adr/0006).
 fetch-passmark:
     uv run scripts/fetch_passmark.py data
+
+# Build the extension into apps/extension/.output/chrome-mv3 (load unpacked in brave://extensions).
+build:
+    pnpm --filter @idealo-hw/extension build
+
+# Extension dev server with HMR.
+dev:
+    pnpm --filter @idealo-hw/extension dev
