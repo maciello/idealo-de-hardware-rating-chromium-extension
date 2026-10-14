@@ -2,7 +2,7 @@ adr.0015:
   title: Product sensors turn parsed product facts into badges and red flags
   status: accepted-default
   date: 2026-10-14
-  issues: ["maciello/idealo-de-hardware-rating-chromium-extension#1", "#5", "#6"]
+  issues: ["maciello/idealo-de-hardware-rating-chromium-extension#1", "#5", "#6", "#7"]
   context:
     goal: owner-requested signals beyond CPU ratings (power extremes, red flags; later webcam, baseline, profiles)
     sources:
@@ -36,7 +36,51 @@ adr.0015:
         rationale: TDP clusters at vendor classes; the thresholds cut the natural tails (<= ~5% low, ~10% high), never a mid class
       efficiency: CPU Mark per TDP watt shown in the detail text only; not a class (base TDP is not measured draw)
     red_flags:
-      catalog: "one rule per flag: {id, facts used, predicate, severity, rationale}; thresholds set from the datasheet sample (finding below)"
+      code: packages/sensors/src/red-flags (catalog/*.ts rules, thresholds.ts cut-offs); ids are RED_FLAG_IDS
+      engine: one FlagRule per flag {id, device laptop|any, fields, severity, trips}; rules sharing a tier emit only the worst
+      facts: fromDatasheet(label -> value) and fromCharacteristics(tile values); numeric labels resolve through idealo-query measureOf (same vocabulary as the filter groups), other labels through facts/readers/table.ts; silence states nothing
+      severity_semantics:
+        red: a reviewer would warn against buying for general use
+        amber: a real compromise the buyer should know about
+        info: worth knowing, not a defect; card only, never counted on the chip
+      catalog:
+        - {id: display_low_res, device: laptop, rule: "short side < 1080 px", severity: red, sample: "nb 6%"}
+        - {id: ram_tiny, device: any, rule: "<= 4 GB", severity: red, sample: "nb 11%"}
+        - {id: ram_low, device: any, rule: "<= 8 GB", severity: amber, sample: "nb 20%, pc 17%"}
+        - {id: storage_emmc, device: any, rule: "eMMC / Flash-Speicher", severity: red, sample: "nb 11%"}
+        - {id: storage_hdd_only, device: any, rule: "HDD and no SSD stated (hybrid excluded)", severity: red, sample: "rare"}
+        - {id: storage_tiny, device: any, rule: "largest drive <= 128 GB", severity: red, sample: "nb 17%"}
+        - {id: storage_small, device: any, rule: "largest drive <= 256 GB", severity: amber, sample: "nb 12%, pc 17%"}
+        - {id: ram_type_outdated, device: any, rule: "DDR3 or older red; DDR4 / LPDDR4X amber", severity: red|amber, sample: "DDR4 32%", note: "owner requirement; reviewer evidence for DDR4 as a defect not found"}
+        - {id: wifi_old, device: any, rule: "Wi-Fi 4 or older red; Wi-Fi 5 info", severity: red|info, sample: "nb 15% without ax/be"}
+        - {id: display_dim, device: laptop, rule: "<= 250 cd/m2", severity: amber, sample: "nb 24%"}
+        - {id: battery_small, device: laptop, rule: "< 45 Wh", severity: amber, sample: "nb 15%"}
+        - {id: model_old, device: any, rule: "release year <= now - 5 (clock injected)", severity: amber, sample: "nb 11%"}
+        - {id: usb2_only, device: any, rule: "no USB 3+/USB-C/Thunderbolt among stated ports", severity: red, sample: "nb 2%"}
+        - {id: video_out_old, device: laptop, rule: "HDMI < 2 and no DisplayPort/Thunderbolt/USB-C", severity: info, sample: "nb 21%"}
+        - {id: no_os, device: any, rule: "Free DOS / ohne Betriebssystem", severity: info, sample: "nb 15%, pc 11%"}
+      not_flagged:
+        - {what: slow CPU, why: the CPU meter shows class standing}
+        - {what: Bluetooth < 5, why: 0 in sample}
+        - {what: non-German keyboard, why: "GH #11, model-code table, separate rule"}
+      sample: idealo MCP productSpecification, 2026-10-14, 66 notebooks (3751) + 21 PCs (3020); aggregates only, raw data not committed (ADR 0008)
+      validation: "blind run of the merged adapters on the same 87 datasheets reproduces the sample shares; products >= 1000 EUR raise no red or amber flag; 3 of 1100+ stated values unparsed, none flag-relevant"
+      evidence_quality: "web research (2026-10-14) reached search summaries only; supported: RAM, storage, eMMC, display resolution, webcam; author judgment: wifi_old, usb2_only, model_old, DDR3"
+      sources:
+        - https://support.microsoft.com/kb/5005380
+        - https://www.pcworld.com/article/395018/how-much-ram-do-you-need-in-a-laptop.html
+        - https://www.test.de/Tablets-mit-Tastatur-Notebooks-Ultrabooks-Convertibles-im-Test-4734961-5403813/
+        - https://www.laptopmag.com/articles/laptop-screen-guide
+        - https://www.pcworld.com/article/2872662/when-an-ssd-upgrade-is-not-worthwhile.html
+    webcam:
+      code: packages/sensors/src/webcam (GH #7)
+      facts: "webcam: {present: false} | {present: true, heightPx?, megapixels?, irCamera?}; absent = datasheet silent, never 'no webcam' (idealo often omits the camera that the shop text mentions)"
+      signals:
+        - {id: webcam.full_hd, kind: badge, severity: info, rule: "height >= 1080 or >= 2 MP"}
+        - {id: webcam.ir, kind: badge, severity: info, rule: IR camera stated}
+        - {id: webcam.low_res, kind: flag, severity: info, device: laptop, rule: "height <= 720"}
+        - {id: webcam.none, kind: flag, severity: amber, device: laptop, rule: "datasheet explicitly states none"}
+      search: idealo offers no webcam filter group (29 notebook groups checked 2026-10-14); finding laptops with a camera stays a search-text term
   consequences:
-    - the DDR4 chip tag (apps/extension features/ratings/model/cpu/ram-type.ts) becomes a red-flags rule
+    - the DDR4 chip tag becomes the red_flags.ram_type_outdated signal
     - webcam (#7), baseline (#2) and profiles (#3) add sensors or options over the same facts
