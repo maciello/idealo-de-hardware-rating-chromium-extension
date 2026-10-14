@@ -1,0 +1,12 @@
+adr.0004:
+  title: Benchmark data enters via user-imported file
+  status: accepted
+  date: 2026-10-14
+  decision:
+    mechanism: user imports file in extension options; persisted locally as BenchmarkSnapshot.
+    first_adapter: passmark_cpu_json
+    no_runtime_fetch_from_benchmark_sites: true
+  rationale: User controls data and freshness; avoids extension depending on third-party site availability/ToS.
+  consequences:
+    - BenchmarkSource is a port; other formats add adapters.
+  refs: [ref.passmark_cpu_json]

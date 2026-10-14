@@ -1,0 +1,42 @@
+# Ubiquitous language. One term = one meaning across code, docs, prompts.
+# diataxis: reference | audience: any agent working in this repo
+entities:
+  term.listing:
+    name: Listing
+    def: idealo category result page (ProductCategory/<id>…) showing many products.
+  term.product_page:
+    name: ProductPage
+    def: idealo page for a single product with offers and specs.
+  term.filter_catalog:
+    name: FilterCatalog
+    def: Per-category set of filter groups and filter values with idealo's numeric IDs. Read-only data scraped from idealo.
+  term.filter_selection:
+    name: FilterSelection
+    def: User- or AI-chosen subset of FilterCatalog values plus price range and sort. Pure data, no IO.
+  term.idealo_query:
+    name: IdealoQuery
+    def: FilterSelection bound to a category; serializes to exactly one idealo URL. Owned by the query library.
+  term.benchmark_source:
+    name: BenchmarkSource
+    def: Port. Parses an external benchmark file into BenchmarkRecords.
+  term.benchmark_record:
+    name: BenchmarkRecord
+    def: Normalized, typed benchmark entry for one CPU (multi-thread score, single-thread score, cores, tdp, category, release date).
+  term.benchmark_snapshot:
+    name: BenchmarkSnapshot
+    def: All BenchmarkRecords from one import, plus source id and import timestamp.
+  term.cpu_identity:
+    name: CpuIdentity
+    def: CPU model extracted from a product (title/specs), e.g. vendor=Intel family=Core i7 model=13700H.
+  term.matcher:
+    name: Matcher
+    def: Maps CpuIdentity -> BenchmarkRecord with a confidence; returns no-match instead of guessing.
+  term.rating_strategy:
+    name: RatingStrategy
+    def: Port. Turns (product, BenchmarkRecord, context) into a Rating. Several adapters coexist for comparison.
+  term.rating:
+    name: Rating
+    def: Output of one RatingStrategy - numeric value, short label, explanation of inputs.
+  term.badge:
+    name: Badge
+    def: UI element injected next to a product on Listing/ProductPage showing one or more Ratings.

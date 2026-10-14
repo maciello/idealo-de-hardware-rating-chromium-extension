@@ -1,0 +1,27 @@
+# Observed format of PassMark CPU list JSON (sample: 6516 rows, 2026-10). Boundary must parse, not trust.
+# diataxis: reference | audience: agent implementing passmark_cpu_json adapter
+ref.passmark_cpu_json:
+  root: '{ "data": Row[] }'
+  quirks:
+    - every numeric field is a string, some with thousands separators ("175,022")
+    - missing values are the string "NA"
+    - samples, secondaryCores, secondaryLogicals, cpuCount are int OR string across rows
+    - logicals is threads-per-core (1|2), not total threads
+    - cat is comma-joined multi-value ("Desktop, Laptop")
+    - date is "Mon YYYY"
+    - href contains HTML entity "&amp;"
+  fields:
+    id: {meaning: PassMark CPU id, use: stable key}
+    name: {meaning: 'vendor-prefixed model, e.g. Intel Core i7-13700H', use: Matcher target}
+    cpumark: {meaning: multi-thread score, na_rate: 0}
+    thread: {meaning: single-thread score, na_rate: ~3%}
+    tdp: {meaning: watts, na_rate: ~26%}
+    price: {meaning: USD reference price, na_rate: ~51%, use: ignore for EUR value}
+    cores: {meaning: primary core count}
+    secondaryCores: {meaning: efficiency cores}
+    speed: {meaning: base MHz, unknown_sentinel: "-1"}
+    turbo: {meaning: boost MHz}
+    socket: {meaning: socket string, unknown_sentinel: Unknown}
+    cat: {meaning: segment set}
+    rank: {meaning: rank by cpumark, type: int}
+    samples: {meaning: number of benchmark submissions}

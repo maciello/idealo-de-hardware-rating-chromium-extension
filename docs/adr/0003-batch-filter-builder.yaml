@@ -1,0 +1,11 @@
+adr.0003:
+  title: Search = batch filter builder, single navigation
+  status: accepted
+  date: 2026-10-14
+  decision:
+    ux: own filter panel; selections change instantly; one navigation to the serialized IdealoQuery URL.
+    rejected_for_now: in-place result rendering (fetch + own result list).
+    library: framework-agnostic TS package owning FilterCatalog parsing, FilterSelection, IdealoQuery serialization; no DOM/chrome APIs.
+  rationale: Removes the per-filter ~5s reload with least fragility; library reusable by future backend/MCP server.
+  consequences:
+    - In-place results can be added later on the same IdealoQuery model.

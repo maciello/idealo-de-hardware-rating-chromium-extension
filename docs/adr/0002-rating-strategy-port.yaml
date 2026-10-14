@@ -1,0 +1,12 @@
+adr.0002:
+  title: Rating is a port with interchangeable strategy adapters
+  status: accepted
+  date: 2026-10-14
+  decision:
+    port: RatingStrategy
+    initial_adapters_proposed: [raw_multithread_score, single_thread_score, value_per_euro, peer_percentile_on_listing, expected_for_price_band]
+    selection: user toggles active strategies in extension options; Badge renders all active.
+  rationale: The best rating is unknown; user wants to compare ideas empirically instead of deciding upfront.
+  consequences:
+    - Strategies are pure functions over typed inputs; testable without browser.
+    - Context (peer products, prices) is supplied by caller, not fetched by strategies.

@@ -1,0 +1,10 @@
+adr.0001:
+  title: MVP rates CPUs and CPU-bearing systems
+  status: accepted
+  date: 2026-10-14
+  decision:
+    in_scope: [CPU listings, laptops, desktop PCs (rated via contained CPU)]
+    deferred: [GPUs, GPU share of system rating]
+  rationale: One benchmark source covers the dominant case; GPU adds a second source and matcher.
+  consequences:
+    - BenchmarkSource and Matcher are keyed by component kind so GPU plugs in without core change.
