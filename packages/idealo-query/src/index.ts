@@ -1,30 +1,29 @@
 export { ASSUMPTIONS, type AssumptionId } from "./assumptions";
 export {
+  allAtLeast,
+  allAtMost,
   type CatalogIndex,
+  type Facet,
+  type FacetGroup,
+  type FacetOption,
   type FilterCatalog,
   FilterCatalogSchema,
   type FilterGroup,
   type FilterLookup,
   type FilterOption,
-  indexCatalog,
-  type Manufacturer,
-  parseMcpSearchResponseCatalog,
-} from "./catalog";
-export {
-  allAtLeast,
-  allAtMost,
-  type Facet,
-  type FacetGroup,
-  type FacetOption,
   facetsOf,
   type Interval,
+  indexCatalog,
   LABEL_FACETS,
   type LabelFacet,
+  type Manufacturer,
   MODEL_FACETS,
   type ModelFacet,
+  mergeCatalogs,
   NUMERIC_FACETS,
   type NumericFacet,
-} from "./facets";
+  vocabularyOf,
+} from "./catalog";
 export {
   type CategoryId,
   categoryId,
@@ -33,16 +32,29 @@ export {
   type ManufacturerId,
   manufacturerId,
 } from "./ids";
-export { type McpCountry, type McpSearchArgs, toMcpSearchArgs } from "./mcp";
 export {
+  addFilters,
+  addManufacturers,
+  clearGroup,
+  describeQuery,
   emptyQuery,
+  foldManufacturers,
   type IdealoQuery,
   IdealoQuerySchema,
   KNOWN_SORT_KEYS,
   normalizeQuery,
   type PriceRange,
+  type QueryDescription,
+  removeFilters,
+  removeManufacturers,
+  resetPaging,
   type SortKey,
-} from "./model";
+  setOffset,
+  setPrice,
+  setSort,
+  setText,
+  toggleFilter,
+} from "./query";
 export {
   type FacetPlan,
   type FacetPlanStatus,
@@ -54,35 +66,22 @@ export {
   RequirementsSchema,
 } from "./requirements";
 export {
-  type EmbeddedSearchResult,
-  type ListingItem,
-  type ListingItemKind,
-  parseSearchResult,
-  readEmbeddedSearchResult,
-  SEARCH_RESULT_PATH,
-  type SearchResultPage,
-} from "./search-result";
-export {
-  addFilters,
-  addManufacturers,
-  clearGroup,
-  describeQuery,
-  foldManufacturers,
-  type QueryDescription,
-  removeFilters,
-  removeManufacturers,
-  resetPaging,
-  setOffset,
-  setPrice,
-  setSort,
-  setText,
-  toggleFilter,
-} from "./select";
-export {
   DEFAULT_ORIGIN,
   type ParsedIdealoUrl,
   parseIdealoUrl,
   toWebUrl,
   UnrepresentableQueryError,
 } from "./url";
-export { mergeCatalogs, vocabularyOf } from "./vocabulary";
+export {
+  type EmbeddedSearchResult,
+  type ListingItem,
+  type ListingItemKind,
+  type McpCountry,
+  type McpSearchArgs,
+  parseMcpSearchResponseCatalog,
+  parseSearchResult,
+  readEmbeddedSearchResult,
+  SEARCH_RESULT_PATH,
+  type SearchResultPage,
+  toMcpSearchArgs,
+} from "./wire";
