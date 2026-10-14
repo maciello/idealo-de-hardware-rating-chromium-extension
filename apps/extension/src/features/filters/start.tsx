@@ -1,24 +1,23 @@
-import {
-  embeddedPriceBounds,
-  type FilterCatalogSource,
-  type FilterPage,
-  filterPageOf,
-  formFactorOfCategory,
-} from "@idealo-hw/idealo-page";
+import { type FilterCatalogSource, type FilterPage, filterPageOf } from "@idealo-hw/idealo-page";
 import type { IdealoQuery } from "@idealo-hw/idealo-query";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
-import { loadRequirements, loadScorerSource, saveRequirements } from "../features/requirements";
-import { sendMessage } from "../platform/messaging";
-import type { Overlay } from "../ui/host";
-import { FilterPanel, type RequirementsContext, type RequirementsStore } from "./FilterPanel";
+import { sendMessage } from "../../platform/messaging";
+import type { Overlay } from "../../ui/host";
+import { loadRequirements, saveRequirements } from "../requirements";
+import { loadRequirementsContext, rememberingCatalog, vocabularyStorage } from "./adapters";
+import { FilterBuilder } from "./connected";
+import type { RequirementsStore } from "./model";
 
 export interface FilterBuilderHandle {
   open(): void;
 }
 
+const requirementsStore: RequirementsStore = { load: loadRequirements, save: saveRequirements };
+
 /**
  * Mounts the filter builder (floating button plus drawer) into the overlay on category and search
- * pages. Returns null elsewhere. `open` lets the popup open it through a message.
+ * pages. Returns null elsewhere. `open` lets the popup open it through a message. Filter options
+ * seen on earlier pages of a category are added to what `catalogSource` reads.
  */
 export function startFilterBuilder(
   ctx: ContentScriptContext,
@@ -29,6 +28,7 @@ export function startFilterBuilder(
   if (found === null) return null;
   const first: FilterPage = found;
   const page = (): FilterPage => filterPageOf(location.href, document) ?? first;
+  const catalogs = rememberingCatalog(catalogSource, vocabularyStorage);
 
   let opened = false;
   let overlay: Overlay | undefined;
@@ -38,28 +38,17 @@ export function startFilterBuilder(
     render();
   };
 
-  // Stable identities: FilterPanel re-loads the catalog whenever these change.
+  // Stable identities: the builder re-loads the catalog whenever these change.
   const initialQuery = () => page().query;
   const loadCatalog = (query: IdealoQuery) =>
-    catalogSource.load({ document, url: location.href, query });
-  const loadContext = async (query: IdealoQuery): Promise<RequirementsContext> => {
-    const { scorer, hasData } = await loadScorerSource(formFactorOfCategory(query.categoryId));
-    return {
-      scorer,
-      hasData,
-      priceBounds: embeddedPriceBounds(document, query.categoryId),
-    };
-  };
-  const requirementsStore: RequirementsStore = {
-    load: loadRequirements,
-    save: saveRequirements,
-  };
+    catalogs.load({ document, url: location.href, query });
+  const loadContext = (query: IdealoQuery) => loadRequirementsContext(document, query);
   const onApply = (url: string) => location.assign(url);
   const onOpenSettings = () => void sendMessage("openOptions", undefined);
 
   function Panel() {
     return (
-      <FilterPanel
+      <FilterBuilder
         opened={opened}
         onOpenedChange={setOpened}
         initialQuery={initialQuery}

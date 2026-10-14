@@ -8,10 +8,8 @@ import {
 } from "@idealo-hw/idealo-page";
 import { IDEALO_MATCH_PATTERNS } from "@idealo-hw/idealo-query/url/constants";
 import { buildPageReport } from "../src/features/diagnostics";
+import { startFilterBuilder } from "../src/features/filters";
 import { RATING_CARD_STYLES, startRatings } from "../src/features/ratings";
-import { startFilterBuilder } from "../src/filters/controller";
-import { rememberingCatalog } from "../src/filters/remembering-catalog";
-import { vocabularyStorage } from "../src/filters/vocabulary-storage";
 import { installGlobalErrorReporting } from "../src/platform/errors";
 import { onMessage } from "../src/platform/messaging";
 import { mountOverlay, type Overlay } from "../src/ui/host";
@@ -31,7 +29,7 @@ export default defineContentScript({
     const ratings = startRatings(ctx, idealoAdapter, getOverlay);
     const filters = startFilterBuilder(
       ctx,
-      rememberingCatalog(firstCatalog([embeddedCatalog, domLinkCatalog]), vocabularyStorage),
+      firstCatalog([embeddedCatalog, domLinkCatalog]),
       getOverlay,
     );
 
