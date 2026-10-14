@@ -11,6 +11,8 @@ const GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.synthetic.csv");
 const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
 
 const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
+/** Same synthetic listing as Notebooks (3751): the page's category names the device class the segment percentile needs. */
+const NOTEBOOKS_LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 const PRODUCT_URL = "https://www.idealo.de/preisvergleich/OffersOfProduct/1001_alpha-book-15.html";
 
 /** The slice of the extension API used inside `page.evaluate` on extension pages. */
@@ -151,7 +153,7 @@ test("listing: tap leaves the page's own fetch untouched and capture mode record
 
 test("settings: disabling strategies updates open listings live", async () => {
   const listing = await context.newPage();
-  await listing.goto(LISTING_URL);
+  await listing.goto(NOTEBOOKS_LISTING_URL);
   const chip = badgeOf(listing, "1001").getByTestId("rating-badge");
   const rows = listing.locator('[data-testid^="card-row-"]');
   await chip.hover();

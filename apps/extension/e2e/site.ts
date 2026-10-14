@@ -24,6 +24,12 @@ export const SSR_GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.ssr.syntheti
 export const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
 
 export const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
+/**
+ * The synthetic listing served as category 3751 (Notebooks). Its chips are in both device-class sets, so the
+ * segment percentile needs a page that names the class; the made-up category 19116 names none.
+ */
+export const NOTEBOOKS_LISTING_URL =
+  "https://www.idealo.de/preisvergleich/ProductCategory/3751.html?variant=synthetic";
 /** Real idealo tile markup and embedded payload (category 3751). */
 export const SSR_LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 /** The same listing markup served as category 3020 (PC-Systeme): the page's category sets the device class. */
@@ -87,6 +93,9 @@ export async function installSite(context: BrowserContext): Promise<void> {
     const url = new URL(route.request().url());
     const { pathname } = url;
     const variant = url.searchParams.get("variant");
+    if (variant === "synthetic" && pathname.includes("/ProductCategory/3751")) {
+      return route.fulfill({ contentType: "text/html; charset=utf-8", body: LISTING_HTML });
+    }
     if (variant === "bare" || variant === "nocat") {
       return route.fulfill({
         contentType: "text/html; charset=utf-8",

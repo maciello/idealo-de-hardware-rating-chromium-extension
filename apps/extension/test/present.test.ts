@@ -82,11 +82,12 @@ const snapshot = passmarkCpuSource.parse(
   }),
 );
 const allIds = STRATEGY_CATALOG.map((s) => s.id);
+// Every chip is in both device-class sets (mobile H/HX/U), so the page's form factor picks the laptop pool.
 const rate = (enabled: readonly string[] = allIds): Extract<ItemRating, { status: "matched" }> => {
   const [first] = createRatingEngine(snapshot, enabled).rate([
-    { title: "A Intel Core i7-13700H", text: "", priceEur: 1299 },
-    { title: "B AMD Ryzen 5 7640U", text: "", priceEur: 899 },
-    { title: "C Intel Core i9-13900HX", text: "", priceEur: 1999 },
+    { title: "A Intel Core i7-13700H", text: "", priceEur: 1299, formFactor: "laptop" },
+    { title: "B AMD Ryzen 5 7640U", text: "", priceEur: 899, formFactor: "laptop" },
+    { title: "C Intel Core i9-13900HX", text: "", priceEur: 1999, formFactor: "laptop" },
   ]);
   if (first?.status !== "matched") throw new Error("expected a match");
   return first;

@@ -107,8 +107,9 @@ describe("createRatingEngine cohort policy", () => {
     }),
   );
   const percentile = (policy?: CohortPolicy): number | undefined => {
+    // The Core i7-13700H is in both device-class sets, so the page's form factor picks the pool.
     const [result] = createRatingEngine(dated, ["segment_percentile"], policy).rate([
-      { title: "Notebook Intel Core i7-13700H", text: "" },
+      { title: "Notebook Intel Core i7-13700H", text: "", formFactor: "laptop" },
     ]);
     return result?.status === "matched" ? result.ratings[0]?.value : undefined;
   };
@@ -146,6 +147,9 @@ describe("createRatingEngine device class", () => {
         classRow(8, "AMD Ryzen 9 7950X", "62,000", "Desktop"),
         classRow(9, "Intel Core i9-14900K", "59,000", "Desktop"),
         classRow(10, "Intel Celeron N5095 @ 2.00GHz", "4,000", "Desktop"),
+        classRow(11, "Qualcomm Snapdragon X Elite X1E78100", "15,000", "Laptop"),
+        classRow(12, "Intel Core i5-13400", "20,000", "Desktop"),
+        classRow(13, "Intel Core i7-1185G7E", "21,000", "Desktop"),
       ],
     }),
   );
@@ -174,11 +178,38 @@ describe("createRatingEngine device class", () => {
     expect(desktop.ratings[0]?.explanation).toContain("desktop CPUs");
   });
 
-  it("falls back to the CPU's own PassMark segment without a device class", () => {
-    const unknown = rate();
-    expect(unknown.formFactor).toBe("unknown");
-    expect(unknown.ratings[0]?.explanation).toContain("desktop CPUs");
-    expect(unknown.ratings[0]?.value).toBe(rate("desktop").ratings[0]?.value);
+  describe("without a form factor", () => {
+    const rateChip = (title: string, formFactor?: "laptop" | "desktop") => {
+      const [result] = engine.rate([{ title, text: "", formFactor }]);
+      if (result?.status !== "matched") throw new Error(`expected a match for ${title}`);
+      return result;
+    };
+
+    it("uses the set a chip is in alone: a laptop-only chip ranks against laptop CPUs", () => {
+      const chip = "Notebook Qualcomm Snapdragon X Elite X1E78100";
+      const unknown = rateChip(chip);
+      expect(unknown.formFactor).toBe("unknown");
+      expect(unknown.ratings[0]?.explanation).toContain("laptop CPUs");
+      expect(unknown.ratings[0]?.value).toBe(rateChip(chip, "laptop").ratings[0]?.value);
+    });
+
+    it("uses the set a chip is in alone: a desktop-only chip ranks against desktop CPUs", () => {
+      const unknown = rateChip("PC Intel Core i5-13400");
+      expect(unknown.formFactor).toBe("unknown");
+      expect(unknown.ratings[0]?.explanation).toContain("desktop CPUs");
+      expect(unknown.ratings[0]?.value).toBe(
+        rateChip("PC Intel Core i5-13400", "desktop").ratings[0]?.value,
+      );
+    });
+
+    it("gives a chip in both sets no segment rating, but still rates it on a page that names the class", () => {
+      expect(rateChip("Notebook AMD Ryzen AI 7 445").ratings).toEqual([]);
+      expect(rateChip("Notebook AMD Ryzen AI 7 445", "laptop").ratings).toHaveLength(1);
+    });
+
+    it("gives a chip in neither set (embedded SKU) no segment rating", () => {
+      expect(rateChip("Industrial PC Intel Core i7-1185G7E").ratings).toEqual([]);
+    });
   });
 
   it("reads the CPU from a bare model token and says how it matched", () => {

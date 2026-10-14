@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { type BrowserContext, expect, test } from "@playwright/test";
 import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
-import { importCpuFixture, installSite, LISTING_URL } from "./site";
+import { importCpuFixture, installSite, NOTEBOOKS_LISTING_URL } from "./site";
 
 /** The slice of the extension API used inside `page.evaluate` on extension pages. */
 declare const chrome: {
@@ -24,7 +24,7 @@ test.afterAll(async () => {
 
 test("cohort policy: narrowing it to years without data drops the segment percentile from the chip live", async () => {
   const listing = await context.newPage();
-  await listing.goto(LISTING_URL);
+  await listing.goto(NOTEBOOKS_LISTING_URL);
   const chip = listing
     .locator('li:has(a[href*="/OffersOfProduct/1001_"]) idealo-hw-badge')
     .getByTestId("rating-badge");
