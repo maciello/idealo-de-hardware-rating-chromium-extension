@@ -1,0 +1,94 @@
+adr.0017:
+  title: A measured subset of the anti-slop Oxlint plugin runs next to Biome
+  status: accepted
+  date: 2026-10-14
+  context:
+    goal: stop low-evidence TypeScript (casts without an invariant, unknown leaking to callers, module mocks) from entering the codebase, which Biome does not check
+    measured_at: commit 30e099c, apps and packages, oxlint 1.88.0, hits counted per rule over the whole tree
+    biome: stays the formatter and the general linter; oxlint adds only rules Biome lacks
+    plugin:
+      source: install-anti-slop skill bundle, vendored to tools/oxlint/anti-slop (MIT licence, UPSTREAM.md with content digest)
+      effect_rules: not installed, the repository has no effect dependency
+      versions: oxlint and @oxlint/plugins pinned to the same exact version (1.88.0) in the root package.json
+  decision:
+    run: "just slop (pnpm exec oxlint -c .oxlintrc.json .), part of just check, every rule at error"
+    default_categories:
+      choice: 'disabled (plugins set to an empty list, correctness category off)'
+      reason: Biome is the general linter; oxlint's default correctness category found 2 warnings here (unicorn/prefer-string-starts-ends-with, unicorn/no-useless-spread), both fixed, and nothing else
+      revisit: enable those two rules by name if a regression shows up
+    enabled_rules:
+      zero_hit_guards:
+        no-object-parameters:
+          hits_before: 0
+          reason: no parameter typed as the broad object keyword; callers pass an owner type
+        no-reduce-accumulator-copy:
+          hits_before: 0
+          reason: reducers that copy the accumulator per item are quadratic; mutate a local accumulator
+        no-reflect-apply:
+          hits_before: 0
+          reason: dynamic dispatch hides the callee from the type checker
+        no-unknown-type-aliases:
+          hits_before: 0
+          reason: an alias to unknown hides it from the next reader; keep unknown explicit at the parsing boundary
+        no-widen-then-assert:
+          hits_before: 0
+          reason: widening a known value to unknown and asserting it back throws type evidence away
+          verified_to_fire: a throwaway probe (const value of type unknown holding a string, returned as string) is reported
+      fixed_then_enabled:
+        no-unknown-returns:
+          hits_before: 2
+          fixed: DecisionCache.get returns JsonValue or undefined; coerceNumeric is generic over its passthrough input
+          reason: a function that returns unknown pushes the parsing to every caller
+        no-chained-type-assertions:
+          hits_before: 2
+          fixed: test fixtures build the real shape (ItemRating) or use one assertion
+          reason: 'the double assertion "x as unknown as T" bypasses the compiler completely'
+        no-reflect-get:
+          hits_before: 4
+          fixed: e2e/page-globals.ts augments Window and globalThis with the three test globals
+          reason: Reflect.get returns any-like values for a typed property read
+        no-module-mocking:
+          hits_before: 2
+          fixed: createScanLoop takes its ErrorRecorder and collectDebugReport takes its PageReportAsker as a defaulted parameter, so two tests inject a fake instead of calling vi.mock
+          reason: module mocks couple tests to import paths; a port parameter is the hexagonal seam
+        require-safety-comment-for-type-assertion:
+          hits_before: 31
+          scope: src only; off for test/**, e2e/** and *.test.ts(x), where fixtures cast on purpose
+          fixed: 24 casts deleted (type guard, flatMap, annotation, satisfies, generic parameter, parse at the boundary)
+          kept: 8 casts carry a one-line SAFETY comment stating the invariant (DOM event types, cloneNode, readonly-to-mutable library parameter, key-to-value correlation in the iGPU rule table, all-optional record key removal, zod-validated record keys)
+          reason: every remaining assertion states why it is sound
+    rejected_rules:
+      require-readable-spacing:
+        hits: 1801
+        reason: cosmetic; the autofix would push files past the 150-line Biome cap (noExcessiveLinesPerFile) and Biome owns formatting
+      no-conditional-empty-object-spread:
+        hits: 58
+        reason: 'the "...(x === undefined ? {} : {x})" idiom is the required way to build optional properties under exactOptionalPropertyTypes'
+      no-runtime-typeof:
+        hits: 16
+        reason: the hits are boundary decoders, type guards and matcher branches, where typeof is the check
+      no-unknown-parameters:
+        hits: 17
+        reason: flags the repository's own decoders, catch handlers and zod preprocess callbacks, whose input really is unknown
+      no-unsafe-dictionary-type:
+        hits: 16
+        reason: flags the same boundary decoders and Mantine value unions
+      no-known-value-widening:
+        hits: 35
+        reason: mostly false positives (explicit return types, string-keyed wire tables)
+        fixed_anyway: nine "as Readonly<Record<...>>" casts in the ratings and requirements copy are gone (five string-keyed tables became index-signature interfaces, two keyed tables use satisfies, the model noun table became an interface, and the numeric label table that claimed every NumericFacet while covering nine of fourteen became a partial record); the rule stays off, 28 hits remain
+      no-array-filter-map:
+        hits: 7
+        reason: lib is ES2023, so iterator helpers (values().filter().map()) are untyped, and the rule's other fix is a rewrite with no gain
+      no-shape-in-symbol-names:
+        hits: 3
+        reason: an arbitrary word ban
+      oxc/no-accumulating-spread:
+        hits: 0
+        reason: duplicates Biome performance/noAccumulatingSpread
+  consequences:
+    - a new cast without a SAFETY comment in src fails just check
+    - a new vi.mock fails just check; tests inject a port instead
+    - the vendored plugin is excluded from Biome (biome.json) and from knip (knip.jsonc); dependency-cruiser and tsc never include tools/
+    - updating the plugin follows the install-anti-slop update procedure, with tools/oxlint/anti-slop/UPSTREAM.md as the base record
+    - the two extra source fixes outside the rules (prefer-string-starts-ends-with in cpu/classify.ts, no-useless-spread in idealo-page snapshot.ts) have no guard; see default_categories.revisit

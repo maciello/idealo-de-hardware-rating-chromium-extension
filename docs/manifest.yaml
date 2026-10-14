@@ -19,3 +19,4 @@ docs:
   - adr/0014-module-boundaries-and-idealo-page.yaml
   - adr/0015-product-sensors.yaml
   - adr/0016-igpu-from-cpu.yaml
+  - adr/0017-anti-slop-oxlint-subset.yaml
