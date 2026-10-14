@@ -320,3 +320,30 @@ describe("createGpuMatcher on workstation and Intel naming", () => {
     expect(nameOf("NVIDIA GeForce RTX 9070 Ti 24GB", "desktop")).toBeNull();
   });
 });
+
+describe("createGpuMatcher with Max-Q-only mobile records", () => {
+  const matcher = createGpuMatcher(
+    snapshotOf(
+      { name: "GeForce RTX 8070 Super", cat: "Desktop", g3d: "21,001" },
+      { name: "GeForce RTX 8070 Super with Max-Q Design", cat: "Mobile", g3d: "15,002" },
+    ),
+  );
+
+  it("reports the Max-Q record as ambiguous for text that does not say Max-Q", () => {
+    const result = matcher.match("NVIDIA GeForce RTX 8070 Super", { formFactor: "laptop" });
+    expect(result).toMatchObject({
+      status: "ambiguous",
+      candidates: [{ name: "GeForce RTX 8070 Super with Max-Q Design" }],
+    });
+  });
+
+  it("matches it when the text says Max-Q, and keeps desktops on the desktop card", () => {
+    expect(matcher.match("GeForce RTX 8070 Super Max-Q", { formFactor: "laptop" })).toMatchObject({
+      status: "matched",
+      record: { name: "GeForce RTX 8070 Super with Max-Q Design" },
+    });
+    expect(matcher.match("NVIDIA GeForce RTX 8070 Super", { formFactor: "desktop" })).toMatchObject(
+      { status: "matched", record: { name: "GeForce RTX 8070 Super" } },
+    );
+  });
+});

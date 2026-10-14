@@ -44,10 +44,11 @@ const groupFor = (map: Map<string, Group>, key: string): Group => {
 const asResult = (
   records: readonly GpuBenchmarkRecord[],
   query: string | GpuIdentity,
+  unsure = false,
 ): MatchResult<GpuBenchmarkRecord> => {
   const [only] = records;
   if (records.length === 0) return { status: "no_match" };
-  if (records.length === 1 && only !== undefined) {
+  if (records.length === 1 && only !== undefined && !unsure) {
     const exact = typeof query === "string" && only.name.trim() === query.trim();
     return { status: "matched", record: only, via: exact ? "exact" : "normalized" };
   }
@@ -77,6 +78,8 @@ function collapseByExactName(entries: readonly Entry[], query: string | GpuIdent
  * - laptop: L when it exists, else D (desktop-only GPUs such as integrated "Radeon 8060S" are kept).
  * - desktop: D when it exists, else L.
  * - unknown: both exist -> ambiguous with both; otherwise the one that exists.
+ * A laptop (or laptop-only) result that consists solely of Max-Q records, for text that does not say Max-Q, is
+ * reported ambiguous even with one candidate: it is the slower variant, so its score is a lower bound.
  */
 export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>): GpuMatcher {
   const withMemory = new Map<string, Group>();
@@ -108,7 +111,7 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
     query: string | GpuIdentity,
     identity: GpuIdentity,
     formFactor: FormFactor,
-  ): GpuBenchmarkRecord[] | null => {
+  ): { records: GpuBenchmarkRecord[]; unsure: boolean } | null => {
     const memoryGroup =
       identity.memoryGb === null
         ? undefined
@@ -124,14 +127,23 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
       const fromMemory = memoryGroup?.[side] ?? [];
       return fromMemory.length > 0 ? fromMemory : (baseGroup?.[side] ?? []);
     };
-    const laptop = collapseByExactName(narrowByMaxQ(pick("laptop"), identity.maxQ), query);
+    const mobile = pick("laptop");
+    const laptop = collapseByExactName(narrowByMaxQ(mobile, identity.maxQ), query);
     const desktop = collapseByExactName(pick("desktop"), query);
-    const records = (entries: readonly Entry[]) => entries.map((e) => e.record);
+    const found = (entries: readonly Entry[], unsure = false) => ({
+      records: entries.map((e) => e.record),
+      unsure,
+    });
+    // Text without "Max-Q" for a model PassMark only lists as Max-Q: the card may be the faster full-power one.
+    const onlyMaxQ = !identity.maxQ && mobile.length > 0 && mobile.every((e) => e.maxQ);
 
     const effective: FormFactor = identity.variant === "laptop" ? "laptop" : formFactor;
-    if (effective === "laptop") return records(laptop.length > 0 ? laptop : desktop);
-    if (effective === "desktop") return records(desktop.length > 0 ? desktop : laptop);
-    return records([...desktop, ...laptop]);
+    if (effective === "laptop") {
+      return laptop.length > 0 ? found(laptop, onlyMaxQ) : found(desktop);
+    }
+    if (effective === "desktop")
+      return found(desktop.length > 0 ? desktop : laptop, onlyMaxQ && desktop.length === 0);
+    return found([...desktop, ...laptop]);
   };
 
   return {
@@ -145,8 +157,8 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
         if (named !== undefined) return asResult(named, query);
       }
       if (identity !== null) {
-        const records = resolveGroup(query, identity, formFactor);
-        if (records !== null) return asResult(records, query);
+        const group = resolveGroup(query, identity, formFactor);
+        if (group !== null) return asResult(group.records, query, group.unsure);
       }
       if (typeof query !== "string") return { status: "no_match" };
       return asResult(byName.get(normalizeGpuName(query)) ?? [], query);

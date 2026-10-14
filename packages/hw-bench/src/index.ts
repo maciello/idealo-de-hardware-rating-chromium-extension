@@ -41,6 +41,13 @@ export {
   normalizeCpuName,
 } from "./identity/cpu-identity";
 export type { FormFactor } from "./identity/form-factor";
+export {
+  type CpuScoreBounds,
+  cpuScoreBounds,
+  type GpuScoreBounds,
+  gpuScoreBounds,
+  type ScoreRange,
+} from "./matcher/bounds";
 export { createCanonicalKeyMatcher } from "./matcher/canonical-key";
 export type {
   FreeTextMatcher,
