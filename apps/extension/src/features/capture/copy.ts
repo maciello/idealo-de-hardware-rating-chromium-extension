@@ -1,4 +1,4 @@
-import { MAX_SNAPSHOT_BYTES } from "../../page/snapshot";
+import { MAX_SNAPSHOT_BYTES } from "@idealo-hw/idealo-page";
 import { RING_CAPACITY } from "./config";
 
 const SNAPSHOT_LIMIT_MB = MAX_SNAPSHOT_BYTES / (1024 * 1024);
