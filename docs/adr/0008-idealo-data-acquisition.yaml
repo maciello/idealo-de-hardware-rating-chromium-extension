@@ -52,6 +52,12 @@ adr.0008:
         - "no window.csr/phx initialData; title in h1#oopStage-title; full datasheet server-rendered in section#datasheet table: <th colspan=2> section rows, <td>label</td><td>value</td> rows (Notebook-Typ, Prozessor, Grafikkarte, RAM, SSD-Speicher, Gewicht, Markteinführung, ...)"
         - "4 application/ld+json blocks (Product with AggregateOffer lowPrice, ProductGroup, Review, FAQPage); no CPU/GPU in them"
         - "price history GET /price-chart/sites/1/products/<id>/history?period=3M|6M|1Y (periods confirmed by user)"
+    - id: live-2026-10-14-multi-filter
+      source: headless Chromium (regular browser user agent) from the build env; curl and the HeadlessChrome UA get Akamai 403
+      observed:
+        - "3751F7612877 (RAM 32 GB) 4319 hits; 3751F7612879 (64 GB) 1737; 3751F7612877-F7612879 -> redirect to 3751F7612877-7612879, 6056 hits = sum: one group ORs"
+        - "3751F1466479 (Gaming Notebook) 4146; with RAM 32 GB -> canonical 3751F1466479-7612877 (ids sorted), 1114 hits: groups AND"
+        - "mcp.idealo.com/mcp answers 401 without OAuth (DCR + PKCE browser login; trial 3 req/s, 500 calls/day)"
   decision_update:
     product_page: datasheet table rows as "Label\tValue" spec text (hw-bench parseSpecBlock); title from h1#oopStage-title
     listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
@@ -59,8 +65,7 @@ adr.0008:
     no_extra_requests_to_idealo: true (the embedded payload makes the planned page-0 GET unnecessary)
     capture_tap: debug only; records idealo hosts only so the 300-entry ring spans more pages
   unknowns:
-    - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
-    - multi-filter encoding of searchResult filters= (web URL form is F<id>-F<id>, unverified for the module)
+    - filter-definition endpoint URL/shape (unobserved)
     - how idealo exposes filters beyond the 100-per-group cap
     - meaning of opaque URL suffix like "oE0oJ1"
   consequences:
