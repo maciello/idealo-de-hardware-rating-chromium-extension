@@ -49,3 +49,16 @@ test("real markup: chips sit on the tiles of a server-rendered idealo listing", 
   await shot(page, "chip-real-markup");
   await page.close();
 });
+
+test("real markup: the filter builder offers the embedded payload's filters", async () => {
+  const page = await context.newPage();
+  await page.goto(SSR_LISTING_URL);
+  await page.getByTestId("filter-fab").click();
+  await expect(page.getByTestId("no-catalog-note")).toHaveCount(0);
+  await page.getByTestId("filter-107301240").check();
+  await page.getByTestId("filter-471878").check();
+  await expect(page.getByTestId("target-url")).toHaveText(
+    "https://www.idealo.de/preisvergleich/ProductCategory/3751F107301240-471878.html",
+  );
+  await page.close();
+});

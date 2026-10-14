@@ -9,6 +9,8 @@ import {
 export interface EmbeddedListing {
   categoryId: CategoryId;
   page: SearchResultPage;
+  /** Document url when the payload was read; it differs from the live url after a client-side navigation. */
+  url: string;
 }
 
 const MARKER = "window.csr.initialData['searchResult']";
@@ -24,6 +26,7 @@ function scan(doc: Document): EmbeddedListing | null {
     return {
       categoryId: embedded.categoryId,
       page: parseSearchResult(embedded.json, embedded.categoryId),
+      url: doc.URL,
     };
   }
   return null;

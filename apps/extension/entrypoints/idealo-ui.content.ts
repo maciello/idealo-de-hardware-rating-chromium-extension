@@ -1,7 +1,7 @@
-import { capturedJsonCatalog } from "../src/filters/captured-json-catalog";
 import { firstCatalog } from "../src/filters/catalog-source";
 import { startFilterBuilder } from "../src/filters/controller";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
+import { embeddedCatalog } from "../src/filters/embedded-catalog";
 import { onMessage } from "../src/messaging";
 import { idealoAdapter } from "../src/page/idealo-adapter";
 import { capturePageSnapshot } from "../src/page/snapshot";
@@ -21,7 +21,7 @@ export default defineContentScript({
     const ratings = startRatings(ctx, idealoAdapter, getOverlay);
     const filters = startFilterBuilder(
       ctx,
-      firstCatalog([capturedJsonCatalog, domLinkCatalog]),
+      firstCatalog([embeddedCatalog, domLinkCatalog]),
       getOverlay,
     );
 

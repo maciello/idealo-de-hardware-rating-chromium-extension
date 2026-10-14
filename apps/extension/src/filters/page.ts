@@ -1,4 +1,5 @@
 import {
+  addFilters,
   type CategoryId,
   categoryId,
   emptyQuery,
@@ -6,6 +7,7 @@ import {
   parseIdealoUrl,
   toWebUrl,
 } from "@idealo-hw/idealo-query";
+import { embeddedListing } from "../page/embedded-listing";
 
 /** How the filter builder behaves on the current page. */
 export interface FilterPage {
@@ -54,8 +56,12 @@ const pick = ({ text, price, sort }: IdealoQuery): Partial<IdealoQuery> => ({
   ...(sort === undefined ? {} : { sort }),
 });
 
-/** Category and search pages get a filter builder; everything else gets none. */
-export function filterPageOf(url: string, doc: ParentNode): FilterPage | null {
+/**
+ * Category and search pages get a filter builder; everything else gets none. A search page that
+ * still shows the page as served names its category and active filters in the embedded payload;
+ * after a client-side navigation the payload is stale and only the page's links are consulted.
+ */
+export function filterPageOf(url: string, doc: Document): FilterPage | null {
   const parsed = parseIdealoUrl(url);
   if (parsed.kind === "category") {
     return { kind: "category", query: parsed.query, toUrl: (q) => toWebUrl(q), canFilter: true };
@@ -66,11 +72,14 @@ export function filterPageOf(url: string, doc: ParentNode): FilterPage | null {
     ...(parsed.price ? { price: parsed.price } : {}),
     ...(parsed.sort ? { sort: parsed.sort } : {}),
   };
-  const guessed = guessCategoryId(doc);
+  const embedded = embeddedListing(doc);
+  const served = embedded?.url === url ? embedded : null;
+  const guessed = served?.categoryId ?? guessCategoryId(doc);
   if (guessed !== null) {
+    const base = { ...emptyQuery(guessed), ...carried };
     return {
       kind: "search",
-      query: { ...emptyQuery(guessed), ...carried },
+      query: served === null ? base : addFilters(base, served.page.selected),
       toUrl: (q) => toWebUrl(q),
       canFilter: true,
     };
