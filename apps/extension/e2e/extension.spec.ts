@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
-import { LISTING_HTML, PRODUCT_HTML } from "./site";
+import { importCpuFixture, importGpuFixture, LISTING_HTML, PRODUCT_HTML } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 const here = import.meta.dirname;
 const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json");
@@ -21,6 +22,7 @@ declare const chrome: {
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: resolve(ARTIFACTS_DIR, `${name}.png`) });
@@ -46,7 +48,12 @@ test.beforeAll(async () => {
     return route.fulfill({ status: 404, body: "" });
   });
   extensionId = await extensionIdOf(context);
+  await importCpuFixture(context, extensionId);
+  await importGpuFixture(context, extensionId);
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();
@@ -62,7 +69,7 @@ test("options: import synthetic PassMark data, enable capture mode", async () =>
 
   await page.getByTestId("capture-mode").check({ force: true });
   await expect(page.getByTestId("capture-mode")).toBeChecked();
-  // The background registers the network tap only now; later tests rely on it being there.
+  // The background registers the network tap only now.
   await expect
     .poll(() =>
       page.evaluate(async () =>
@@ -139,16 +146,30 @@ test("listing: only a power extreme gets an icon, in the chip and in the card", 
 });
 
 test("listing: tap leaves the page's own fetch untouched and capture mode records it", async () => {
+  const setup = await context.newPage();
+  await setup.goto(`chrome-extension://${extensionId}/options.html`);
+  await setup.getByTestId("capture-mode").check({ force: true });
+  await expect
+    .poll(() =>
+      setup.evaluate(async () =>
+        (await chrome.scripting.getRegisteredContentScripts()).map((script) => script.id),
+      ),
+    )
+    .toContain("idealo-hw-network-tap");
+  await setup.close();
+
   const page = await context.newPage();
   await page.goto(LISTING_URL);
   await expect
     .poll(() => page.evaluate(() => Reflect.get(window, "__filters")))
     .toEqual(JSON.parse(FILTERS_JSON));
-  await page.close();
 
+  // The tap reads the body, posts it to the relay and the relay stores it, all after the page's own
+  // fetch has resolved: the listing stays open until the options page shows the capture.
   const options = await context.newPage();
   await options.goto(`chrome-extension://${extensionId}/options.html`);
   await expect(options.getByTestId("capture-count")).toContainText(/^[1-9]\d* captured$/);
+  await page.close();
 
   const download = options.waitForEvent("download");
   await options.getByTestId("capture-export").click();

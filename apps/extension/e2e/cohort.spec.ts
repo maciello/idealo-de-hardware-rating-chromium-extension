@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { type BrowserContext, expect, test } from "@playwright/test";
 import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
 import { importCpuFixture, installSite, NOTEBOOKS_LISTING_URL } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 /** The slice of the extension API used inside `page.evaluate` on extension pages. */
 declare const chrome: {
@@ -10,13 +11,17 @@ declare const chrome: {
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 test.beforeAll(async () => {
   context = await launchWithExtension();
   await installSite(context);
   extensionId = await extensionIdOf(context);
   await importCpuFixture(context, extensionId);
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();

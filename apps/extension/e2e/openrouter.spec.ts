@@ -1,6 +1,7 @@
 import { type BrowserContext, expect, type Page, test, type Worker } from "@playwright/test";
 import { extensionIdOf, launchWithExtension } from "./launch";
 import { shot } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 /** The slice of the extension API used inside `worker.evaluate` (e2e has no chrome typings). */
 declare const chrome: {
@@ -15,6 +16,7 @@ const KEY = "sk-or-test";
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 let worker: Worker;
 let exchangeBodies: unknown[];
 let exchangeStatus: number;
@@ -97,6 +99,7 @@ test.beforeAll(async () => {
       }),
     });
   });
+  baseline = await captureBaseline(context, extensionId);
 });
 
 test.beforeEach(() => {
@@ -105,6 +108,8 @@ test.beforeEach(() => {
   jevStatus = 200;
   jevRequests = [];
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();

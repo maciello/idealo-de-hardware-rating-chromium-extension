@@ -10,6 +10,7 @@ import {
   SEARCH_URL,
   shot,
 } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 /** The slice of the extension API used inside `page.evaluate` on extension pages. */
 declare const chrome: {
@@ -21,6 +22,7 @@ const TAP_ID = "idealo-hw-network-tap";
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 const popupUrl = () => `chrome-extension://${extensionId}/popup.html`;
 const chipOf = (page: Page, productId: string) =>
@@ -55,7 +57,10 @@ test.beforeAll(async () => {
   await installSite(context);
   extensionId = await extensionIdOf(context);
   await importCpuFixture(context, extensionId);
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();
