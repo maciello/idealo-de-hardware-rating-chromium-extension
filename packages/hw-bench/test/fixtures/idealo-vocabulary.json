@@ -1,0 +1,1689 @@
+{
+  "source": "idealo.de embedded searchResult payloads, HARs 2026-10-14 (categories 3751 Notebooks, 3020 PC-Systeme); filter labels of groups Prozessor and Grafikkarte",
+  "cpuFilterLabels": [
+    "AMD Ryzen 3 3200G",
+    "AMD Ryzen 5 150",
+    "AMD Ryzen 5 220",
+    "AMD Ryzen 5 230",
+    "AMD Ryzen 5 240",
+    "AMD Ryzen 5 3500U",
+    "AMD Ryzen 5 3600",
+    "AMD Ryzen 5 4500",
+    "AMD Ryzen 5 4600G",
+    "AMD Ryzen 5 5500",
+    "AMD Ryzen 5 5500GT",
+    "AMD Ryzen 5 5500U",
+    "AMD Ryzen 5 5600",
+    "AMD Ryzen 5 5600G",
+    "AMD Ryzen 5 5600X",
+    "AMD Ryzen 5 5625U",
+    "AMD Ryzen 5 7430U",
+    "AMD Ryzen 5 7500F",
+    "AMD Ryzen 5 7500X3D",
+    "AMD Ryzen 5 7520U",
+    "AMD Ryzen 5 7530U",
+    "AMD Ryzen 5 7535HS",
+    "AMD Ryzen 5 7535U",
+    "AMD Ryzen 5 7600",
+    "AMD Ryzen 5 7600X",
+    "AMD Ryzen 5 7600X3D",
+    "AMD Ryzen 5 7640HS",
+    "AMD Ryzen 5 8400F",
+    "AMD Ryzen 5 8500G",
+    "AMD Ryzen 5 8500GE",
+    "AMD Ryzen 5 8600G",
+    "AMD Ryzen 5 9500F",
+    "AMD Ryzen 5 9600X",
+    "AMD Ryzen 5 Pro 5655G",
+    "AMD Ryzen 7 170",
+    "AMD Ryzen 7 250",
+    "AMD Ryzen 7 260",
+    "AMD Ryzen 7 5700G",
+    "AMD Ryzen 7 5700U",
+    "AMD Ryzen 7 5700X",
+    "AMD Ryzen 7 5700X3D",
+    "AMD Ryzen 7 5800X",
+    "AMD Ryzen 7 5800X3D",
+    "AMD Ryzen 7 5800XT",
+    "AMD Ryzen 7 5825U",
+    "AMD Ryzen 7 6800H",
+    "AMD Ryzen 7 7700",
+    "AMD Ryzen 7 7700X",
+    "AMD Ryzen 7 7730U",
+    "AMD Ryzen 7 7735HS",
+    "AMD Ryzen 7 7735U",
+    "AMD Ryzen 7 7800X3D",
+    "AMD Ryzen 7 7840HS",
+    "AMD Ryzen 7 8700F",
+    "AMD Ryzen 7 8700G",
+    "AMD Ryzen 7 8745HS",
+    "AMD Ryzen 7 8745HX",
+    "AMD Ryzen 7 8840HS",
+    "AMD Ryzen 7 8840U",
+    "AMD Ryzen 7 8845HS",
+    "AMD Ryzen 7 9700X",
+    "AMD Ryzen 7 9800X3D",
+    "AMD Ryzen 7 9850X3D",
+    "AMD Ryzen 7 Pro 5750G",
+    "AMD Ryzen 9 5900X",
+    "AMD Ryzen 9 7900X",
+    "AMD Ryzen 9 7900X3D",
+    "AMD Ryzen 9 7950X",
+    "AMD Ryzen 9 7950X3D",
+    "AMD Ryzen 9 8940HX",
+    "AMD Ryzen 9 8945HS",
+    "AMD Ryzen 9 9900X",
+    "AMD Ryzen 9 9900X3D",
+    "AMD Ryzen 9 9950X",
+    "AMD Ryzen 9 9950X3D",
+    "AMD Ryzen 9 9950X3D2",
+    "AMD Ryzen 9 9955HX",
+    "AMD Ryzen 9 9955HX3D",
+    "AMD Ryzen AI 5 330",
+    "AMD Ryzen AI 5 340",
+    "AMD Ryzen AI 5 430",
+    "AMD Ryzen AI 7 350",
+    "AMD Ryzen AI 7 445",
+    "AMD Ryzen AI 7 450",
+    "AMD Ryzen AI 7 Pro 350",
+    "AMD Ryzen AI 9 365",
+    "AMD Ryzen AI 9 465",
+    "AMD Ryzen AI 9 HX 370",
+    "AMD Ryzen AI 9 HX 375",
+    "AMD Ryzen AI 9 HX 470",
+    "AMD Ryzen AI Max+ 395",
+    "Apple M1 Pro",
+    "Apple M2 Max",
+    "Apple M2 Pro",
+    "Apple M3 Max",
+    "Apple M4",
+    "Apple M4 Pro",
+    "Apple M5",
+    "Apple M5 Max",
+    "Apple M5 Pro",
+    "Apple M5 Ultra",
+    "Apple M6",
+    "Intel Atom",
+    "Intel Celeron N5105",
+    "Intel Core 3 100U",
+    "Intel Core 5 120U",
+    "Intel Core 5 210H",
+    "Intel Core 7 150U",
+    "Intel Core 7 240H",
+    "Intel Core 9 270H",
+    "Intel Core N355",
+    "Intel Core Ultra 5 125H",
+    "Intel Core Ultra 5 125U",
+    "Intel Core Ultra 5 225",
+    "Intel Core Ultra 5 225H",
+    "Intel Core Ultra 5 225T",
+    "Intel Core Ultra 5 225U",
+    "Intel Core Ultra 5 226V",
+    "Intel Core Ultra 5 228V",
+    "Intel Core Ultra 5 235",
+    "Intel Core Ultra 5 235T",
+    "Intel Core Ultra 5 245",
+    "Intel Core Ultra 5 245K",
+    "Intel Core Ultra 5 245KF",
+    "Intel Core Ultra 5 250K Plus",
+    "Intel Core Ultra 5 250KF Plus",
+    "Intel Core Ultra 5 325",
+    "Intel Core Ultra 7 155H",
+    "Intel Core Ultra 7 155U",
+    "Intel Core Ultra 7 255H",
+    "Intel Core Ultra 7 255HX",
+    "Intel Core Ultra 7 255U",
+    "Intel Core Ultra 7 256V",
+    "Intel Core Ultra 7 258V",
+    "Intel Core Ultra 7 265",
+    "Intel Core Ultra 7 265F",
+    "Intel Core Ultra 7 265K",
+    "Intel Core Ultra 7 265KF",
+    "Intel Core Ultra 7 265T",
+    "Intel Core Ultra 7 268V",
+    "Intel Core Ultra 7 270K Plus",
+    "Intel Core Ultra 7 355",
+    "Intel Core Ultra 7 356H",
+    "Intel Core Ultra 7 366H",
+    "Intel Core Ultra 9 185H",
+    "Intel Core Ultra 9 275HX",
+    "Intel Core Ultra 9 285",
+    "Intel Core Ultra 9 285H",
+    "Intel Core Ultra 9 285HX",
+    "Intel Core Ultra 9 285K",
+    "Intel Core Ultra 9 288V",
+    "Intel Core Ultra 9 290HX Plus",
+    "Intel Core Ultra 9 386H",
+    "Intel Core Ultra X7 358H",
+    "Intel Core Ultra X7 368H",
+    "Intel Core Ultra X9 388H",
+    "Intel Core i3-12100",
+    "Intel Core i3-13100",
+    "Intel Core i3-14100",
+    "Intel Core i3-6100",
+    "Intel Core i3-N305",
+    "Intel Core i5-10210U",
+    "Intel Core i5-10400F",
+    "Intel Core i5-10500T",
+    "Intel Core i5-1135G7",
+    "Intel Core i5-11400",
+    "Intel Core i5-11400F",
+    "Intel Core i5-1235U",
+    "Intel Core i5-12400",
+    "Intel Core i5-12400F",
+    "Intel Core i5-12500",
+    "Intel Core i5-12500T",
+    "Intel Core i5-12600KF",
+    "Intel Core i5-1334U",
+    "Intel Core i5-1335U",
+    "Intel Core i5-13400",
+    "Intel Core i5-13400T",
+    "Intel Core i5-13420H",
+    "Intel Core i5-13500",
+    "Intel Core i5-13500T",
+    "Intel Core i5-14400",
+    "Intel Core i5-14400F",
+    "Intel Core i5-14500",
+    "Intel Core i5-14500T",
+    "Intel Core i5-14600",
+    "Intel Core i5-14600K",
+    "Intel Core i5-14600KF",
+    "Intel Core i5-4570",
+    "Intel Core i5-6500",
+    "Intel Core i5-8400T",
+    "Intel Core i5-8500",
+    "Intel Core i5-8500T",
+    "Intel Core i5-9500",
+    "Intel Core i5-9500T",
+    "Intel Core i7-10510U",
+    "Intel Core i7-10700",
+    "Intel Core i7-1165G7",
+    "Intel Core i7-1185G7",
+    "Intel Core i7-1255U",
+    "Intel Core i7-1260P",
+    "Intel Core i7-12700",
+    "Intel Core i7-12700F",
+    "Intel Core i7-12700H",
+    "Intel Core i7-12700K",
+    "Intel Core i7-12700KF",
+    "Intel Core i7-1355U",
+    "Intel Core i7-1360P",
+    "Intel Core i7-13620H",
+    "Intel Core i7-13700",
+    "Intel Core i7-13700H",
+    "Intel Core i7-13700K",
+    "Intel Core i7-13700T",
+    "Intel Core i7-14650HX",
+    "Intel Core i7-14700",
+    "Intel Core i7-14700HX",
+    "Intel Core i7-14700K",
+    "Intel Core i7-14700KF",
+    "Intel Core i7-14700T",
+    "Intel Core i7-4770",
+    "Intel Core i7-4790",
+    "Intel Core i7-6700",
+    "Intel Core i7-6700T",
+    "Intel Core i7-8700",
+    "Intel Core i7-8700K",
+    "Intel Core i7-8700T",
+    "Intel Core i7-9700",
+    "Intel Core i9-10900",
+    "Intel Core i9-11900K",
+    "Intel Core i9-12900K",
+    "Intel Core i9-12900KF",
+    "Intel Core i9-13900",
+    "Intel Core i9-13900H",
+    "Intel Core i9-13900K",
+    "Intel Core i9-13900KF",
+    "Intel Core i9-14900",
+    "Intel Core i9-14900HX",
+    "Intel Core i9-14900K",
+    "Intel Core i9-14900KF",
+    "Intel Core i9-9900K",
+    "Intel N100",
+    "Intel N150",
+    "Intel N200",
+    "Intel N95",
+    "Intel Xeon W-2225",
+    "NVIDIA GB10",
+    "Qualcomm Snapdragon X Elite X1E-78-100",
+    "Qualcomm Snapdragon X X1-26-100",
+    "Qualcomm Snapdragon X2 Elite X2E-88-100",
+    "Qualcomm Snapdragon X2 Plus X2P-42-100",
+    "АMD Ryzen 5 7430U"
+  ],
+  "gpuFilterLabels": [
+    "AMD Radeon 540X",
+    "AMD Radeon 610M",
+    "AMD Radeon 660M",
+    "AMD Radeon 680M",
+    "AMD Radeon 740M",
+    "AMD Radeon 760M",
+    "AMD Radeon 780M",
+    "AMD Radeon 8050S",
+    "AMD Radeon 8050S Graphics",
+    "AMD Radeon 8060S",
+    "AMD Radeon 8060S Graphics",
+    "AMD Radeon 820M",
+    "AMD Radeon 840M",
+    "AMD Radeon 860M",
+    "AMD Radeon 880M",
+    "AMD Radeon 890M",
+    "AMD Radeon AI Pro 9700",
+    "AMD Radeon Graphics",
+    "AMD Radeon Pro 5300M",
+    "AMD Radeon Pro 555X",
+    "AMD Radeon Pro 560X",
+    "AMD Radeon RX 580",
+    "AMD Radeon RX 6400",
+    "AMD Radeon RX 6600",
+    "AMD Radeon RX 6600 XT",
+    "AMD Radeon RX 6700 XT",
+    "AMD Radeon RX 7600",
+    "AMD Radeon RX 7600 XT",
+    "AMD Radeon RX 7700 XT",
+    "AMD Radeon RX 7800 XT",
+    "AMD Radeon RX 7900 XT",
+    "AMD Radeon RX 7900 XTX",
+    "AMD Radeon RX 9060",
+    "AMD Radeon RX 9060 XT",
+    "AMD Radeon RX 9070",
+    "AMD Radeon RX 9070 GRE",
+    "AMD Radeon RX 9070 XT",
+    "AMD Radeon RX Vega",
+    "AMD Radeon RX Vega 10",
+    "AMD Radeon RX Vega 11",
+    "AMD Radeon RX Vega 3",
+    "AMD Radeon RX Vega 6",
+    "AMD Radeon RX Vega 7",
+    "AMD Radeon RX Vega 8",
+    "Apple M2 GPU",
+    "Apple M4 10-Core GPU",
+    "Apple M4 Graphics",
+    "Apple M4 Max 32-Core GPU",
+    "Apple M4 Max 40-Core GPU",
+    "Apple M4 Pro 16-Core GPU",
+    "Apple M4 Pro 20-Core GPU",
+    "Apple M5 Graphics",
+    "Apple M5 Max 32-Core GPU",
+    "Apple M5 Max 40-Core GPU",
+    "Apple M5 Pro 16-Core GPU",
+    "Apple M5 Pro 20-Core GPU",
+    "Apple M5 Ultra 64-Core GPU",
+    "Apple M5 Ultra 80-Core GPU",
+    "Apple M6 12-Core GPU",
+    "Intel Arc B390",
+    "Intel Arc B580",
+    "Intel Arc Graphics",
+    "Intel Arc Graphics 130T",
+    "Intel Arc Graphics 130V",
+    "Intel Arc Graphics 140T",
+    "Intel Arc Graphics 140V",
+    "Intel Arc Graphics B390",
+    "Intel Graphics",
+    "Intel HD Graphics",
+    "Intel HD Graphics 2500",
+    "Intel HD Graphics 4000",
+    "Intel HD Graphics 4400",
+    "Intel HD Graphics 4600",
+    "Intel HD Graphics 500",
+    "Intel HD Graphics 510",
+    "Intel HD Graphics 530",
+    "Intel HD Graphics 5500",
+    "Intel HD Graphics 600",
+    "Intel HD Graphics 620",
+    "Intel HD Graphics 630",
+    "Intel HD Graphics P4600",
+    "Intel Iris Graphics",
+    "Intel Iris Graphics 640",
+    "Intel Iris Plus Graphics",
+    "Intel Iris Plus Graphics 655",
+    "Intel Iris Xe Graphics",
+    "Intel UHD Graphics",
+    "Intel UHD Graphics 1250",
+    "Intel UHD Graphics 600",
+    "Intel UHD Graphics 605",
+    "Intel UHD Graphics 620",
+    "Intel UHD Graphics 630",
+    "Intel UHD Graphics 730",
+    "Intel UHD Graphics 750",
+    "Intel UHD Graphics 770",
+    "Intel Xe Graphics",
+    "NVIDIA Blackwell RTX",
+    "NVIDIA GB10 Blackwell GPU",
+    "NVIDIA GeForce GT 1030",
+    "NVIDIA GeForce GT 710",
+    "NVIDIA GeForce GT 730",
+    "NVIDIA GeForce GTX 1050",
+    "NVIDIA GeForce GTX 1050 Ti",
+    "NVIDIA GeForce GTX 1060",
+    "NVIDIA GeForce GTX 1650",
+    "NVIDIA GeForce GTX 1650 Ti",
+    "NVIDIA GeForce GTX 1660 Ti",
+    "NVIDIA GeForce MX250",
+    "NVIDIA GeForce MX330",
+    "NVIDIA GeForce MX450",
+    "NVIDIA GeForce MX550",
+    "NVIDIA GeForce RTX 2050",
+    "NVIDIA GeForce RTX 2060",
+    "NVIDIA GeForce RTX 2070",
+    "NVIDIA GeForce RTX 2070 Super",
+    "NVIDIA GeForce RTX 2080 Ti",
+    "NVIDIA GeForce RTX 3050",
+    "NVIDIA GeForce RTX 3050 Ti",
+    "NVIDIA GeForce RTX 3060",
+    "NVIDIA GeForce RTX 3060 Ti",
+    "NVIDIA GeForce RTX 3070",
+    "NVIDIA GeForce RTX 3070 Ti",
+    "NVIDIA GeForce RTX 3080",
+    "NVIDIA GeForce RTX 3080 Ti",
+    "NVIDIA GeForce RTX 3090",
+    "NVIDIA GeForce RTX 4050",
+    "NVIDIA GeForce RTX 4060",
+    "NVIDIA GeForce RTX 4060 Ti",
+    "NVIDIA GeForce RTX 4070",
+    "NVIDIA GeForce RTX 4070 Super",
+    "NVIDIA GeForce RTX 4070 Ti",
+    "NVIDIA GeForce RTX 4070 Ti Super",
+    "NVIDIA GeForce RTX 4080",
+    "NVIDIA GeForce RTX 4080 Super",
+    "NVIDIA GeForce RTX 4090",
+    "NVIDIA GeForce RTX 5050",
+    "NVIDIA GeForce RTX 5060",
+    "NVIDIA GeForce RTX 5060 Ti",
+    "NVIDIA GeForce RTX 5070",
+    "NVIDIA GeForce RTX 5070 Ti",
+    "NVIDIA GeForce RTX 5080",
+    "NVIDIA GeForce RTX 5090",
+    "NVIDIA Quadro 2000",
+    "NVIDIA Quadro 4000",
+    "NVIDIA Quadro P1000",
+    "NVIDIA Quadro P2000",
+    "NVIDIA Quadro P2200",
+    "NVIDIA Quadro P4000",
+    "NVIDIA Quadro P520",
+    "NVIDIA Quadro P600",
+    "NVIDIA Quadro P620",
+    "NVIDIA Quadro RTX 3000",
+    "NVIDIA Quadro RTX 4000",
+    "NVIDIA Quadro RTX 5000",
+    "NVIDIA Quadro RTX A4000",
+    "NVIDIA Quadro T1000",
+    "NVIDIA Quadro T2000",
+    "NVIDIA Quadro T400",
+    "NVIDIA RTX 1000",
+    "NVIDIA RTX 1000 Ada",
+    "NVIDIA RTX 2000",
+    "NVIDIA RTX 2000 Ada",
+    "NVIDIA RTX 3000 Ada",
+    "NVIDIA RTX 3500 Ada",
+    "NVIDIA RTX 4000 Ada",
+    "NVIDIA RTX 4500 Ada",
+    "NVIDIA RTX 500 Ada",
+    "NVIDIA RTX A1000",
+    "NVIDIA RTX A2000",
+    "NVIDIA RTX A3000",
+    "NVIDIA RTX A400",
+    "NVIDIA RTX A4000",
+    "NVIDIA RTX A4500",
+    "NVIDIA RTX A500",
+    "NVIDIA RTX PRO 2000",
+    "NVIDIA RTX PRO 4000",
+    "NVIDIA RTX PRO 4500 Blackwell",
+    "NVIDIA RTX PRO 500 Blackwell",
+    "NVIDIA RTX PRO 5000 Blackwell",
+    "NVIDIA RTX PRO 6000",
+    "NVIDIA RTX Pro 1000",
+    "NVIDIA RTX Pro 2000",
+    "NVIDIA RTX Pro 2000 Blackwell",
+    "NVIDIA RTX Pro 3000",
+    "NVIDIA RTX Pro 4000",
+    "NVIDIA RTX Pro 500",
+    "NVIDIA T1000",
+    "NVIDIA T1200",
+    "NVIDIA T400",
+    "NVIDIA T550",
+    "Qualcomm Adreno",
+    "Qualcomm Adreno X",
+    "Qualcomm Adreno X2 Elite",
+    "Qualcomm Adreno X2 Plus",
+    "ohne Grafikkarte"
+  ],
+  "tiles": [
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M6 2026",
+      "characteristics": ["Mini-PC", "Apple M6", "12-Core", "Apple M6 12-Core GPU"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS Ascent GX10",
+      "characteristics": ["Mini-PC", "NVIDIA GB10", "128 GB RAM"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac Studio M5 2026",
+      "characteristics": ["Mini-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "GMKtec EVO-X2",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "3 GHz",
+        "16-Core",
+        "DDR5",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M6 2026 MHQM4ZD/A",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M6",
+        "12-Core",
+        "24 GB RAM",
+        "LPDDR5X",
+        "512 GB SSD-Speicher",
+        "Apple M6 12-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation PGX",
+      "characteristics": ["Workstation", "NVIDIA GB10", "128 GB RAM"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M5 Pro 2026",
+      "characteristics": ["Mini-PC", "Apple M5 Pro", "macOS"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkCentre M75q Gen 5 Tiny",
+      "characteristics": ["Multimedia-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS NUC 14 Essential",
+      "characteristics": ["Barebone", "DDR5"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M4 [2024]",
+      "characteristics": ["Mini-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "NVIDIA DGX Spark Founders Edition (940-54242-0005-000)",
+      "characteristics": [
+        "Mini-PC",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "4.000 GB SSD-Speicher",
+        "NVIDIA GB10 Blackwell GPU",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS Ascent GX10-GG0003BN",
+      "characteristics": [
+        "Mini-PC",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Minisforum UM890 Pro",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 9 8945HS",
+        "DDR5",
+        "AMD Radeon 780M",
+        "Grafikspeicher Shared Memory"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M6 2026 MHQK4ZD/A",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M6",
+        "12-Core",
+        "16 GB RAM",
+        "LPDDR5X",
+        "256 GB SSD-Speicher",
+        "Apple M6 12-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Geekom A8 Max",
+      "characteristics": ["Mini-PC", "DDR5", "AMD Radeon 780M", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS ROG NUC 15",
+      "characteristics": ["Gaming-PC", "Microsoft Windows 11 Home"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Omen 35L GT16",
+      "characteristics": ["Gaming-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS NUC 14 Essential Kit Mill Canyon RNUC14MNK1500002",
+      "characteristics": [
+        "Mini-PC",
+        "Intel N150",
+        "1,8 GHz",
+        "Quad-Core",
+        "DDR5",
+        "Intel UHD Graphics",
+        "ohne Betriebssystem"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ARCTIC Senza",
+      "characteristics": ["Mini-PC", "1.000 GB SSD-Speicher", "Grafikspeicher Shared Memory"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS NUC 16 Pro Kit",
+      "characteristics": ["Barebone"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "GMKtec K12",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 7 H 255",
+        "3,8 GHz",
+        "8-Core",
+        "DDR5",
+        "AMD Radeon 780M",
+        "Grafikspeicher Shared Memory"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Minisforum AI X1 Pro",
+      "characteristics": ["Mini-PC", "DDR5", "AMD Radeon 890M"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac Studio M5 2026 MHL64ZD/A",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M5 Max",
+        "18-Core",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "Apple M5 Max 32-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "GMKtec K12 (H255 / 32GB / 1TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 7 H 255",
+        "3,8 GHz",
+        "8-Core",
+        "32 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon 780M",
+        "Grafikspeicher Shared Memory",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac Studio M5 2026 MHL74ZD/A",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M5 Ultra",
+        "30-Core",
+        "96 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Apple M5 Ultra 64-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Beelink SER8",
+      "characteristics": ["Mini-PC", "3,8 GHz", "8-Core", "DDR5", "AMD Radeon 780M"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS ROG NUC 16 Jean Canyon",
+      "characteristics": [
+        "Gaming-PC",
+        "Intel Core Ultra 9 290HX",
+        "2,7 GHz",
+        "24-Core",
+        "32 GB RAM",
+        "DDR5",
+        "Grafikspeichertyp GDDR7",
+        "Microsoft Windows 11 Home"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M6 2026 Z1UA-021000",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M6",
+        "12-Core",
+        "32 GB RAM",
+        "LPDDR5X",
+        "512 GB SSD-Speicher",
+        "Apple M6 12-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Acer Predator Orion 3000 PO3-665",
+      "characteristics": ["Gaming-PC", "Microsoft Windows 11 Home"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Pro Mini 400 G9",
+      "characteristics": ["Mini-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Geekom A7 Max (R9-7940HS + 16GB + 1TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 9 7940HS",
+        "4 GHz",
+        "8-Core",
+        "16 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon 780M",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Shuttle XPC nano NE10N",
+      "characteristics": [
+        "Barebone",
+        "Intel N100",
+        "Quad-Core",
+        "DDR4",
+        "Intel UHD Graphics",
+        "Grafikspeicher Shared Memory"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP EliteBoard G1a DM0R5ET",
+      "characteristics": [
+        "Tastatur‑PC",
+        "AMD Ryzen AI 5 330",
+        "16 GB RAM",
+        "512 GB SSD-Speicher",
+        "AMD Radeon 820M",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Geekom A6",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 7 6800H",
+        "3,2 GHz",
+        "8-Core",
+        "DDR5",
+        "AMD Radeon 680M",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac Studio 2025",
+      "characteristics": ["Multimedia-PC"]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Medion SPRCHRGD 14 S2 MD62722",
+      "characteristics": [
+        "Multimedia Notebook",
+        "14 Zoll",
+        "2,8K",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 120 Hz",
+        "Intel Core Ultra 7 258V",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Arc Graphics 140V",
+        "Windows 11 Home",
+        "Microsoft Copilot",
+        "Akkulaufzeit 21 h",
+        "1,4 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Dell Latitude 3410 14\" Core i5-10210U, 32GB RAM, 2TB SSD",
+      "characteristics": [
+        "Business Notebook",
+        "14 Zoll",
+        "Full HD",
+        "Intel Core i5-10210U",
+        "32 GB RAM",
+        "2.000 GB SSD-Speicher",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Samsung Galaxy Book 6 14 Enterprise Edition NP744BJG-KG3DE",
+      "characteristics": [
+        "Multimedia Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "Bildformat 16:10",
+        "Intel Core Ultra 7 355",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "Intel Arc Graphics",
+        "Windows 11 Professional",
+        "1,43 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "GigaByte Aero X16 1WH93DEC64AH",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 165 Hz",
+        "AMD Ryzen AI 7 350",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070",
+        "Grafikspeicher 8 GB",
+        "Windows 11 Home",
+        "Microsoft Copilot",
+        "1,9 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Acer Nitro V 17 AI ANV17-41-R7EN",
+      "characteristics": [
+        "Gaming Notebook",
+        "17,3 Zoll",
+        "Full HD",
+        "Bildformat 16:9",
+        "AMD Ryzen 7 260",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5060",
+        "Grafikspeicher 8 GB",
+        "Windows 11 Home",
+        "Akkulaufzeit 10,5 h",
+        "2,71 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Dell Latitude 5520 15,6\" Touch Full HD, Core i5-1145G7, 32GB, 512GB SSD (Latitude 5520)",
+      "characteristics": [
+        "Business Notebook",
+        "15,6 Zoll",
+        "Full HD",
+        "Bildformat 16:9",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "Intel Iris Xe Graphics",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "ASUS ROG Strix G16 G614PM-RV015W",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WUXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 165 Hz",
+        "AMD Ryzen 9 8940HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5060",
+        "Windows 11 Home",
+        "2,5 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo ThinkPad P14s Gen 7 Ryzen AI 5 PRO 440, 32GB RAM, 512GB SSD, 14\" (21X00026GE)",
+      "characteristics": [
+        "Business Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "AMD Ryzen AI 5 Pro 440",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "AMD Radeon 840M",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "MSI Prestige 14 Flip AI+ D3M",
+      "characteristics": [
+        "Convertible Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "Bildformat 16:10",
+        "32 GB RAM",
+        "Windows 11 Home",
+        "1,37 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "MSI Katana 17 HX 17,3\" Core i7-14650HX, RTX 5070, 32GB RAM, 1TB SSD (B14WGK-061)",
+      "characteristics": [
+        "Gaming Notebook",
+        "17,3 Zoll",
+        "Bildwiederholungsrate 240 Hz",
+        "Intel Core i7-14650HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070",
+        "Grafikspeicher 8 GB"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "GigaByte Gaming A16 PRO DYHG5DECC4SH",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 165 Hz",
+        "Intel Core 7 240H",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5080",
+        "Windows 11 Home",
+        "2,2 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Acer Predator Helios Neo 16 AI PHN16-73-9816",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 240 Hz",
+        "Intel Core Ultra 9 275HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070",
+        "Grafikspeicher 8 GB",
+        "Windows 11 Home",
+        "2,7 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "ASUS ROG Strix G16 G614PP-RV030W",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WUXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 165 Hz",
+        "AMD Ryzen 9 8940HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070",
+        "Grafikspeicher 8 GB",
+        "Windows 11 Home",
+        "2,5 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Microsoft Surface Laptop 7 13.8 32GB/256GB platin EP2-36394",
+      "characteristics": [
+        "Business Notebook",
+        "13,8 Zoll",
+        "Bildformat 3:2",
+        "Intel Core Ultra 7 268V",
+        "32 GB RAM",
+        "256 GB SSD-Speicher",
+        "Intel Arc Graphics",
+        "Windows 11 Professional",
+        "Microsoft Copilot",
+        "Akkulaufzeit 13 h",
+        "1,34 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Dell Precision 5570 15\" Core i9-12900H 32GB 1TB SSD RTX A2000 FHD+",
+      "characteristics": [
+        "Business Notebook",
+        "15,6 Zoll",
+        "WUXGA",
+        "Intel Core i9-12900H",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA RTX A2000",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "ASUS Zenbook 14 OLED 14\" WUXGA, Core Ultra 9 285H, 32GB, 1TB, Ponder Blue (T-AM-ZB14PB-CU92-32-T1-W)",
+      "characteristics": [
+        "Multimedia Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "Bildwiederholungsrate 60 Hz",
+        "Intel Core Ultra 9 285H",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Arc Graphics 140T",
+        "Windows 11 Professional",
+        "Akkulaufzeit 18 h"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo ThinkPad T14s Gen2 Intel Core i7 11. Gen, 32GB RAM, 512GB SSD, 14\", Win11 Pro (20XH)",
+      "characteristics": [
+        "Business Notebook",
+        "14 Zoll",
+        "Full HD",
+        "Intel Core i7-1165G7",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Windows 10 Professional",
+        "1,28 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Samsung Galaxy Book 5 Pro 360 NP960QHA-KG4DE",
+      "characteristics": [
+        "Convertible Notebook",
+        "16 Zoll",
+        "2,8K",
+        "Bildformat 16:10",
+        "Intel Core Ultra 7 258V",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Arc Graphics",
+        "Windows 11 Home",
+        "Samsung Galaxy AI",
+        "1,69 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo ThinkPad X1 Yoga Gen 6 i7 3,0GHz, 32GB, 512GB SSD, WUXGA, Win11 Pro",
+      "characteristics": [
+        "Convertible Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "Intel Core i7-1165G7",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Iris Xe Graphics",
+        "Windows 10 Professional",
+        "1,4 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Microsoft Surface Laptop 7 13.8 32GB/256GB platin EP2-36344",
+      "characteristics": [
+        "Business Notebook",
+        "13,8 Zoll",
+        "Bildformat 3:2",
+        "Intel Core Ultra 5 238V",
+        "32 GB RAM",
+        "256 GB SSD-Speicher",
+        "Intel Arc Graphics",
+        "Windows 11 Professional",
+        "Microsoft Copilot",
+        "Akkulaufzeit 13 h",
+        "1,34 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo V15 Notebook 15,6\" Intel Celeron N150, 32GB RAM, 2TB SSD",
+      "characteristics": [
+        "Multimedia Notebook",
+        "15,6 Zoll",
+        "Full HD",
+        "Intel Celeron",
+        "32 GB RAM",
+        "2.000 GB SSD-Speicher",
+        "Intel UHD Graphics",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Apple MacBook Air 13\" M5 2026 Z1L6-2200000 Mitternacht",
+      "characteristics": [
+        "Multimedia Notebook",
+        "13,6 Zoll",
+        "Retina",
+        "Apple M5",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "Apple M5 Graphics",
+        "macOS Tahoe",
+        "Apple Intelligence",
+        "Akkulaufzeit 15 h",
+        "1,23 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "ASUS Zenbook S16 16\" 3K OLED Touch, Ryzen AI 9 465, 32GB, 1TB (90NB17H4-M00JV0)",
+      "characteristics": [
+        "Multimedia Notebook",
+        "16 Zoll",
+        "WQXGA+",
+        "AMD Ryzen AI 9 465",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon Graphics",
+        "Windows 11 Home"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Monsternotebook Tulpar T6 V3.8.1",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Intel Core i9-14900HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070 Ti",
+        "Grafikspeicher 12 GB",
+        "Windows 11 Home",
+        "2,3 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "ASUS Zenbook 14 14\" WUXGA OLED Touch, Intel Core Ultra 9 285H, 32GB RAM, 1TB SSD (T-DEV00724-32-T1-WO)",
+      "characteristics": [
+        "Multimedia Notebook",
+        "14 Zoll",
+        "WUXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 60 Hz",
+        "Intel Core Ultra 9 285H",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "Intel Arc Graphics 140T",
+        "Windows 11 Professional",
+        "Akkulaufzeit 11 h"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "HP EliteBook 840 G8 14\" FHD, Intel Core i7-1185G7, 32GB RAM, 512GB SSD",
+      "characteristics": [
+        "Business Notebook",
+        "14 Zoll",
+        "Full HD",
+        "Bildformat 16:9",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "Intel Iris Xe Graphics",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo ThinkPad P14s Gen 7 14\" Ryzen AI 7 PRO 450, 32GB RAM, 512GB SSD (21X0002HGE)",
+      "characteristics": [
+        "Business Notebook",
+        "WUXGA",
+        "Bildformat 16:10",
+        "AMD Ryzen AI 7 Pro 450",
+        "32 GB RAM",
+        "512 GB SSD-Speicher",
+        "AMD Radeon 860M",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Acer Extensa 15 15,6\" Full-HD, Ryzen 5 7430U, 32GB RAM, 1TB SSD (T-DEV00714-32-T1-W)",
+      "characteristics": [
+        "Multimedia Notebook",
+        "15,6 Zoll",
+        "Full HD",
+        "Bildformat 16:9",
+        "Bildwiederholungsrate 60 Hz",
+        "AMD Ryzen 5 7430U",
+        "32 GB RAM",
+        "Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "Lenovo Legion 5 Pro 16 83LU002CSP",
+      "characteristics": [
+        "Gaming Notebook",
+        "16 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 240 Hz",
+        "Intel Core Ultra 9 275HX",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070 Ti",
+        "Grafikspeicher 12 GB",
+        "ohne Betriebssystem",
+        "Lenovo AI Engine+",
+        "2,52 kg"
+      ]
+    },
+    {
+      "categoryId": "3751",
+      "title": "GigaByte Gaming A18 Pro DXJ",
+      "characteristics": [
+        "Gaming Notebook",
+        "18 Zoll",
+        "WQXGA",
+        "Bildformat 16:10",
+        "Bildwiederholungsrate 165 Hz",
+        "Intel Core 7 240H",
+        "32 GB RAM",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5070 Ti",
+        "Grafikspeicher 12 GB",
+        "Windows 11 Home",
+        "2,9 kg"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Mini G1a Workstation",
+      "characteristics": ["Workstation", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation PGX 30KL0002GF",
+      "characteristics": [
+        "Workstation",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GB10 Blackwell GPU",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Tower G1i Workstation",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P3 Tower Gen2",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Minisforum MS-S1 Max (395 / 64GB/ 2TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "16-Core",
+        "64 GB RAM",
+        "LPDDR5X",
+        "2.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Tower G1i Workstation A40MHET",
+      "characteristics": [
+        "Workstation",
+        "Intel Core Ultra 7 265K",
+        "3,9 GHz",
+        "20-Core",
+        "32 GB RAM",
+        "DDR5",
+        "2.000 GB SSD-Speicher",
+        "NVIDIA RTX 4000 Ada",
+        "Grafikspeicher 20 GB",
+        "Grafikspeichertyp GDDR6",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P2 Tower Gen 2 30JQ00AJGE",
+      "characteristics": [
+        "Workstation",
+        "Intel Core Ultra 5 225",
+        "3,3 GHz",
+        "10-Core",
+        "16 GB RAM",
+        "DDR5",
+        "512 GB SSD-Speicher",
+        "Intel Graphics",
+        "Grafikspeicher Shared Memory",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Minisforum MS-S1 Max (395 / 128GB/ 2TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "16-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "2.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P3 Ultra Gen2",
+      "characteristics": ["Workstation", "DDR5"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Mini G1a Workstation B76Q7ET",
+      "characteristics": [
+        "Workstation",
+        "AMD Ryzen AI Max+ PRO 395",
+        "3 GHz",
+        "16-Core",
+        "128 GB RAM",
+        "DDR5",
+        "2.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P2 Tower",
+      "characteristics": ["Office-PC", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Workstation Z4 G5",
+      "characteristics": ["Workstation", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P3 Tiny G2",
+      "characteristics": ["Office-PC"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP ZGX Nano G1n AI Station",
+      "characteristics": ["Workstation", "128 GB RAM", "NVIDIA GB10 Blackwell GPU"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Bosgame M5 (Ryzen AI Max+ 395 / 128GB / 2TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "16-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "2.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z1 Tower G1i",
+      "characteristics": ["Workstation", "DDR5", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "MSI PRO MAX EDGE AI+ 11M",
+      "characteristics": [
+        "Workstation",
+        "AMD Ryzen AI Max+ 395",
+        "3 GHz",
+        "16-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "2.000 GB SSD-Speicher",
+        "AMD Radeon 8060S"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Mini G1i Workstation",
+      "characteristics": ["Workstation", "DDR5", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P3 Ultra",
+      "characteristics": ["Workstation", "DDR5"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Workstation Z2 G9 Tower",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Sedatech Workstation Threadripper Pro 7995WX / 2x Geforce RTX 5090 (UC0W932I1I1HF)",
+      "characteristics": [
+        "Workstation",
+        "AMD Ryzen Threadripper PRO 7995WX",
+        "2,5 GHz",
+        "96-Core",
+        "256 GB RAM",
+        "DDR5",
+        "2.000 GB SSD-Speicher",
+        "NVIDIA GeForce RTX 5090",
+        "Grafikspeicher 64 GB",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation PGX 30KL000FGF",
+      "characteristics": [
+        "Workstation",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "2.000 GB SSD-Speicher",
+        "NVIDIA GB10 Blackwell GPU",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Captiva PC Workstation I98",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P620",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Ankermann Business Silent Workstation PC (4260561742863)",
+      "characteristics": [
+        "Workstation",
+        "AMD Ryzen 7 8700F",
+        "3,2 GHz",
+        "6-Core",
+        "32 GB RAM",
+        "DDR4",
+        "512 GB SSD-Speicher",
+        "2 TB",
+        "nVidia Quadro M4000",
+        "Grafikspeicher 8 GB",
+        "Grafikspeichertyp GDDR5",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Workstation Z4 G5 CF1R2ET",
+      "characteristics": [
+        "Workstation",
+        "Intel Xeon w3-2535",
+        "3,5 GHz",
+        "10-Core",
+        "64 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA RTX PRO 4000",
+        "Grafikspeicher 24 GB",
+        "Grafikspeichertyp GDDR7",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS ExpertCenter P500 Mini Tower P500MV",
+      "characteristics": ["Office-PC", "DDR5"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z1 Tower G1i A40SZET",
+      "characteristics": [
+        "Workstation",
+        "Intel Core Ultra 7 265",
+        "2,4 GHz",
+        "20-Core",
+        "32 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA RTX A1000",
+        "Grafikspeicher 8 GB",
+        "Grafikspeichertyp GDDR6",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P2 Tower Gen 2",
+      "characteristics": ["Workstation"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Tower G1i Workstation A40MCET",
+      "characteristics": [
+        "Workstation",
+        "Intel Core Ultra 9 285K",
+        "3,7 GHz",
+        "24-Core",
+        "64 GB RAM",
+        "DDR5",
+        "2.000 GB SSD-Speicher",
+        "NVIDIA RTX 2000 Ada",
+        "Grafikspeicher 16 GB",
+        "Grafikspeichertyp GDDR6",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation P5 G2 Tower 30KB0022GE",
+      "characteristics": [
+        "Workstation",
+        "Intel Xeon 638",
+        "64 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA RTX PRO 4500 Blackwell",
+        "Grafikspeicher 32 GB",
+        "Grafikspeichertyp GDDR7",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP Z2 Tower G1i Workstation A40MJET",
+      "characteristics": [
+        "Workstation",
+        "Intel Core Ultra 7 265K",
+        "3,9 GHz",
+        "20-Core",
+        "32 GB RAM",
+        "DDR5",
+        "2.000 GB SSD-Speicher",
+        "NVIDIA RTX 2000 Ada",
+        "Grafikspeicher 16 GB",
+        "Grafikspeichertyp GDDR6",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Lenovo ThinkStation PGX 30KL0004GF",
+      "characteristics": [
+        "Workstation",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "1.000 GB SSD-Speicher",
+        "NVIDIA GB10 Blackwell GPU",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "HP ZGX Nano G1n AI Station CZ9K4ET",
+      "characteristics": [
+        "Workstation",
+        "NVIDIA GB10",
+        "20-Core",
+        "128 GB RAM",
+        "LPDDR5X",
+        "4.000 GB SSD-Speicher",
+        "NVIDIA GB10 Blackwell GPU",
+        "NVIDIA DGX OS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "GMKtec EVO-X2 (Ryzen AI Max+ 395 / 64GB / 1TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "3 GHz",
+        "16-Core",
+        "64 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Apple Mac mini M6 2026 MHQL4ZD/A",
+      "characteristics": [
+        "Mini-PC",
+        "Apple M6",
+        "12-Core",
+        "16 GB RAM",
+        "LPDDR5X",
+        "512 GB SSD-Speicher",
+        "Apple M6 12-Core GPU",
+        "macOS"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Beelink SER5 Mini (5600H 32+500G)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 5 5600H",
+        "3,3 GHz",
+        "6-Core",
+        "32 GB RAM",
+        "DDR4",
+        "500 GB SSD-Speicher",
+        "AMD Radeon Graphics",
+        "Grafikspeicher Shared Memory",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Geekom Mini IT13",
+      "characteristics": ["Mini-PC", "Microsoft Windows 11 Professional"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "ASUS ExpertCenter PN42",
+      "characteristics": ["Barebone", "Intel UHD Graphics", "Grafikspeicher Shared Memory"]
+    },
+    {
+      "categoryId": "3020",
+      "title": "Geekom A8 Max (8945HS / 32GB / 1TB)",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 9 8945HS",
+        "4 GHz",
+        "8-Core",
+        "32 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon 780M",
+        "Microsoft Windows 11 Professional"
+      ]
+    },
+    {
+      "categoryId": "3020",
+      "title": "GMKtec NucBox M6 Ultra",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen 5 7640HS",
+        "4,3 GHz",
+        "6-Core",
+        "DDR5",
+        "AMD Radeon 760M",
+        "Grafikspeicher Shared Memory"
+      ]
+    }
+  ]
+}
