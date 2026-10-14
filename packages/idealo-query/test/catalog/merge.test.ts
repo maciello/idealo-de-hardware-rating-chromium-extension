@@ -61,6 +61,44 @@ describe("mergeCatalogs", () => {
     expect(merged.groups[0]?.attributeId).toBe("processor");
   });
 
+  describe("with two groups of one name", () => {
+    const memory = (attributeId: string, filters: ReturnType<typeof option>[]) => ({
+      attributeId,
+      name: "Grafikspeicher",
+      filters,
+    });
+    const listing: FilterCatalog = {
+      ...current,
+      groups: [
+        memory("15869", [option("1", "Shared Memory"), option("2", "8 GB")]),
+        memory("31502", [option("3", "8 GB"), option("4", "16 GB")]),
+      ],
+    };
+
+    it("keeps both groups when the vocabulary adds nothing", () => {
+      expect(mergeCatalogs(listing, vocabularyOf(listing)).groups).toEqual(listing.groups);
+    });
+
+    it("adds a remembered option to the group with the same attribute id", () => {
+      const seen: FilterCatalog = {
+        ...listing,
+        groups: [memory("31502", [option("5", "24 GB")])],
+      };
+      const [shared, dedicated] = mergeCatalogs(listing, seen).groups;
+      expect(shared?.filters.map((f) => f.label)).toEqual(["Shared Memory", "8 GB"]);
+      expect(dedicated?.filters.map((f) => f.label)).toEqual(["8 GB", "16 GB", "24 GB"]);
+    });
+
+    it("gives a remembered option of an unknown attribute id its own group", () => {
+      const seen: FilterCatalog = {
+        ...listing,
+        groups: [memory("99999", [option("6", "32 GB")])],
+      };
+      const groups = mergeCatalogs(listing, seen).groups;
+      expect(groups.map((g) => g.attributeId)).toEqual(["15869", "31502", "99999"]);
+    });
+  });
+
   it("leaves catalogs of another category alone", () => {
     const other = { ...earlier, categoryId: categoryId("3020") };
     expect(mergeCatalogs(current, other)).toBe(current);

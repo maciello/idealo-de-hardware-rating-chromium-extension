@@ -47,31 +47,82 @@ export const NOCAT_SEARCH_URL = `${SEARCH_URL}&variant=nocat`;
 export const PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/1001_alpha-book-15.html";
 
+interface ListingGroup {
+  id: string;
+  name: string;
+  filters: { id: string; name: string; hits: number }[];
+}
+
+const gigabytes = (sizes: Record<string, number>, hits = 500) =>
+  Object.entries(sizes).map(([name, id]) => ({ id: String(id), name, hits }));
+
 /**
- * The real-markup listing as PC-Systeme (3020): same tiles, category id swapped, and the RAM-Typ
- * group that only that category has (Notebooks lists none).
+ * idealo lists Grafikspeicher twice on Notebooks: the older group has a "Shared Memory" option, the
+ * newer one is dedicated memory only (HAR 2026-10-14). Filter ids as in the idealo-query fixtures.
  */
-function desktopListingHtml(): string {
+const MEMORY_GROUPS: ListingGroup[] = [
+  {
+    id: "31502",
+    name: "Grafikspeicher",
+    filters: gigabytes({
+      "1 GB": 106351679,
+      "2 GB": 106351680,
+      "3 GB": 106351681,
+      "4 GB": 106351682,
+      "6 GB": 106351683,
+      "8 GB": 106351684,
+      "12 GB": 106351686,
+      "16 GB": 106351687,
+      "24 GB": 106585584,
+    }),
+  },
+  {
+    id: "15869",
+    name: "Grafikspeicher",
+    filters: gigabytes({
+      "Shared Memory": 720300,
+      "4 GB": 786134,
+      "6 GB": 2098333,
+      "8 GB": 8532550,
+      "12 GB": 9537023,
+    }),
+  },
+];
+
+/** The real-markup listing with filter groups added to its embedded payload, served as `categoryId`. */
+function listingHtml(categoryId: string, groups: ListingGroup[]): string {
   const payload = JSON.parse(
     Buffer.from(
       /initialData\['searchResult'\] = "([A-Za-z0-9+/=]+)"/.exec(SSR_LISTING_HTML)?.[1] ?? "",
       "base64",
     ).toString("utf8"),
   );
-  payload.filterGroups.push({
-    id: "19540",
-    name: "RAM Typ",
-    filters: [
-      { id: "19540001", name: "DDR4", hits: 900 },
-      { id: "19540002", name: "DDR5", hits: 3000 },
-      { id: "19540003", name: "LPDDR5X", hits: 1500 },
-    ],
-  });
+  payload.filterGroups.push(...groups);
   return SSR_LISTING_HTML.replace(
     /(initialData\['searchResult'\] = ")[A-Za-z0-9+/=]+/,
     (_, head: string) => head + Buffer.from(JSON.stringify(payload)).toString("base64"),
-  ).replace("initialData['categoryId'] = \"3751\"", "initialData['categoryId'] = \"3020\"");
+  ).replace("initialData['categoryId'] = \"3751\"", `initialData['categoryId'] = "${categoryId}"`);
 }
+
+/** Notebooks (3751): the real listing plus the two Grafikspeicher groups. */
+const notebooksListingHtml = (): string => listingHtml("3751", MEMORY_GROUPS);
+
+/**
+ * The same listing as PC-Systeme (3020): category id swapped, and the RAM-Typ group that only that
+ * category has (Notebooks lists none).
+ */
+const desktopListingHtml = (): string =>
+  listingHtml("3020", [
+    {
+      id: "19540",
+      name: "RAM Typ",
+      filters: [
+        { id: "19540001", name: "DDR4", hits: 900 },
+        { id: "19540002", name: "DDR5", hits: 3000 },
+        { id: "19540003", name: "LPDDR5X", hits: 1500 },
+      ],
+    },
+  ]);
 
 function productHtml(ramType: string | null): string {
   if (ramType === null) return SSR_PRODUCT_HTML;
@@ -106,7 +157,10 @@ export async function installSite(context: BrowserContext): Promise<void> {
       return route.fulfill({ contentType: "application/json", body: FILTERS_JSON });
     }
     if (pathname.includes("/ProductCategory/3751")) {
-      return route.fulfill({ contentType: "text/html; charset=utf-8", body: SSR_LISTING_HTML });
+      return route.fulfill({
+        contentType: "text/html; charset=utf-8",
+        body: notebooksListingHtml(),
+      });
     }
     if (pathname.includes("/ProductCategory/3020")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: desktopListingHtml() });

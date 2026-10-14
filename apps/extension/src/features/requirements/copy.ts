@@ -9,6 +9,7 @@ const MODEL_NOUNS: NounTable = { cpu_model: "CPUs", gpu_model: "GPUs" };
 
 /** Slider labels; facets without a slider (RAM speed, core counts, ...) have none. */
 const NUMERIC_LABELS: Readonly<Partial<Record<NumericFacet, string>>> = {
+  vram_gb: "Graphics memory",
   ram_gb: "RAM",
   ssd_gb: "SSD",
   storage_gb: "Storage",
@@ -31,6 +32,7 @@ export const REQUIREMENTS_COPY = {
   combineAria: "Combine CPU minimums",
   noCpuData: "Import PassMark CPU data in the settings to filter by CPU score.",
   noGpuData: "Import PassMark GPU data in the settings to filter by 3D score.",
+  openSettings: "Open settings",
 
   /** Value text of a slider with no restriction set. */
   any: "any",

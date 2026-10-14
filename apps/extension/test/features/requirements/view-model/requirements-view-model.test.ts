@@ -1,4 +1,12 @@
-import { emptyRequirements, facetsOf, setMinimum } from "@idealo-hw/idealo-query";
+import {
+  emptyQuery,
+  emptyRequirements,
+  facetsOf,
+  filterId,
+  planRequirements,
+  setMinimum,
+  setNumeric,
+} from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import {
   buildRequirementsViewModel,
@@ -61,5 +69,48 @@ describe("buildRequirementsViewModel", () => {
       pagePrice: { max: 900 },
     });
     expect(model?.price?.valueText).toBe("up to 900 €");
+  });
+
+  it("puts the graphics memory slider right after the GPU block", () => {
+    const model = build([
+      group("RAM", ["8 GB", "16 GB"]),
+      group("Grafikspeicher", ["4 GB", "8 GB", "16 GB"]),
+      group("Grafikkarte", ["RTX 4060"]),
+    ]);
+    expect(model?.numeric.map((entry) => entry.facet)).toEqual(["vram_gb", "ram_gb"]);
+    expect(model?.gpu).toEqual({ state: "no-data" });
+  });
+
+  describe("with two Grafikspeicher groups", () => {
+    const memory = (attributeId: string, start: number, labels: string[]) => ({
+      attributeId,
+      name: "Grafikspeicher",
+      filters: labels.map((label, i) => ({ filterId: filterId(String(start + i)), label })),
+    });
+    const listing = {
+      ...catalog(),
+      groups: [
+        memory("15869", 100, ["Shared Memory", "4 GB", "8 GB", "16 GB"]),
+        memory("31502", 200, ["4 GB", "8 GB", "16 GB", "24 GB"]),
+      ],
+    };
+    const requirements = setNumeric(emptyRequirements(), "vram_gb", { min: 8 });
+    const plan = planRequirements(
+      requirements,
+      listing,
+      emptyQuery(listing.categoryId),
+      () => null,
+    );
+    const model = buildRequirementsViewModel(facetsOf(listing), input({ requirements, plan }));
+    const slider = model?.numeric.find((entry) => entry.facet === "vram_gb")?.slider;
+
+    it("slides over the sizes of both groups, leaving Shared Memory out", () => {
+      expect(slider).toMatchObject({ kind: "single", min: 4, max: 24, value: 8 });
+    });
+
+    it("reports the one group the plan picked", () => {
+      expect(slider?.status).toBe("3 options");
+      expect(plan.query.filterIds).toEqual(["201", "202", "203"].map(filterId));
+    });
   });
 });

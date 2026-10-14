@@ -1,20 +1,23 @@
-import { Text } from "@mantine/core";
 import { REQUIREMENTS_COPY } from "../copy";
 import type { GpuBlockModel } from "../view-model";
+import { ImportHint } from "./ImportHint";
 import { ScoreSlider } from "./ScoreSlider";
 
 export interface GpuBlockProps {
   model: GpuBlockModel;
   onMinimum: (value: number | undefined) => void;
+  onOpenSettings: () => void;
 }
 
 /** The G3D minimum, or the hint to import PassMark GPU data first. */
-export function GpuBlock({ model, onMinimum }: GpuBlockProps) {
+export function GpuBlock({ model, onMinimum, onOpenSettings }: GpuBlockProps) {
   if (model.state === "no-data") {
     return (
-      <Text size="xs" c="dimmed" data-testid="req-no-gpu-data">
-        {REQUIREMENTS_COPY.noGpuData}
-      </Text>
+      <ImportHint
+        text={REQUIREMENTS_COPY.noGpuData}
+        testId="req-no-gpu-data"
+        onOpenSettings={onOpenSettings}
+      />
     );
   }
   return model.g3d && <ScoreSlider model={model.g3d} onChange={onMinimum} />;

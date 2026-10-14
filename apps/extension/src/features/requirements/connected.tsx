@@ -7,6 +7,8 @@ export interface RequirementsSectionProps extends RequirementsViewInput {
   catalog: FilterCatalog;
   onChange: (next: Requirements) => void;
   onPriceChange: (price: PriceRange) => void;
+  /** Opens the settings, where the PassMark exports are imported. */
+  onOpenSettings: () => void;
 }
 
 /**
@@ -17,6 +19,7 @@ export function RequirementsSection({
   catalog,
   onChange,
   onPriceChange,
+  onOpenSettings,
   ...input
 }: RequirementsSectionProps) {
   const model = useRequirementsView(catalog, input);
@@ -24,6 +27,7 @@ export function RequirementsSection({
   return (
     <RequirementsSectionView
       model={model}
+      onOpenSettings={onOpenSettings}
       edits={createRequirementEdits(input.requirements, onChange, onPriceChange)}
     />
   );

@@ -2,6 +2,7 @@ import { type Combine, METRIC, type Metric } from "@idealo-hw/idealo-query";
 import { SegmentedControl, Stack, Text } from "@mantine/core";
 import { REQUIREMENTS_COPY } from "../copy";
 import type { CpuBlockModel } from "../view-model";
+import { ImportHint } from "./ImportHint";
 import { ScoreSlider } from "./ScoreSlider";
 
 const COPY = REQUIREMENTS_COPY;
@@ -10,15 +11,14 @@ export interface CpuBlockProps {
   model: CpuBlockModel;
   onMinimum: (metric: Metric, value: number | undefined) => void;
   onCombine: (combine: Combine) => void;
+  onOpenSettings: () => void;
 }
 
 /** CPU benchmark minimums, or the hint to import PassMark CPU data first. */
-export function CpuBlock({ model, onMinimum, onCombine }: CpuBlockProps) {
+export function CpuBlock({ model, onMinimum, onCombine, onOpenSettings }: CpuBlockProps) {
   if (model.state === "no-data") {
     return (
-      <Text size="xs" c="dimmed" data-testid="req-no-cpu-data">
-        {COPY.noCpuData}
-      </Text>
+      <ImportHint text={COPY.noCpuData} testId="req-no-cpu-data" onOpenSettings={onOpenSettings} />
     );
   }
   return (
