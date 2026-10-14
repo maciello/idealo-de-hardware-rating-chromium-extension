@@ -17,30 +17,41 @@ adr.0014:
         edges: [decide -> hw-bench, decide -> idealo-query, idealo-page -> idealo-query, extension -> every package]
         rule: packages never import apps; cross-sub-domain imports inside a package go through that sub-domain's index.ts
       extension_src:
-        contracts: shared kernel, zod schemas and types only
-        platform: adapters over wxt, @wxt-dev and @webext-core (messaging, storage, tabs, errors); never features or ui
-        ui: shared kit (theme, host, components, format); never features or platform
-        features: slices with model, view-model, controller, view, adapters and background; cross-feature access only through features/<x>/index.ts
-        app: popup and options screens composing features through their index
-        entrypoints: composition roots, no logic
+        contracts: shared kernel, zod schemas and types only (messages, settings, benchmark-snapshot, page-report, ai-test-result, openrouter-status, oauth, error-entry); imports zod, hw-bench, idealo-page and itself
+        platform: adapters over wxt, @wxt-dev and @webext-core (messaging, storage, tabs, errors, runtime, locks, download); never features, ui or app
+        ui: shared kit (theme, host, components, format); never features, platform or app
+        features:
+          list: [ai-matching, benchmark-data, capture, diagnostics, filters, ratings, requirements, settings]
+          shape: slices with model, view-model, controller, view, adapters and background, plus copy.ts (all user-facing strings) and config.ts (timings, sizes, limits) at the feature root
+          public_api: features/<x>/index.ts; cross-feature access only through it
+          feature_root: start.tsx (content-script entry of ratings and filters) and connected.tsx (view wired to its controller) sit at the feature root and may import platform; view/, model/ and view-model/ may not
+        app: "popup and options screens composing features through their index: app/popup/{PopupScreen, use-page-status, page-summary, copy}, app/options/{OptionsScreen, copy}; may import platform and ui directly"
+        entrypoints: composition roots, no logic; popup/main.tsx and options/main.tsx mount the screens, background.ts and the content scripts start features
+        r8_adapter_exemption: "app/ and entrypoints/ may import features/<x>/(index|background/index|adapters/(tap|relay)).ts; the capture content scripts import adapters/tap (MAIN world, must not reach the feature index with React and storage) and adapters/relay directly because each world needs its own entry module"
       feature_layers:
         view: pure React over props and callbacks; imports view-model, model types, ui, contracts, react, mantine only
         view_model: pure derivation for display; may call the pure ui/format and ui/theme functions, never ui components or host
         model: pure domain logic over packages, contracts and zod
         controller: hooks, state and IO orchestration
+        adapters: IO behind the feature (storage, DOM, network, extension APIs)
+        background: service-worker side of a feature, started from entrypoints/background.ts through background/index.ts
       secret_isolation: entrypoints/*.content.ts, popup and options cannot reach the OpenRouter key module or its key provider, transitively (adr.0012); the network tap in the MAIN world cannot reach storage, React, Mantine or ui
     enforcement:
       tool: dependency-cruiser (root devDependency), config .dependency-cruiser.cjs, command just boundaries, part of just check
-      error_now: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client, R6 idealo-page-no-platform, R8 platform-not-to-features-or-ui and ui-not-to-features-or-platform and contracts-pure, R9 secret reachability, R11 src-not-to-tests, R12 no-non-package-json]
-      warn_now: [R7 barrel-only imports for packages and features, R8 extension layers (view, model, screens), R10 main-world tap stays lean]
-      why_warn: R7 to R10 target the features/, platform/, ui/ and contracts/ layout that later refactor steps create, or the current tree still violates them; each step flips its rules to error when it lands, and the last step leaves no warnings
+      severity: every rule runs at error; there are no warn rules and just boundaries reports 0 violations
+      rules: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client and sensors-not-to-hw-bench, R6 idealo-page-no-platform and idealo-page-only-idealo-query, R7 package-submodules-via-barrel and cross-feature-via-index, R8 app-screens-via-feature-index and view-is-pure and model-is-pure and platform-not-to-features-or-ui and ui-not-to-features-or-platform and contracts-pure, R9 secret reachability, R10 main-world-tap-is-lean, R11 src-not-to-tests, R12 no-non-package-json]
+      layer_rule_scopes:
+        view-is-pure: features/<x>/view/ may not import controller, adapters, background, platform or the wxt/@wxt-dev/@webext-core runtimes
+        model-is-pure: features/<x>/(model|view-model)/ may not import controller, adapters, view, background, platform, ui components or host (ui/format and ui/theme are allowed), React, Mantine or the extension runtimes
+        app-screens-via-feature-index: app/ and entrypoints/ reach into features only through index.ts, background/index.ts and the capture adapters tap.ts and relay.ts
+        feature_root_files: start.tsx and connected.tsx at the feature root are outside view-is-pure and model-is-pure and may import platform
       r9_scope: matches the key locations (platform/storage/openrouter-key, features/ai-matching/background/key-provider); the vitest test openrouter-key-isolation stays as a second, independent proof
       resolver_notes:
         - workspace packages are TS source (exports ".": ./src/index.ts); enhancedResolveOptions exportsFields [exports] resolves them to packages/*/src/index.ts
         - specifiers ending ?raw or ?inline are bundler queries; R3 exempts them
-        - WXT auto-imports browser invisibly, so no rule sees it; Biome noRestrictedGlobals in view/ and model/ is the complement (separate step)
+        - "WXT auto-imports browser invisibly, so no depcruise rule sees it; Biome style/noRestrictedGlobals (biome.json override) denies browser, chrome, document, window, localStorage, sessionStorage and fetch in src/features/*/(view|model|view-model) and src/ui/components"
       companions:
-        godfiles: "just godfiles lists source files over 150 lines (report only, exit 0 until the final step)"
+        godfiles: "just godfiles lists source files over 150 lines (Biome style/noExcessiveLinesPerFile at error in the src and entrypoints override); it exits non-zero on a violation and is part of just lint through biome check"
         manifest_check: "just manifest-check rebuilds the extension and diffs manifest.json (jq -S) against docs/baselines/manifest.chrome-mv3.json"
     idealo_page_package:
       rule_amended: adr.0005 says packages wait for a second consumer; idealo-page is extracted with one consumer (apps/extension)
@@ -58,14 +69,14 @@ adr.0014:
     - {alt: Nx enforce-module-boundaries, why: needs the Nx project graph and ESLint; task running stays pnpm -r plus justfile}
     - {alt: turbo boundaries, why: experimental and package-level only (no intra-app layers), needs turbo}
     - {alt: Sheriff (softarc), why: barrel-aware and a good fit, but the ESLint plugin is its primary integration and standalone CLI support is unverified}
-    - {alt: Biome noRestrictedImports alone, why: per-file pattern bans; no cycles, no transitive rules, no barrel capture groups; kept only as a complement (noRestrictedGlobals for browser and document in view/ and model/)}
+    - {alt: Biome noRestrictedImports alone, why: per-file pattern bans; no cycles, no transitive rules, no barrel capture groups; kept only as a complement (noRestrictedGlobals in view/, model/, view-model/ and ui/components)}
     - {alt: keep review-only conventions, why: the SCC grew under review; an unenforced layering is not a layering}
   rationale:
     - dependency-cruiser expresses all three rule kinds this repo needs in one config: cycles, capture-group barrel rules ($1 back-references) and transitive reachability (secret isolation)
     - it reads TS source directly, resolves workspace exports, runs standalone with no ESLint, and reports in under a few seconds
   consequences:
-    - just check fails on any R1 to R6, R9, R11 or R12 violation; a refactor step that adds a cycle or a deep cross-package import cannot land
-    - warn rules print on every run; their count is the migration progress meter
+    - just check fails on any dependency-cruiser violation (every rule is at error) and on a source file over 150 lines; a change that adds a cycle, a deep cross-feature import or a view that does IO cannot land
+    - the one documented exemption is the capture adapters tap.ts and relay.ts, imported directly by their content scripts (r8_adapter_exemption)
     - directory-level cycles are not expressible as dependency-cruiser rules (no-circular is file-level); they disappear by construction once R8 holds
     - the unused ui/mount.tsx (no importers) is deleted; R2 keeps dead modules out
   evidence:
