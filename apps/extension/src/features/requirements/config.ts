@@ -14,8 +14,9 @@ export const PRICE_STEPS = { wideSpan: 2000, wideStep: 50, narrowStep: 10 } as c
 /** Smallest share of the track between two labelled slider marks. */
 export const MARK_LABEL_GAP = 0.16;
 
-/** The numeric requirements offered as sliders, in panel order. */
+/** The numeric requirements offered as sliders, in panel order; graphics memory follows the GPU block it belongs to. */
 export const NUMERIC_CONTROLS: readonly NumericControl[] = [
+  { facet: "vram_gb", unit: "GB", direction: "min" },
   { facet: "ram_gb", unit: "GB", direction: "min" },
   { facet: "ssd_gb", unit: "GB", direction: "min" },
   { facet: "storage_gb", unit: "GB", direction: "min" },

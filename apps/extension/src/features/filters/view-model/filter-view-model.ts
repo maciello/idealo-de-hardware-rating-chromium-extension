@@ -40,7 +40,10 @@ export interface FilterViewModel {
   text: string;
   note: PanelNote | null;
   /** Null when the requirement controls do not apply (no category, no catalog yet). */
-  requirements: Omit<RequirementsSectionProps, "onChange" | "onPriceChange"> | null;
+  requirements: Omit<
+    RequirementsSectionProps,
+    "onChange" | "onPriceChange" | "onOpenSettings"
+  > | null;
   /** The price inputs show when the requirement slider does not cover the price. */
   priceInputs: { price: IdealoQuery["price"] } | null;
   sort: { value: string; options: readonly SortOption[] };

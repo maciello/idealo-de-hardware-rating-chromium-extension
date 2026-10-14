@@ -57,6 +57,7 @@ export function FilterPanel({ opened, model, actions }: FilterPanelProps) {
               {...requirements}
               onChange={actions.changeRequirements}
               onPriceChange={actions.clearPrice}
+              onOpenSettings={actions.openSettings}
             />
           )}
 

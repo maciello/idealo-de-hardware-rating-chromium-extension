@@ -4,6 +4,7 @@ import {
   emptyRequirements,
   type FilterCatalog,
   filterId,
+  type ModelScorer,
   planRequirements,
   setNumeric,
 } from "@idealo-hw/idealo-query";
@@ -46,7 +47,19 @@ const base = (...groups: ReturnType<typeof group>[]): FilterCatalog => ({
   manufacturers: [],
 });
 
-const view = (catalog: FilterCatalog, onChange = vi.fn()) => {
+const view = (
+  catalog: FilterCatalog,
+  onChange = vi.fn(),
+  {
+    onOpenSettings = vi.fn(),
+    hasData = { cpu: false, gpu: false },
+    scorer = () => null,
+  }: {
+    onOpenSettings?: () => void;
+    hasData?: { cpu: boolean; gpu: boolean };
+    scorer?: ModelScorer;
+  } = {},
+) => {
   const requirements = setNumeric(emptyRequirements(), "ram_gb", { min: 16 });
   const plan = planRequirements(
     requirements,
@@ -60,12 +73,13 @@ const view = (catalog: FilterCatalog, onChange = vi.fn()) => {
         catalog={catalog}
         requirements={requirements}
         plan={plan}
-        scorer={() => null}
-        hasData={{ cpu: false, gpu: false }}
+        scorer={scorer}
+        hasData={hasData}
         priceBounds={null}
         pagePrice={undefined}
         onChange={onChange}
         onPriceChange={() => undefined}
+        onOpenSettings={onOpenSettings}
       />
     </MantineProvider>,
   );
@@ -102,6 +116,46 @@ describe("RequirementsSection", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "DDR5" }));
     expect(onChange).toHaveBeenCalledOnce();
     expect(onChange.mock.calls[0]?.[0].labels).toEqual({ ram_type: ["DDR5"] });
+  });
+
+  it("offers the way to the settings where a PassMark export is missing", () => {
+    const onOpenSettings = vi.fn();
+    view(
+      base(group("Prozessor", ["Intel Core i7"], 500), group("Grafikkarte", ["RTX 4060"], 600)),
+      vi.fn(),
+      {
+        onOpenSettings,
+      },
+    );
+    expect(screen.getByTestId("req-no-gpu-data").textContent).toContain(
+      "Import PassMark GPU data in the settings",
+    );
+    fireEvent.click(screen.getByTestId("req-no-gpu-data-open-settings"));
+    fireEvent.click(screen.getByTestId("req-no-cpu-data-open-settings"));
+    expect(onOpenSettings).toHaveBeenCalledTimes(2);
+  });
+
+  it("replaces the hint with the 3D slider once GPU data is there", () => {
+    const scorer = (_facet: string, label: string) =>
+      label === "RTX 4060" ? { g3d: 15000 } : { g3d: 5000 };
+    view(base(group("Grafikkarte", ["RTX 4060", "Radeon 680M"], 600)), vi.fn(), {
+      hasData: { cpu: false, gpu: true },
+      scorer,
+    });
+    expect(screen.queryByTestId("req-no-gpu-data")).toBeNull();
+    expect(screen.getByTestId("req-value-g3d").textContent).toBe("any");
+  });
+
+  it("offers a graphics memory slider that follows the 3D block", () => {
+    view(
+      base(
+        group("RAM", ["8 GB", "16 GB"], 100),
+        group("Grafikspeicher", ["Shared Memory", "4 GB", "8 GB", "16 GB"], 700),
+      ),
+    );
+    expect(screen.getByTestId("req-value-vram_gb").textContent).toBe("any");
+    const order = screen.getAllByTestId(/^req-value-/).map((el) => el.getAttribute("data-testid"));
+    expect(order).toEqual(["req-value-vram_gb", "req-value-ram_gb"]);
   });
 
   it("renders nothing for a category without any requirement facet", () => {
