@@ -8,9 +8,11 @@ import {
   SSR_CPU_FIXTURE,
   SSR_DESKTOP_URL,
   SSR_LISTING_URL,
+  SSR_LOW_SPEC_URL,
   SSR_PRODUCT_URL,
   shot,
   ssrProductUrl,
+  ssrProductWithRamUrl,
 } from "./site";
 import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
@@ -105,6 +107,64 @@ test("real markup: DDR4 gets an amber tag, current and graphics memory get none"
   await chipOf(page, "212702771").screenshot({
     path: resolve(ARTIFACTS_DIR, "chip-memory-tag-closeup.png"),
   });
+  await page.close();
+});
+
+test("real markup: weak specs in a tile's payload count as red flags on the chip and list in the card", async () => {
+  const page = await context.newPage();
+  await page.goto(SSR_LOW_SPEC_URL);
+  await expect(page.locator("idealo-hw-badge")).toHaveCount(4);
+  const nitro = chipOf(page, "207096746");
+  const flags = nitro.getByTestId("chip-flags");
+  await expect(flags).toHaveText("2");
+  await expect(flags).toHaveAttribute("data-severity", "red");
+  await expect(nitro.getByTestId("rating-badge")).toHaveAttribute(
+    "aria-label",
+    /2 flags, worst red: Very little RAM, Very little storage/,
+  );
+  // Sound specs carry no count, and the DDR4 tile's only flag is its memory tag.
+  await expect(chipOf(page, "205984319").getByTestId("chip-flags")).toHaveCount(0);
+  await expect(chipOf(page, "212702771").getByTestId("chip-flags")).toHaveCount(0);
+  await expect(chipOf(page, "212702771").getByTestId("chip-memory")).toHaveText("DDR4");
+
+  await nitro.getByTestId("rating-badge").click();
+  const card = page.locator('[role="dialog"]').filter({ hasText: "PassMark" });
+  const list = card.getByTestId("card-flags");
+  await expect(list).toBeVisible();
+  await expect(list.locator("[data-flag-id]")).toHaveCount(2);
+  const tiny = list.locator('[data-flag-id="red_flags.ram_tiny"]');
+  await expect(tiny).toHaveAttribute("data-severity", "red");
+  await expect(tiny).toContainText("4 GB is too little for current Windows and browsers.");
+  await expect(list.locator('[data-flag-id="red_flags.storage_tiny"]')).toBeVisible();
+  await expect(card.getByTestId("card-features")).toHaveCount(0);
+  await page.waitForTimeout(400);
+  await shot(page, "chip-red-flags");
+  await page.close();
+});
+
+test("real markup: the product page card lists the webcam as a feature, with no flags for a sound datasheet", async () => {
+  const page = await context.newPage();
+  await page.goto(SSR_PRODUCT_URL);
+  const chip = page.locator("h1#oopStage-title idealo-hw-badge");
+  await expect(chip.getByTestId("chip-value")).toHaveText("30.000");
+  await expect(chip.getByTestId("chip-flags")).toHaveCount(0);
+  await chip.getByTestId("rating-badge").click();
+  const card = page.locator('[role="dialog"]').filter({ hasText: "PassMark" });
+  await expect(card.getByTestId("card-features")).toContainText("1080p+ webcam");
+  await expect(card.getByTestId("card-flags")).toHaveCount(0);
+  await page.close();
+});
+
+test("real markup: a weak datasheet row puts a red flag on the product page chip", async () => {
+  const page = await context.newPage();
+  await page.goto(ssrProductWithRamUrl("4 GB"));
+  const chip = page.locator("h1#oopStage-title idealo-hw-badge");
+  await expect(chip.getByTestId("chip-flags")).toHaveText("1");
+  await expect(chip.getByTestId("chip-flags")).toHaveAttribute("data-severity", "red");
+  await chip.getByTestId("rating-badge").click();
+  const card = page.locator('[role="dialog"]').filter({ hasText: "PassMark" });
+  await expect(card.getByTestId("card-flags").locator("[data-flag-id]")).toHaveCount(1);
+  await expect(card.getByTestId("card-flags")).toContainText("Very little RAM");
   await page.close();
 });
 

@@ -12,6 +12,11 @@ export interface ListingItem {
   text: string;
   /** Where `text` came from: the page's embedded search payload or the rendered markup. */
   textSource: "embedded" | "dom";
+  /**
+   * The tile's spec values exactly as the embedded payload lists them, one per entry ("32 GB RAM",
+   * "Windows 11 Home"). Absent when the tile has no payload; `text` joins these, which loses the boundaries.
+   */
+  characteristics?: readonly string[];
   priceEur?: number;
   /** `PageAdapter.id` of the adapter that found this item (the composite adapter delegates). */
   adapterId: string;

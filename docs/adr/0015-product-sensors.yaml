@@ -81,6 +81,12 @@ adr.0015:
         - {id: webcam.low_res, kind: flag, severity: info, device: laptop, rule: "height <= 720"}
         - {id: webcam.none, kind: flag, severity: amber, device: laptop, rule: "datasheet explicitly states none"}
       search: idealo offers no webcam filter group (29 notebook groups checked 2026-10-14); finding laptops with a camera stays a search-text term
+    extension_wiring:
+      seam: "features/ratings/model/signals computes the signals per item, beside the CPU rating and the GPU reading (QueryRating = {rating, gpu, signals}); no CPU match is needed for flags"
+      facts: "product page: ProductInfo.specText -> parseSpecBlock -> fromDatasheet; listing tile: ListingItem.characteristics (payload values, unjoined) -> fromCharacteristics; datasheet before tile; ramType from hw-bench ramTypeOf(text) mapped to facts.ramType; never a re-split of the joined text"
+      clock: "the composition root (ratings/start.tsx) passes the year in; model code never reads the date"
+      chip: "data-testid chip-flags counts red and amber flags (worst severity colours it, data-severity); info signals and badges are card-only; the DDR4 tag (chip-memory) is the red_flags.ram_type_outdated signal and is left out of the count"
+      card: "card-flags lists red, amber and info flags worst first (data-flag-id); card-features lists the webcam badges; the power badge keeps its CPU row"
   consequences:
-    - the DDR4 chip tag becomes the red_flags.ram_type_outdated signal
+    - the DDR4 chip tag is the red_flags.ram_type_outdated signal (apps/extension features/ratings/view-model/signals/chip.ts), not a field of the CPU rating
     - webcam (#7), baseline (#2) and profiles (#3) add sensors or options over the same facts

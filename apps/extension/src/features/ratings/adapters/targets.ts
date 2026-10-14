@@ -20,7 +20,13 @@ export function collectTargets(adapter: PageAdapter): Target[] {
     return adapter.listingItems(document).map((item) => ({
       element: item.element,
       placement: "corner",
-      query: { title: item.title, text: item.text, priceEur: item.priceEur, formFactor },
+      query: {
+        title: item.title,
+        text: item.text,
+        priceEur: item.priceEur,
+        formFactor,
+        characteristics: item.characteristics,
+      },
       seen: {
         adapterId: item.adapterId,
         productId: item.productId ?? null,
@@ -42,6 +48,7 @@ export function collectTargets(adapter: PageAdapter): Target[] {
             text: info.specText,
             priceEur: info.priceEur,
             formFactor: productFormFactor(info),
+            datasheet: info.specText,
           },
           seen: {
             adapterId: info.adapterId,

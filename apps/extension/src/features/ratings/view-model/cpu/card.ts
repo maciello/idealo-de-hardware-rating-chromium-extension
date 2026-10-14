@@ -1,3 +1,4 @@
+import type { Signal } from "@idealo-hw/sensors";
 import { RATINGS_COPY } from "../../copy";
 import { type MatchedRating, MULTI, PAGE_RANK, ROW_ORDER, SEGMENT } from "../../model";
 import type { CardRow } from "../card-row";
@@ -11,7 +12,7 @@ import { valueText } from "./value-text";
  * multi-thread score, so it rides on that row; without it, it gets a row of its own. The on-page
  * percentile only shows as a meter on its own, labelled page-rank row, when no segment percentile exists.
  */
-export function cardRows(rating: MatchedRating): CardRow[] {
+export function cardRows(rating: MatchedRating, signals: readonly Signal[]): CardRow[] {
   const segment = segmentMeter(rating);
   const rows: CardRow[] = [];
   for (const id of ROW_ORDER) {
@@ -38,7 +39,7 @@ export function cardRows(rating: MatchedRating): CardRow[] {
         : null,
     });
   }
-  const power = powerSignalOf(rating);
+  const power = powerSignalOf(signals);
   if (power) {
     rows.push({
       id: "power",

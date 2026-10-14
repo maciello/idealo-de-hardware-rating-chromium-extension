@@ -45,6 +45,9 @@ export const RATINGS_COPY = {
   /** What the chip says when the item's memory is DDR4 or older; DDR5 and LPDDR5(X) are the baseline. */
   oldMemoryHint: "Older memory generation",
   oldMemoryAria: (label: string, hint: string): string => `${label}: ${hint}`,
+  /** Chip indicator for the item's red and amber flags; `severity` is the worst of them. */
+  flagsAria: (count: number, severity: string, labels: readonly string[]): string =>
+    `${count} ${count === 1 ? "flag" : "flags"}, worst ${severity}: ${labels.join(", ")}`,
 
   /** The four numbers a user can pick as the chip's headline value. */
   primaryLabels: PRIMARY_LABELS,
@@ -67,6 +70,9 @@ export const RATINGS_COPY = {
   importNote: (date: string | null): string =>
     date ? `PassMark import ${date}` : "PassMark import",
   settings: "Settings",
+  flagsHeading: "Red flags",
+  featuresHeading: "Features",
+  severityLabels: { red: "Red", amber: "Amber", info: "Info" },
 
   // GPU
   gpuLabels: { dedicated: "GPU", integrated: "iGPU" } satisfies Readonly<Record<GpuKind, string>>,

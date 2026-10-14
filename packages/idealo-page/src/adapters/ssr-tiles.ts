@@ -64,6 +64,7 @@ export function ssrTileItems(root: ParentNode): ListingItem[] {
       text:
         specs.length > 0 ? specs.join(", ") : collapse(tile.querySelector(DETAILS)?.textContent),
       textSource: specs.length > 0 ? "embedded" : "dom",
+      ...(specs.length > 0 ? { characteristics: specs } : {}),
       ...(priceEur == null ? {} : { priceEur }),
       adapterId: SSR_ADAPTER_ID,
     });

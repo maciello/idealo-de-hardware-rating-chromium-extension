@@ -38,6 +38,14 @@ export const SSR_PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/209657188_-magicbook-pro-14-honor.html";
 /** The product page with a RAM-type row added to its datasheet (the real page lists none). */
 export const ssrProductUrl = (ramType: string): string => `${SSR_PRODUCT_URL}?ramtype=${ramType}`;
+/** The product page with its RAM row changed to `ram` ("4 GB"): a synthetic value under the real label. */
+export const ssrProductWithRamUrl = (ram: string): string =>
+  `${SSR_PRODUCT_URL}?ram=${encodeURIComponent(ram)}`;
+/**
+ * The real-markup listing where the Nitro tile's payload names 4 GB RAM and a 128 GB SSD: synthetic
+ * values under the real labels, enough for two red flags on an otherwise untouched page.
+ */
+export const SSR_LOW_SPEC_URL = `${SSR_LISTING_URL}?variant=lowspec`;
 export const SEARCH_URL =
   "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=laptop+32GB";
 /** Listing without filter links: category link only (no toggles), so the catalog is null. */
@@ -47,11 +55,36 @@ export const NOCAT_SEARCH_URL = `${SEARCH_URL}&variant=nocat`;
 export const PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/1001_alpha-book-15.html";
 
+const PAYLOAD_ASSIGNMENT = /(initialData\['searchResult'\] = ")([A-Za-z0-9+/=]+)/;
+
 interface ListingGroup {
   id: string;
   name: string;
   filters: { id: string; name: string; hits: number }[];
 }
+
+/** The slice of the embedded search payload these fixtures edit. */
+interface ListingPayload {
+  items: { id: string; characteristics?: string[] }[];
+  filterGroups: ListingGroup[];
+}
+
+/** The real-markup listing with its embedded search payload edited in place and re-encoded. */
+function listingWithPayload(edit: (payload: ListingPayload) => void): string {
+  const encoded = PAYLOAD_ASSIGNMENT.exec(SSR_LISTING_HTML)?.[2] ?? "";
+  const payload: ListingPayload = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+  edit(payload);
+  return SSR_LISTING_HTML.replace(
+    PAYLOAD_ASSIGNMENT,
+    (_, head: string) => head + Buffer.from(JSON.stringify(payload)).toString("base64"),
+  );
+}
+
+/** The real-markup listing with filter groups added to its embedded payload, served as `categoryId`. */
+const listingHtml = (categoryId: string, groups: ListingGroup[]): string =>
+  listingWithPayload((payload) => {
+    payload.filterGroups.push(...groups);
+  }).replace("initialData['categoryId'] = \"3751\"", `initialData['categoryId'] = "${categoryId}"`);
 
 const gigabytes = (sizes: Record<string, number>, hits = 500) =>
   Object.entries(sizes).map(([name, id]) => ({ id: String(id), name, hits }));
@@ -89,21 +122,6 @@ const MEMORY_GROUPS: ListingGroup[] = [
   },
 ];
 
-/** The real-markup listing with filter groups added to its embedded payload, served as `categoryId`. */
-function listingHtml(categoryId: string, groups: ListingGroup[]): string {
-  const payload = JSON.parse(
-    Buffer.from(
-      /initialData\['searchResult'\] = "([A-Za-z0-9+/=]+)"/.exec(SSR_LISTING_HTML)?.[1] ?? "",
-      "base64",
-    ).toString("utf8"),
-  );
-  payload.filterGroups.push(...groups);
-  return SSR_LISTING_HTML.replace(
-    /(initialData\['searchResult'\] = ")[A-Za-z0-9+/=]+/,
-    (_, head: string) => head + Buffer.from(JSON.stringify(payload)).toString("base64"),
-  ).replace("initialData['categoryId'] = \"3751\"", `initialData['categoryId'] = "${categoryId}"`);
-}
-
 /** Notebooks (3751): the real listing plus the two Grafikspeicher groups. */
 const notebooksListingHtml = (): string => listingHtml("3751", MEMORY_GROUPS);
 
@@ -124,10 +142,34 @@ const desktopListingHtml = (): string =>
     },
   ]);
 
-function productHtml(ramType: string | null): string {
-  if (ramType === null) return SSR_PRODUCT_HTML;
+const NITRO_ID = "207096746";
+const NBSP = " ";
+
+/** The Nitro tile with 4 GB RAM and a 128 GB SSD in its payload: two red flags, nothing else changed. */
+function lowSpecListingHtml(): string {
+  return listingWithPayload((payload) => {
+    const nitro = payload.items.find((item) => item.id === NITRO_ID);
+    if (nitro?.characteristics === undefined) throw new Error("fixture lost the Nitro tile");
+    nitro.characteristics = nitro.characteristics.map((value) =>
+      value
+        .replace(`32${NBSP}GB${NBSP}RAM`, `4${NBSP}GB${NBSP}RAM`)
+        .replace(`512${NBSP}GB${NBSP}SSD-Speicher`, `128${NBSP}GB${NBSP}SSD-Speicher`),
+    );
+  });
+}
+
+const RAM_ROW = /(<td[^>]*>RAM<\/td><td[^>]*>)([^<]*)(<\/td><\/tr>)/;
+
+function productHtml(ramType: string | null, ram: string | null): string {
+  let html = SSR_PRODUCT_HTML;
+  if (ram !== null)
+    html = html.replace(
+      RAM_ROW,
+      (_, head: string, _value: string, tail: string) => head + ram + tail,
+    );
+  if (ramType === null) return html;
   const row = `<tr><td class="text-gray-700 px-2 py-1 w-1/2 sm:w-1/3 align-top wrap-break-word">RAM-Typ</td><td class="px-2 py-1 w-1/2 sm:w-2/3 align-top">${ramType}</td></tr>`;
-  return SSR_PRODUCT_HTML.replace(/(<td[^>]*>RAM<\/td><td[^>]*>[^<]*<\/td><\/tr>)/, `$1${row}`);
+  return html.replace(RAM_ROW, (whole) => `${whole}${row}`);
 }
 
 const withoutFilters = (variant: string): string =>
@@ -156,6 +198,9 @@ export async function installSite(context: BrowserContext): Promise<void> {
     if (pathname === "/api/filters.json") {
       return route.fulfill({ contentType: "application/json", body: FILTERS_JSON });
     }
+    if (variant === "lowspec" && pathname.includes("/ProductCategory/3751")) {
+      return route.fulfill({ contentType: "text/html; charset=utf-8", body: lowSpecListingHtml() });
+    }
     if (pathname.includes("/ProductCategory/3751")) {
       return route.fulfill({
         contentType: "text/html; charset=utf-8",
@@ -171,7 +216,7 @@ export async function installSite(context: BrowserContext): Promise<void> {
     if (pathname.includes("/OffersOfProduct/209657188")) {
       return route.fulfill({
         contentType: "text/html; charset=utf-8",
-        body: productHtml(url.searchParams.get("ramtype")),
+        body: productHtml(url.searchParams.get("ramtype"), url.searchParams.get("ram")),
       });
     }
     if (pathname.includes("/OffersOfProduct/")) {

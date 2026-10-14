@@ -1,6 +1,5 @@
 export { createRatingEngine } from "./engine";
 export { pageRankOf } from "./page-rank";
-export { deviceClassOf, sensorInputOf } from "./sensor-input";
 export { cpuSignatureOf } from "./signature";
 export { resolveEnabledStrategyIds, STRATEGY_CATALOG } from "./strategy-catalog";
 export {

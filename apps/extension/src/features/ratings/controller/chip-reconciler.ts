@@ -3,7 +3,7 @@ import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { recordError } from "../../../platform/errors";
 import type { Overlay } from "../../../ui/host";
 import { anchorPosition, type ChipHost, mountChipHost } from "../adapters";
-import { type RatingView, signatureOf, visibleCpu } from "../model";
+import { hasChip, type RatingView, signatureOf, visibleCpu } from "../model";
 import type { ChipRenderer, TileRating } from "./types";
 
 interface ChipEntry {
@@ -67,18 +67,18 @@ export function createChipReconciler(
     sync(overlay, view, results) {
       const live = new Set<Element>();
       for (const result of results) {
-        const { target, rating, gpu } = result;
-        const cpu = visibleCpu(rating);
-        if (cpu === null && gpu === null) continue;
+        const { target, rating, gpu, signals } = result;
+        if (!hasChip(result)) continue;
         const { element } = target;
         live.add(element);
         const node = renderChip({
-          rating: cpu,
+          rating: visibleCpu(rating),
           gpu,
+          signals,
           primaryId: view.primaryId,
           importedAt: view.importedAt,
         });
-        const signature = `${view.primaryId}|${view.importedAt}|${signatureOf(rating, gpu)}`;
+        const signature = `${view.primaryId}|${view.importedAt}|${signatureOf(rating, gpu, signals)}`;
         const existing = chips.get(element);
         if (existing && (existing.host === undefined || element.contains(existing.host.host))) {
           if (existing.signature !== signature) {

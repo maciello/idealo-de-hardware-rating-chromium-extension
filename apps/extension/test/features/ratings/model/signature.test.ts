@@ -29,24 +29,24 @@ const gpuFor = (text: string, formFactor: "laptop" | "desktop" = "laptop") =>
 
 describe("signatureOf", () => {
   it("is stable for identical input", () => {
-    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"))).toBe(
-      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060")),
+    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"), [])).toBe(
+      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"), []),
     );
   });
 
   it("changes when a GPU appears or disappears", () => {
-    const without = signatureOf(cpu, null);
-    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"))).not.toBe(without);
+    const without = signatureOf(cpu, null, []);
+    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"), [])).not.toBe(without);
   });
 
   it("changes with the matched GPU", () => {
-    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"))).not.toBe(
-      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060")),
+    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"), [])).not.toBe(
+      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060"), []),
     );
   });
 
   it("changes with the GPU percentile when the match stays the same", () => {
-    const laptop = signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"));
+    const laptop = signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060"), []);
     const base = gpuFor("NVIDIA GeForce RTX 4060");
     if (!base?.primary.rating) throw new Error("expected a GPU match");
     const { rating } = base.primary;
@@ -62,34 +62,34 @@ describe("signatureOf", () => {
         },
       },
     };
-    expect(signatureOf(cpu, shifted)).not.toBe(laptop);
+    expect(signatureOf(cpu, shifted, [])).not.toBe(laptop);
   });
 
   it("changes with the GPU line's kind, memory and companion iGPU", () => {
-    const card = signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060"));
-    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060, Grafikspeicher 16 GB"))).not.toBe(
+    const card = signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060"), []);
+    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 5060, Grafikspeicher 16 GB"), [])).not.toBe(
       card,
     );
     // The title names the CPU, so a tile without a card gets its iGPU on the line instead.
-    expect(signatureOf(cpu, gpuFor("16 GB RAM"))).not.toBe(card);
-    expect(signatureOf(cpu, gpuFor("Intel Core i7-13700H"))).not.toBe(
-      signatureOf(cpu, gpuFor("Intel Core Ultra 7 258V")),
+    expect(signatureOf(cpu, gpuFor("16 GB RAM"), [])).not.toBe(card);
+    expect(signatureOf(cpu, gpuFor("Intel Core i7-13700H"), [])).not.toBe(
+      signatureOf(cpu, gpuFor("Intel Core Ultra 7 258V"), []),
     );
   });
 
   it("tells an unrated iGPU from a rated one", () => {
-    expect(signatureOf(cpu, gpuFor("Apple M3"))).not.toBe(
-      signatureOf(cpu, gpuFor("Intel Core i7-13700H")),
+    expect(signatureOf(cpu, gpuFor("Apple M3"), [])).not.toBe(
+      signatureOf(cpu, gpuFor("Intel Core i7-13700H"), []),
     );
   });
 
   it("changes with the page form factor, which picks the GPU's comparison group", () => {
-    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060", "laptop"))).not.toBe(
-      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060", "desktop")),
+    expect(signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060", "laptop"), [])).not.toBe(
+      signatureOf(cpu, gpuFor("NVIDIA GeForce RTX 4060", "desktop"), []),
     );
   });
 
   it("still tells CPU outcomes apart without a GPU", () => {
-    expect(signatureOf(cpu, null)).not.toBe(signatureOf({ status: "no_match" }, null));
+    expect(signatureOf(cpu, null, [])).not.toBe(signatureOf({ status: "no_match" }, null, []));
   });
 });

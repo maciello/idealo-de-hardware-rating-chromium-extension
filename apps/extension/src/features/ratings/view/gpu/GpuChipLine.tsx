@@ -1,8 +1,12 @@
+import type { ReactNode } from "react";
 import { Meter } from "../../../../ui";
 import type { GpuLineModel } from "../../view-model";
 
-/** The GPU line of the chip: meter, headline value, "GPU" or "iGPU", and the memory figure. */
-export function GpuChipLine({ model }: { model: GpuLineModel }) {
+/**
+ * The GPU line of the chip: meter, headline value, "GPU" or "iGPU", and the memory figure.
+ * `trailing` is where the product's signals sit when this is the chip's first line.
+ */
+export function GpuChipLine({ model, trailing }: { model: GpuLineModel; trailing?: ReactNode }) {
   return (
     <span
       className="hw-chip__line"
@@ -26,6 +30,7 @@ export function GpuChipLine({ model }: { model: GpuLineModel }) {
           {model.memory.text}
         </span>
       )}
+      {trailing}
     </span>
   );
 }

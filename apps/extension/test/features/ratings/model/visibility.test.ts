@@ -5,6 +5,7 @@ import {
   type ItemRating,
   isRated,
   isVisible,
+  signalsOf,
   visibleCpu,
 } from "../../../../src/features/ratings/model";
 
@@ -41,9 +42,7 @@ const matched = (ratings: number): ItemRating => ({
   record,
   via: "exact",
   formFactor: "desktop",
-  ramType: null,
   ratings: Array.from({ length: ratings }, () => numberRating),
-  signals: [],
   pageRank: null,
 });
 const gpu = { primary: {}, companion: null } as never;
@@ -65,13 +64,32 @@ describe("visibility", () => {
   });
 
   it("counts an ambiguous CPU toward the chip but not toward the rated stats", () => {
-    expect(hasChip({ rating: ambiguous, gpu: null })).toBe(true);
+    expect(hasChip({ rating: ambiguous, gpu: null, signals: [] })).toBe(true);
     expect(isRated({ rating: ambiguous, gpu: null })).toBe(false);
   });
 
   it("counts any GPU line as rated and as a chip", () => {
     expect(isRated({ rating: noMatch, gpu })).toBe(true);
-    expect(hasChip({ rating: noMatch, gpu })).toBe(true);
-    expect(hasChip({ rating: noMatch, gpu: null })).toBe(false);
+    expect(hasChip({ rating: noMatch, gpu, signals: [] })).toBe(true);
+    expect(hasChip({ rating: noMatch, gpu: null, signals: [] })).toBe(false);
+  });
+});
+
+describe("chips for product signals", () => {
+  const signalsFor = (datasheet: string) =>
+    signalsOf({ title: "Notebook", text: "", formFactor: "laptop", datasheet }, noMatch, {
+      year: 2026,
+    });
+
+  it("draws a chip for a red or amber flag even without a CPU or GPU line", () => {
+    expect(hasChip({ rating: noMatch, gpu: null, signals: signalsFor("RAM\t4 GB") })).toBe(true);
+    expect(hasChip({ rating: noMatch, gpu: null, signals: signalsFor("RAM\t8 GB") })).toBe(true);
+  });
+
+  it("draws none for info signals alone, and does not count a flag as rated", () => {
+    const info = signalsFor("Kameraauflösung\t1920 x 1080 Pixel");
+    expect(info.map((s) => s.severity)).toEqual(["info"]);
+    expect(hasChip({ rating: noMatch, gpu: null, signals: info })).toBe(false);
+    expect(isRated({ rating: noMatch, gpu: null })).toBe(false);
   });
 });

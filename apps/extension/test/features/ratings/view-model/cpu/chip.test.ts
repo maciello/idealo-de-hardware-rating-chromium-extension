@@ -80,21 +80,21 @@ const rate = (enabled: readonly string[] = allIds): Extract<ItemRating, { status
 
 describe("chipModel and cardRows", () => {
   it("shows the primary number with the segment meter", () => {
-    const model = chipModel(rate(), "raw_multithread_score");
+    const model = chipModel(rate(), "raw_multithread_score", []);
     expect(model).toMatchObject({ value: "28.000", label: "CPU", filled: 4 });
     expect(model?.aria).toContain("top 33% of laptop CPUs");
   });
 
   it("switches the headline value with the primary strategy", () => {
     const matched = rate();
-    expect(chipModel(matched, "single_thread_score")?.value).toBe("3.900");
-    expect(chipModel(matched, "value_per_euro")?.value).toBe("21,6 /€");
-    expect(chipModel(matched, "peer_percentile_on_listing")?.value).toBe("#2 of 3");
+    expect(chipModel(matched, "single_thread_score", [])?.value).toBe("3.900");
+    expect(chipModel(matched, "value_per_euro", [])?.value).toBe("21,6 /€");
+    expect(chipModel(matched, "peer_percentile_on_listing", [])?.value).toBe("#2 of 3");
   });
 
   it("falls back to the next available number when the primary one is disabled", () => {
     const only = rate(["single_thread_score", "segment_percentile"]);
-    expect(chipModel(only, "raw_multithread_score")?.value).toBe("3.900");
+    expect(chipModel(only, "raw_multithread_score", [])?.value).toBe("3.900");
   });
 
   it("never fills the chip meter from the on-page percentile", () => {
@@ -102,6 +102,7 @@ describe("chipModel and cardRows", () => {
     const model = chipModel(
       rate(["raw_multithread_score", "peer_percentile_on_listing"]),
       "raw_multithread_score",
+      [],
     );
     expect(model?.filled).toBeNull();
     expect(model?.aria).not.toContain("on this page");
@@ -114,17 +115,19 @@ describe("chipModel and cardRows", () => {
       { title: "C Intel Core i9-13900HX", text: "", priceEur: 1999, formFactor: "unknown" },
     ]);
     if (first?.status !== "matched") throw new Error("expected a match");
-    expect(chipModel(first, "raw_multithread_score")?.filled).toBeNull();
-    expect(cardRows(first).find((r) => r.label === "Multi-thread")?.meter).toBeNull();
+    expect(chipModel(first, "raw_multithread_score", [])?.filled).toBeNull();
+    expect(cardRows(first, []).find((r) => r.label === "Multi-thread")?.meter).toBeNull();
   });
 
   it("hides the meter when neither percentile is enabled, and the chip when nothing is", () => {
-    expect(chipModel(rate(["raw_multithread_score"]), "raw_multithread_score")?.filled).toBeNull();
-    expect(chipModel(rate([]), "raw_multithread_score")).toBeNull();
+    expect(
+      chipModel(rate(["raw_multithread_score"]), "raw_multithread_score", [])?.filled,
+    ).toBeNull();
+    expect(chipModel(rate([]), "raw_multithread_score", [])).toBeNull();
   });
 
   it("builds one row per enabled strategy, the meter on the first, explanations as titles", () => {
-    const rows = cardRows(rate());
+    const rows = cardRows(rate(), []);
     expect(rows.map((r) => [r.label, r.value])).toEqual([
       ["Multi-thread", "28.000"],
       ["Single-thread", "3.900"],
@@ -137,7 +140,7 @@ describe("chipModel and cardRows", () => {
   });
 
   it("gives the segment percentile its own row when multi-thread is disabled", () => {
-    const rows = cardRows(rate(["single_thread_score", "segment_percentile"]));
+    const rows = cardRows(rate(["single_thread_score", "segment_percentile"]), []);
     expect(rows.map((r) => r.label)).toEqual(["In its segment", "Single-thread"]);
     expect(rows[0]).toMatchObject({ value: "top 33%", meter: { filled: 4 } });
   });

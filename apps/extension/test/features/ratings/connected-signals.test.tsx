@@ -5,7 +5,11 @@ import { MantineProvider } from "@mantine/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ConnectedRatingChip as RatingChip } from "../../../src/features/ratings/connected";
-import { createRatingEngine, STRATEGY_CATALOG } from "../../../src/features/ratings/model";
+import {
+  createRatingEngine,
+  STRATEGY_CATALOG,
+  signalsOf,
+} from "../../../src/features/ratings/model";
 import { cardRows, chipModel } from "../../../src/features/ratings/view-model";
 
 window.matchMedia = (query: string) =>
@@ -48,13 +52,16 @@ const engine = createRatingEngine(
   STRATEGY_CATALOG.map((s) => s.id),
 );
 
+const NOW = { year: 2026 };
+
 const rate = (title: string, formFactor?: "laptop" | "desktop") => {
-  const [rating] = engine.rate([{ title, text: "", ...(formFactor ? { formFactor } : {}) }]);
+  const query = { title, text: "", ...(formFactor ? { formFactor } : {}) };
+  const [rating] = engine.rate([query]);
   if (rating?.status !== "matched") throw new Error("expected a match");
-  return rating;
+  return { rating, signals: signalsOf(query, rating, NOW) };
 };
 
-describe("engine signals", () => {
+describe("power signals", () => {
   it("raises a very high power signal for a laptop CPU at the threshold", () => {
     expect(rate("Notebook Intel Core i9-13900HX", "laptop").signals.map((s) => s.id)).toEqual([
       "power.very_high",
@@ -90,12 +97,12 @@ describe("engine signals", () => {
 
 describe("power signal presentation", () => {
   it("puts the label on the chip model and label plus detail in a card row", () => {
-    const rating = rate("Notebook Intel Core i7-1250U", "laptop");
-    expect(chipModel(rating, "raw_multithread_score")?.power).toEqual({
+    const { rating, signals } = rate("Notebook Intel Core i7-1250U", "laptop");
+    expect(chipModel(rating, "raw_multithread_score", signals)?.power).toEqual({
       level: "low",
       label: "Very low power",
     });
-    expect(cardRows(rating).at(-1)).toEqual({
+    expect(cardRows(rating, signals).at(-1)).toEqual({
       id: "power",
       label: "Very low power",
       value: "9 W TDP · 3,333 CPU Mark per W",
@@ -105,24 +112,27 @@ describe("power signal presentation", () => {
   });
 
   it("adds neither a chip icon nor a row for the middle", () => {
-    const rating = rate("Notebook Intel Core i7-13700H", "laptop");
-    expect(chipModel(rating, "raw_multithread_score")?.power).toBeNull();
-    expect(cardRows(rating).some((r) => r.id === "power")).toBe(false);
+    const { rating, signals } = rate("Notebook Intel Core i7-13700H", "laptop");
+    expect(chipModel(rating, "raw_multithread_score", signals)?.power).toBeNull();
+    expect(cardRows(rating, signals).some((r) => r.id === "power")).toBe(false);
   });
 });
 
 describe("RatingChip power icon", () => {
-  const show = (title: string, formFactor: "laptop" | "desktop") =>
-    render(
+  const show = (title: string, formFactor: "laptop" | "desktop") => {
+    const { rating, signals } = rate(title, formFactor);
+    return render(
       <MantineProvider env="test">
         <RatingChip
-          rating={rate(title, formFactor)}
+          rating={rating}
+          signals={signals}
           primaryId="raw_multithread_score"
           importedAt={null}
           onOpenSettings={() => undefined}
         />
       </MantineProvider>,
     );
+  };
 
   it("shows a labelled leaf for very low power", () => {
     show("Notebook Intel Core i7-1250U", "laptop");
