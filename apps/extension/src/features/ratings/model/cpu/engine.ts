@@ -7,12 +7,12 @@ import {
   type FormFactor,
   type FreeTextMatchResult,
   type RatingStrategy,
+  ramTypeOf,
 } from "@idealo-hw/hw-bench";
 import { senseAll } from "@idealo-hw/sensors";
 import type { RatingQuery } from "../query";
 import { fragmentsOf } from "../text-fragments";
 import { pageRankOf } from "./page-rank";
-import { ramTypeOf } from "./ram-type";
 import { sensorInputOf } from "./sensor-input";
 import type { ItemRating, RatingEngine } from "./types";
 

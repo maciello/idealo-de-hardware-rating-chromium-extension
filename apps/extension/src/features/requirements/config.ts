@@ -7,9 +7,6 @@ export const MIN_STEPS: Readonly<Record<Metric, number>> = {
   [METRIC.g3d]: 500,
 };
 
-/** Shown disabled where the category has no RAM-type group, so the control is not a surprise elsewhere. */
-export const FALLBACK_RAM_TYPES = ["DDR5", "LPDDR5X", "LPDDR5", "DDR4", "LPDDR4X"] as const;
-
 /** Price slider: a result set wider than `wideSpan` euros moves in `wideStep` steps, else in `narrowStep`. */
 export const PRICE_STEPS = { wideSpan: 2000, wideStep: 50, narrowStep: 10 } as const;
 

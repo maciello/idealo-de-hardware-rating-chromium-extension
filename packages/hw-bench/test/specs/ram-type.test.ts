@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ramTypeOf } from "../../../../../src/features/ratings/model/cpu";
+import { compareRamLabels, KNOWN_RAM_TYPES, parseRamLabel, ramTypeOf } from "../../src";
 
 describe("ramTypeOf", () => {
   it("reads the standalone fragment of a tile and flags DDR4 and older", () => {
@@ -46,5 +46,47 @@ describe("ramTypeOf", () => {
     expect(ramTypeOf("")).toBeNull();
     expect(ramTypeOf("Notebook, 32 GB RAM, 1.000 GB SSD-Speicher")).toBeNull();
     expect(ramTypeOf("Mainboard for DDR4 and DDR5")).toBeNull();
+  });
+});
+
+describe("parseRamLabel", () => {
+  it("reads generation, low power and outdated from a facet label", () => {
+    expect(parseRamLabel("DDR4")).toEqual({
+      kind: "known",
+      label: "DDR4",
+      generation: 4,
+      lowPower: false,
+      outdated: true,
+    });
+    expect(parseRamLabel("lpddr5x")).toEqual({
+      kind: "known",
+      label: "LPDDR5X",
+      generation: 5,
+      lowPower: true,
+      outdated: false,
+    });
+  });
+
+  it("maps labels outside the grammar to an explicit unknown", () => {
+    expect(parseRamLabel("GDDR6")).toEqual({ kind: "unknown", label: "GDDR6" });
+    expect(parseRamLabel("SDRAM")).toEqual({ kind: "unknown", label: "SDRAM" });
+    expect(parseRamLabel("")).toEqual({ kind: "unknown", label: "" });
+  });
+});
+
+describe("compareRamLabels", () => {
+  it("sorts the newest generation first, plain before low-power, unknown last", () => {
+    const sorted = ["DDR4", "SDRAM", "LPDDR5X", "DDR5", "LPDDR5", "DDR3"].sort(compareRamLabels);
+    expect(sorted).toEqual(["DDR5", "LPDDR5", "LPDDR5X", "DDR4", "DDR3", "SDRAM"]);
+  });
+
+  it("orders the fallback list of known types by generation", () => {
+    expect([...KNOWN_RAM_TYPES].sort(compareRamLabels)).toEqual([
+      "DDR5",
+      "LPDDR5",
+      "LPDDR5X",
+      "DDR4",
+      "LPDDR4X",
+    ]);
   });
 });

@@ -1,5 +1,5 @@
+import { compareRamLabels, KNOWN_RAM_TYPES } from "@idealo-hw/hw-bench";
 import type { FacetPlan } from "@idealo-hw/idealo-query";
-import { FALLBACK_RAM_TYPES } from "../config";
 import { REQUIREMENTS_COPY } from "../copy";
 import { statusLine } from "./status";
 
@@ -12,13 +12,7 @@ export interface RamTypeModel {
   note: string | null;
 }
 
-const generation = (label: string): number => Number(/\d+/.exec(label)?.[0] ?? 0);
-
-/** Newest generation first, plain before low-power within one. */
-const byGeneration = (a: string, b: string): number =>
-  generation(b) - generation(a) || a.localeCompare(b);
-
-/** `listed` are the labels of the category's RAM-type group; empty when it has none. */
+/** `listed` are the labels of the category's RAM-type group, empty when it has none (the known types are then shown disabled). */
 export function ramTypeModel(
   listed: readonly string[],
   selected: readonly string[],
@@ -27,7 +21,7 @@ export function ramTypeModel(
   const available = listed.length > 0;
   return {
     available,
-    labels: [...(available ? listed : FALLBACK_RAM_TYPES)].sort(byGeneration),
+    labels: [...(available ? listed : KNOWN_RAM_TYPES)].sort(compareRamLabels),
     selected: available ? [...selected] : [],
     note: available ? statusLine(plan) : REQUIREMENTS_COPY.ramType.unavailable,
   };
