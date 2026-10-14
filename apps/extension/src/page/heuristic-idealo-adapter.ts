@@ -175,6 +175,7 @@ export const heuristicIdealoAdapter: PageAdapter = {
       element: heading,
       title,
       specText: specTextOf(root),
+      adapterId: ID,
       ...(priceEur === undefined ? {} : { priceEur }),
     };
   },

@@ -17,8 +17,11 @@ export interface ListingItem {
 export interface ProductInfo {
   element: Element | null;
   title: string;
+  /** "Label<TAB>Value" lines when the page has a spec table, free text otherwise. */
   specText: string;
   priceEur?: number;
+  /** `PageAdapter.id` of the adapter that read this page. */
+  adapterId: string;
 }
 
 /**

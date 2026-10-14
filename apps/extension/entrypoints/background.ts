@@ -2,11 +2,13 @@ import { createAiTestService, probeDecider } from "../src/ai/ai-test-service";
 import { storageKeyProvider } from "../src/ai/key-provider";
 import { createOpenRouterService } from "../src/ai/openrouter-service";
 import { createTapRegistrar } from "../src/capture/tap-registration";
+import { installGlobalErrorReporting, recordError } from "../src/diagnostics/error-log";
 import { onMessage } from "../src/messaging";
 import { aiTestResultItem } from "../src/storage/ai-test-result";
 import { captureModeItem } from "../src/storage/items";
 
 export default defineBackground(() => {
+  installGlobalErrorReporting("background");
   onMessage("openOptions", () => browser.runtime.openOptionsPage());
 
   const openrouter = createOpenRouterService({
@@ -29,7 +31,10 @@ export default defineBackground(() => {
   // The network tap is opt-in: it is registered only while capture mode is on. Listeners are added
   // synchronously so a storage change can wake the service worker.
   const tap = createTapRegistrar(browser.scripting);
-  const report = (error: unknown): void => console.error("[idealo-hw] tap registration", error);
+  const report = (error: unknown): void => {
+    console.error("[idealo-hw] tap registration", error);
+    void recordError("background", error);
+  };
   captureModeItem.watch((enabled) => void tap.sync(enabled).catch(report));
   browser.runtime.onInstalled.addListener(
     () =>

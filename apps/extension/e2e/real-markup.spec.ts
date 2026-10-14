@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { extensionIdOf, launchWithExtension } from "./launch";
 import {
@@ -83,4 +84,51 @@ test("real markup: the product page gets a chip next to the title and a card", a
   await page.waitForTimeout(400);
   await shot(page, "chip-product-page");
   await page.close();
+});
+
+test("debug report: the popup downloads page counts for the open listing, without secrets", async () => {
+  const listing = await context.newPage();
+  await listing.goto(SSR_LISTING_URL);
+  await expect(listing.locator("idealo-hw-badge")).toHaveCount(4);
+
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  const download = popup.waitForEvent("download");
+  await popup.getByTestId("popup-debug-report").click();
+  const saved = await download;
+  expect(saved.suggestedFilename()).toMatch(/^idealo-hw_debug-report_\d{8}T\d{6}Z\.json$/);
+  const text = readFileSync(await saved.path(), "utf8");
+  const report = JSON.parse(text);
+
+  expect(report.page).toEqual({
+    url: SSR_LISTING_URL,
+    kind: "listing",
+    adapterId: "idealo_ssr",
+    tiles: 4,
+    tilesWithProductId: 3,
+    tilesMatchedToPayload: 3,
+    tilesRated: 4,
+    unrated: [],
+    payload: { present: true, categoryId: "3751", resultCount: 53609, error: null },
+  });
+  expect(report.pageNote).toBeNull();
+  expect(report.exportedAt).toMatch(/Z$/);
+  expect(report.benchmarkData.cpu).toMatchObject({ records: 5 });
+  expect(report.ai).toEqual({ connected: false, lastTest: null });
+  expect(report.settings.captureMode).toBe(false);
+  expect(text).not.toMatch(/sk-or-|session.?info/i);
+  await expect(popup.getByTestId("popup-debug-note")).toContainText("idealo-hw_debug-report_");
+  await popup.close();
+  await listing.close();
+});
+
+test("debug report: options export works without an idealo tab and says so", async () => {
+  const options = await context.newPage();
+  await options.goto(`chrome-extension://${extensionId}/options.html`);
+  const download = options.waitForEvent("download");
+  await options.getByTestId("debug-report-export").click();
+  const report = JSON.parse(readFileSync(await (await download).path(), "utf8"));
+  expect(report.page).toBeNull();
+  expect(report.pageNote).toBe("No idealo tab was open.");
+  await options.close();
 });

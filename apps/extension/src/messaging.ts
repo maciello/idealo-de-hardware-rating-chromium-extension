@@ -1,5 +1,6 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import type { ConnectResult } from "./ai/openrouter-connect";
+import type { PageReport } from "./diagnostics/page-report";
 import type { PageKind } from "./page/adapter";
 import type { PageSnapshot } from "./page/snapshot";
 import type { AiTestResult } from "./storage/ai-test-result";
@@ -27,6 +28,8 @@ interface ProtocolMap {
   testAiMatching(): AiTestResult;
   /** Popup -> content script (tabId): how many products on this page have a rating. */
   getPageStats(): PageStats;
+  /** Popup -> content script (tabId): what was read on this page and what could be rated, for the debug report. */
+  getPageReport(): PageReport;
   /** Popup -> content script (tabId): open the filter builder; false when this page has none. */
   openFilterBuilder(): boolean;
   /** Popup -> content script (tabId): sanitized copy of the page, for building real adapters. */

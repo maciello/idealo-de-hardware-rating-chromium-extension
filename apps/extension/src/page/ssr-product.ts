@@ -1,4 +1,5 @@
 import type { ProductInfo } from "./adapter";
+import { SSR_ADAPTER_ID } from "./ssr-tiles";
 
 const TITLE = "h1#oopStage-title";
 const SPEC_ROWS = "section#datasheet table tr";
@@ -21,5 +22,7 @@ export function ssrProductInfo(root: ParentNode): Omit<ProductInfo, "priceEur"> 
     if (!label || !value || rest.length > 0) return [];
     return [`${collapse(label.textContent)}\t${collapse(value.textContent)}`];
   });
-  return lines.length === 0 ? null : { element: heading, title, specText: lines.join("\n") };
+  return lines.length === 0
+    ? null
+    : { element: heading, title, specText: lines.join("\n"), adapterId: SSR_ADAPTER_ID };
 }

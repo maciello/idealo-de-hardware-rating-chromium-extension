@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
+import { recordError } from "../diagnostics/error-log";
+import type { InspectedItem, PageInspection } from "../diagnostics/page-report";
 import type { PageStats } from "../messaging";
 import { sendMessage } from "../messaging";
 import type { PageAdapter } from "../page/adapter";
@@ -22,6 +24,8 @@ interface Target {
   element: Element;
   query: RatingQuery;
   placement: ChipPlacement;
+  /** What the adapter read, for the debug report. */
+  seen: Omit<InspectedItem, "rated">;
 }
 
 interface ChipEntry {
@@ -43,6 +47,8 @@ interface View {
 export interface RatingsHandle {
   /** Fresh stats for the popup: products found, products with a rating. */
   stats(): Promise<PageStats>;
+  /** Fresh per-item view of what was read and rated, for the debug report. */
+  inspect(): Promise<PageInspection>;
 }
 
 const isVisible = (rating: ItemRating): boolean =>
@@ -64,6 +70,13 @@ function collectTargets(adapter: PageAdapter): Target[] {
       element: item.element,
       placement: "corner",
       query: { title: item.title, text: item.text, priceEur: item.priceEur },
+      seen: {
+        adapterId: item.adapterId,
+        productId: item.productId ?? null,
+        textSource: item.textSource,
+        title: item.title,
+        text: item.text,
+      },
     }));
   }
   if (kind === "product") {
@@ -74,6 +87,13 @@ function collectTargets(adapter: PageAdapter): Target[] {
           element: info.element,
           placement: "inline",
           query: { title: info.title, text: info.specText, priceEur: info.priceEur },
+          seen: {
+            adapterId: info.adapterId,
+            productId: null,
+            textSource: "dom",
+            title: info.title,
+            text: info.specText,
+          },
         },
       ];
     }
@@ -111,6 +131,7 @@ export function startRatings(
   let timer: ReturnType<typeof setTimeout> | undefined;
   let nextId = 0;
   let stats: PageStats = { kind: adapter.detect(location.href), rated: 0, total: 0 };
+  let inspection: PageInspection = { kind: stats.kind, items: [] };
 
   const buildView = async (): Promise<View> => {
     const [snapshot, settings] = await Promise.all([loadCpuSnapshot(), loadSettings()]);
@@ -168,14 +189,16 @@ export function startRatings(
         restorePosition: target.placement === "corner" ? anchorPosition(element) : () => undefined,
       };
       chips.set(element, entry);
-      void mountChipHost(ctx, element, target.placement).then((host) => {
-        if (entry.gone) {
-          host.remove();
-          return;
-        }
-        entry.host = host;
-        overlay.render(entry.id, entry.node, host.container);
-      });
+      void mountChipHost(ctx, element, target.placement)
+        .then((host) => {
+          if (entry.gone) {
+            host.remove();
+            return;
+          }
+          entry.host = host;
+          overlay.render(entry.id, entry.node, host.container);
+        })
+        .catch((error: unknown) => recordError("content", error));
     }
     for (const [element, entry] of chips) if (!live.has(element)) drop(element, entry, overlay);
   };
@@ -193,11 +216,13 @@ export function startRatings(
       const rating = ratings[i];
       return rating ? [{ target, rating }] : [];
     });
-    stats = {
-      kind: adapter.detect(location.href),
-      total: targets.length,
-      rated: results.filter(({ rating }) => rating.status === "matched" && isVisible(rating))
-        .length,
+    const isRated = (rating: ItemRating | undefined): boolean =>
+      rating?.status === "matched" && isVisible(rating);
+    const kind = adapter.detect(location.href);
+    stats = { kind, total: targets.length, rated: ratings.filter(isRated).length };
+    inspection = {
+      kind,
+      items: targets.map((target, i) => ({ ...target.seen, rated: isRated(ratings[i]) })),
     };
     if (results.some(({ rating }) => isVisible(rating)) && current) {
       sync(await getOverlay(), current, results);
@@ -218,6 +243,8 @@ export function startRatings(
         rerun = false;
         await scan();
       } while (rerun);
+    } catch (error) {
+      await recordError("content", error);
     } finally {
       running = false;
     }
@@ -250,6 +277,10 @@ export function startRatings(
     async stats() {
       await scan();
       return stats;
+    },
+    async inspect() {
+      await scan();
+      return inspection;
     },
   };
 }

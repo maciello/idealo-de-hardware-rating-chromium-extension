@@ -1,8 +1,15 @@
 import { parseIdealoUrl } from "@idealo-hw/idealo-query";
 import { Anchor, Button, Group, SegmentedControl, Stack, Switch, Text } from "@mantine/core";
-import { IconAdjustmentsHorizontal, IconDownload, IconFileExport } from "@tabler/icons-react";
+import {
+  IconAdjustmentsHorizontal,
+  IconBug,
+  IconDownload,
+  IconFileExport,
+} from "@tabler/icons-react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { captureRing } from "../capture/ring";
+import { recordError } from "../diagnostics/error-log";
+import { exportDebugReport } from "../diagnostics/export";
 import { type PageStats, sendMessage } from "../messaging";
 import { useStorageItem } from "../options/use-storage-item";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
@@ -154,7 +161,8 @@ function AiMatching() {
       } else {
         await sendMessage("disconnectOpenRouter", undefined);
       }
-    } catch {
+    } catch (cause) {
+      void recordError("popup", cause);
       setError("The extension background did not respond. Reload the extension and try again.");
     } finally {
       setBusy(false);
@@ -229,7 +237,8 @@ function Capture({ tab }: { tab: TargetTab | null }) {
         maximumFractionDigits: 1,
       });
       setNote(`Snapshot saved (${mb} MB${snapshot.truncated ? ", cut at 5 MB" : ""})`);
-    } catch {
+    } catch (cause) {
+      void recordError("popup", cause);
       setNote("Could not read this page. Reload it and try again.");
     }
   };
@@ -270,6 +279,43 @@ function Capture({ tab }: { tab: TargetTab | null }) {
         </Group>
         {note && (
           <Text fz="xs" c="var(--hw-ink-muted)" role="status" data-testid="popup-note">
+            {note}
+          </Text>
+        )}
+      </Stack>
+    </Row>
+  );
+}
+
+function Diagnostics({ tab }: { tab: TargetTab | null }) {
+  const [note, setNote] = useState<string | null>(null);
+
+  const exportReport = async (): Promise<void> => {
+    setNote(null);
+    try {
+      setNote(`Saved ${await exportDebugReport(tab)}`);
+    } catch (cause) {
+      void recordError("popup", cause);
+      setNote("Could not create the report.");
+    }
+  };
+
+  return (
+    <Row label="Diagnostics" stacked>
+      <Stack gap={8}>
+        <Group>
+          <Button
+            size="compact-sm"
+            variant="default"
+            leftSection={<IconBug size={14} />}
+            onClick={() => void exportReport()}
+            data-testid="popup-debug-report"
+          >
+            Export debug report
+          </Button>
+        </Group>
+        {note && (
+          <Text fz="xs" c="var(--hw-ink-muted)" role="status" data-testid="popup-debug-note">
             {note}
           </Text>
         )}
@@ -336,6 +382,7 @@ export function PopupApp() {
       </Button>
       <AiMatching />
       <Capture tab={tab} />
+      <Diagnostics tab={tab} />
       <Anchor
         component="button"
         type="button"

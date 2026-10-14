@@ -15,7 +15,13 @@ export interface EmbeddedListing {
 
 const MARKER = "window.csr.initialData['searchResult']";
 
-const cache = new WeakMap<Document, EmbeddedListing | null>();
+export interface EmbeddedStatus {
+  listing: EmbeddedListing | null;
+  /** Why a payload that is present could not be read; null when absent or fine. */
+  error: string | null;
+}
+
+const cache = new WeakMap<Document, EmbeddedStatus>();
 
 function scan(doc: Document): EmbeddedListing | null {
   for (const script of doc.scripts) {
@@ -34,18 +40,24 @@ function scan(doc: Document): EmbeddedListing | null {
 
 /**
  * Parsed once per document. The payload describes the page as served: after a client-side
- * navigation it is stale, so callers must only trust it for item ids it lists. A missing or
- * malformed payload yields null.
+ * navigation it is stale, so callers must only trust it for item ids it lists. A missing payload
+ * yields a null listing; a malformed one also says why.
  */
-export function embeddedListing(doc: Document): EmbeddedListing | null {
-  if (cache.has(doc)) return cache.get(doc) ?? null;
-  let found: EmbeddedListing | null = null;
+export function embeddedStatus(doc: Document): EmbeddedStatus {
+  const cached = cache.get(doc);
+  if (cached) return cached;
+  let status: EmbeddedStatus;
   try {
-    found = scan(doc);
-  } catch {
-    found = null;
+    status = { listing: scan(doc), error: null };
+  } catch (error) {
+    status = { listing: null, error: error instanceof Error ? error.message : String(error) };
   }
   // While the document is still loading the script may not have been parsed yet.
-  if (found !== null || doc.readyState !== "loading") cache.set(doc, found);
-  return found;
+  if (status.listing !== null || status.error !== null || doc.readyState !== "loading") {
+    cache.set(doc, status);
+  }
+  return status;
 }
+
+export const embeddedListing = (doc: Document): EmbeddedListing | null =>
+  embeddedStatus(doc).listing;

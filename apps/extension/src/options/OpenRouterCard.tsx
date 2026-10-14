@@ -1,6 +1,7 @@
 import { Alert, Badge, Button, Card, Group, Stack, Text, Title } from "@mantine/core";
 import { IconCheck, IconFlask, IconLink, IconLinkOff, IconX } from "@tabler/icons-react";
 import { useState } from "react";
+import { recordError } from "../diagnostics/error-log";
 import { sendMessage } from "../messaging";
 import { AiTestResultSchema, aiTestResultItem } from "../storage/ai-test-result";
 import {
@@ -27,7 +28,8 @@ export function OpenRouterCard() {
     try {
       const result = await sendMessage("connectOpenRouter", undefined);
       if (!result.ok) setError(result.error.message);
-    } catch {
+    } catch (cause) {
+      void recordError("options", cause);
       setError("The extension background did not respond. Reload the extension and try again.");
     } finally {
       setBusy(false);
@@ -38,7 +40,8 @@ export function OpenRouterCard() {
     setError(null);
     try {
       await sendMessage("disconnectOpenRouter", undefined);
-    } catch {
+    } catch (cause) {
+      void recordError("options", cause);
       setError("The extension background did not respond. Reload the extension and try again.");
     }
   };
@@ -48,7 +51,8 @@ export function OpenRouterCard() {
     setError(null);
     try {
       await sendMessage("testAiMatching", undefined);
-    } catch {
+    } catch (cause) {
+      void recordError("options", cause);
       setError("The extension background did not respond. Reload the extension and try again.");
     } finally {
       setTesting(false);

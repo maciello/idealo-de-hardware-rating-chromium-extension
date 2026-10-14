@@ -3,6 +3,7 @@ import { Container, Stack, Text, Title } from "@mantine/core";
 import { cpuSnapshotItem, gpuSnapshotItem } from "../storage/items";
 import { CpuSnapshotSchema, GpuSnapshotSchema } from "../storage/schemas";
 import { CaptureCard } from "./CaptureCard";
+import { DiagnosticsCard } from "./DiagnosticsCard";
 import { ImportCard } from "./ImportCard";
 import { OpenRouterCard } from "./OpenRouterCard";
 import { StrategiesCard } from "./StrategiesCard";
@@ -32,6 +33,7 @@ export function OptionsApp() {
         <StrategiesCard />
         <OpenRouterCard />
         <CaptureCard />
+        <DiagnosticsCard />
       </Stack>
     </Container>
   );
