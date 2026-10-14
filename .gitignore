@@ -4,3 +4,6 @@ data/
 .wxt/
 coverage/
 *.log
+
+# throwaway live-probe scripts (need node_modules resolution, must never be committed)
+.probe/
