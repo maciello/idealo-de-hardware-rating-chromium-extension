@@ -9,7 +9,7 @@ import {
   setText,
   toggleFilter,
 } from "@idealo-hw/idealo-query";
-import { useDebouncedCallback } from "@mantine/hooks";
+import { useDebouncedCallback, useWindowEvent } from "@mantine/hooks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SAVE_DELAY_MS } from "../config";
 import { NO_CONTEXT, planOf, type RequirementsContext, safeUrl } from "../model";
@@ -55,6 +55,8 @@ export function useFilterBuilder({
       void requirementsStore.save(categoryId, next).catch(() => undefined),
     { delay: SAVE_DELAY_MS, flushOnUnmount: true },
   );
+  // Apply navigates and a tab can close without unmounting React: write the pending edit first.
+  useWindowEvent("pagehide", save.flush);
   const changeRequirements = (next: Requirements): void => {
     edited.current = true;
     setRequirements(next);

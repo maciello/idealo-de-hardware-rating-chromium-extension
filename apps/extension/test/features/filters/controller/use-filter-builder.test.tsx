@@ -87,6 +87,18 @@ describe("useFilterBuilder", () => {
     expect(save).toHaveBeenCalledWith("3751", edit(16));
   });
 
+  it("writes a pending edit when the page is left (apply navigates, the tab closes)", async () => {
+    const { result, save } = setup();
+    await settle();
+    act(() => result.current.actions.changeRequirements(edit(16)));
+    expect(save).not.toHaveBeenCalled();
+    act(() => {
+      window.dispatchEvent(new Event("pagehide"));
+    });
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith("3751", edit(16));
+  });
+
   it("keeps an edit made before the stored requirements arrived", async () => {
     let arrive: (value: Requirements) => void = () => undefined;
     const load = () => new Promise<Requirements>((resolve) => (arrive = resolve));
