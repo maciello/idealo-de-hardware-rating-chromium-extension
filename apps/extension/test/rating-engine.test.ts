@@ -1,4 +1,4 @@
-import { passmarkCpuSource } from "@idealo-hw/hw-bench";
+import { type CohortPolicy, DEFAULT_COHORT_POLICY, passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
 import {
   createRatingEngine,
@@ -86,5 +86,44 @@ describe("resolveEnabledStrategyIds", () => {
   it("enables everything until settings exist and drops unknown ids", () => {
     expect(resolveEnabledStrategyIds(undefined)).toEqual(allIds);
     expect(resolveEnabledStrategyIds(["value_per_euro", "gone"])).toEqual(["value_per_euro"]);
+  });
+});
+
+describe("createRatingEngine cohort policy", () => {
+  const datedRow = (id: number, name: string, cpumark: string, date: string) => ({
+    ...row(id, name, cpumark),
+    date,
+  });
+  const dated = passmarkCpuSource.parse(
+    JSON.stringify({
+      data: [
+        datedRow(1, "Intel Core i7-13700H", "28,000", "Jan 2023"),
+        datedRow(2, "AMD Ryzen 5 7640U", "17,000", "Apr 2023"),
+        datedRow(3, "Intel Core i9-13900HX", "45,000", "Jan 2023"),
+        datedRow(4, "Intel Core i3-1115G4", "8,000", "Mar 2021"),
+        datedRow(5, "Intel Core i5-8250U", "5,500", "Aug 2017"),
+        datedRow(6, "Intel Core i5-7200U", "3,500", "Jan 2017"),
+      ],
+    }),
+  );
+  const percentile = (policy?: CohortPolicy): number | undefined => {
+    const [result] = createRatingEngine(dated, ["segment_percentile"], policy).rate([
+      { title: "Notebook Intel Core i7-13700H", text: "" },
+    ]);
+    return result?.status === "matched" ? result.ratings[0]?.value : undefined;
+  };
+
+  it("changes the segment percentile when the cohort changes", () => {
+    const all = percentile({ yearCutoff: { kind: "none" }, minScore: null });
+    const recent = percentile({ yearCutoff: { kind: "rolling", years: 2 }, minScore: null });
+    const floor = percentile({ yearCutoff: { kind: "none" }, minScore: 20_000 });
+    expect(all).toBeDefined();
+    expect(recent).toBeDefined();
+    expect(new Set([all, recent, floor]).size).toBe(3);
+  });
+
+  it("uses the default policy (rolling 5 years) when none is given", () => {
+    expect(percentile()).toBe(percentile(DEFAULT_COHORT_POLICY));
+    expect(percentile()).not.toBe(percentile({ yearCutoff: { kind: "none" }, minScore: null }));
   });
 });

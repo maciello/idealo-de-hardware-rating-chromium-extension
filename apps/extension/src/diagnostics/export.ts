@@ -2,7 +2,13 @@ import { sendMessage } from "../messaging";
 import type { TargetTab } from "../popup/target-tab";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { loadAiTestResult } from "../storage/ai-test-result";
-import { captureModeItem, loadCpuSnapshot, loadGpuSnapshot, loadSettings } from "../storage/items";
+import {
+  captureModeItem,
+  loadCohortPolicy,
+  loadCpuSnapshot,
+  loadGpuSnapshot,
+  loadSettings,
+} from "../storage/items";
 import { loadOpenRouterStatus } from "../storage/openrouter-status";
 import { downloadJson } from "../ui/download";
 import { buildDebugReport, type DebugReport } from "./debug-report";
@@ -27,21 +33,24 @@ async function readPage(
 
 /** Reads the allowlisted inputs of the debug report. Deliberately never touches the OpenRouter key store. */
 export async function collectDebugReport(tab: TargetTab | null): Promise<DebugReport> {
-  const [settings, captureMode, openrouter, aiTest, cpu, gpu, errors, page] = await Promise.all([
-    loadSettings(),
-    captureModeItem.getValue(),
-    loadOpenRouterStatus(),
-    loadAiTestResult(),
-    loadCpuSnapshot(),
-    loadGpuSnapshot(),
-    readErrorLog(),
-    readPage(tab),
-  ]);
+  const [settings, cohortPolicy, captureMode, openrouter, aiTest, cpu, gpu, errors, page] =
+    await Promise.all([
+      loadSettings(),
+      loadCohortPolicy(),
+      captureModeItem.getValue(),
+      loadOpenRouterStatus(),
+      loadAiTestResult(),
+      loadCpuSnapshot(),
+      loadGpuSnapshot(),
+      readErrorLog(),
+      readPage(tab),
+    ]);
   return buildDebugReport({
     extensionVersion: browser.runtime.getManifest().version,
     userAgent: navigator.userAgent,
     enabledStrategyIds: resolveEnabledStrategyIds(settings?.enabledStrategyIds),
     settings,
+    cohortPolicy,
     captureMode,
     openrouter,
     aiTest,

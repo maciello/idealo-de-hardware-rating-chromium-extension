@@ -97,6 +97,7 @@ describe("collectDebugReport", () => {
     expect(report.settings).toEqual({
       enabledStrategyIds: ["raw_multithread_score"],
       primaryStrategyId: "raw_multithread_score",
+      cohortPolicy: { yearCutoff: { kind: "rolling", years: 5 }, minScore: null },
       captureMode: true,
     });
     expect(report.ai).toMatchObject({

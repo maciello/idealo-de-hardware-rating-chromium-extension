@@ -5,7 +5,14 @@ import type { InspectedItem, PageInspection } from "../diagnostics/page-report";
 import type { PageStats } from "../messaging";
 import { sendMessage } from "../messaging";
 import type { PageAdapter } from "../page/adapter";
-import { cpuSnapshotItem, loadCpuSnapshot, loadSettings, settingsItem } from "../storage/items";
+import {
+  cohortPolicyItem,
+  cpuSnapshotItem,
+  loadCohortPolicy,
+  loadCpuSnapshot,
+  loadSettings,
+  settingsItem,
+} from "../storage/items";
 import { type ChipHost, type ChipPlacement, mountChipHost } from "../ui/chip-host";
 import type { Overlay } from "../ui/overlay";
 import {
@@ -56,7 +63,9 @@ const isVisible = (rating: ItemRating): boolean =>
 
 const signatureOf = (rating: ItemRating): string => {
   if (rating.status === "matched") {
-    const values = rating.ratings.map((r) => `${r.strategyId}=${r.value}`).join(",");
+    const values = rating.ratings
+      .map((r) => `${r.strategyId}=${r.value}:${r.explanation}`)
+      .join(",");
     const rank = rating.pageRank ? `${rating.pageRank.rank}/${rating.pageRank.total}` : "-";
     return `m:${rating.record.id}:${values}:${rank}`;
   }
@@ -134,12 +143,20 @@ export function startRatings(
   let inspection: PageInspection = { kind: stats.kind, items: [] };
 
   const buildView = async (): Promise<View> => {
-    const [snapshot, settings] = await Promise.all([loadCpuSnapshot(), loadSettings()]);
+    const [snapshot, settings, cohortPolicy] = await Promise.all([
+      loadCpuSnapshot(),
+      loadSettings(),
+      loadCohortPolicy(),
+    ]);
     return {
       engine:
         snapshot === null
           ? null
-          : createRatingEngine(snapshot, resolveEnabledStrategyIds(settings?.enabledStrategyIds)),
+          : createRatingEngine(
+              snapshot,
+              resolveEnabledStrategyIds(settings?.enabledStrategyIds),
+              cohortPolicy,
+            ),
       primaryId: settings?.primaryStrategyId ?? DEFAULT_PRIMARY_ID,
       importedAt: snapshot?.importedAt ?? null,
     };
@@ -264,7 +281,11 @@ export function startRatings(
     view = undefined;
     schedule(0);
   };
-  const unwatch = [cpuSnapshotItem.watch(invalidate), settingsItem.watch(invalidate)];
+  const unwatch = [
+    cpuSnapshotItem.watch(invalidate),
+    settingsItem.watch(invalidate),
+    cohortPolicyItem.watch(invalidate),
+  ];
 
   ctx.onInvalidated(() => {
     observer.disconnect();

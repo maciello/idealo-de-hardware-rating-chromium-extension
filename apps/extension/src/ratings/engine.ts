@@ -1,5 +1,6 @@
 import {
   type BenchmarkSnapshot,
+  type CohortPolicy,
   type CpuBenchmarkRecord,
   createCanonicalKeyMatcher,
   createStrategies,
@@ -77,11 +78,12 @@ export interface RatingEngine {
 export function createRatingEngine(
   snapshot: BenchmarkSnapshot<CpuBenchmarkRecord>,
   enabledStrategyIds: readonly string[],
+  cohortPolicy?: CohortPolicy,
 ): RatingEngine {
   const matcher = createCanonicalKeyMatcher(snapshot);
   const enabled = new Set(enabledStrategyIds);
-  const strategies: readonly RatingStrategy[] = createStrategies(snapshot).filter((s) =>
-    enabled.has(s.id),
+  const strategies: readonly RatingStrategy[] = createStrategies(snapshot, cohortPolicy).filter(
+    (s) => enabled.has(s.id),
   );
 
   return {

@@ -1,3 +1,4 @@
+import { type CohortPolicy, CohortPolicySchema } from "@idealo-hw/hw-bench";
 import { z } from "zod";
 import { type AiTestResult, AiTestResultSchema } from "../storage/ai-test-result";
 import type { CpuSnapshot, GpuSnapshot } from "../storage/items";
@@ -24,6 +25,7 @@ export const DebugReportSchema = z.object({
   settings: z.object({
     enabledStrategyIds: z.array(z.string()),
     primaryStrategyId: z.string().nullable(),
+    cohortPolicy: CohortPolicySchema,
     captureMode: z.boolean(),
   }),
   ai: z.object({
@@ -47,6 +49,7 @@ export interface DebugReportInput {
   /** Enabled strategy ids after resolving "never saved" against the catalog. */
   enabledStrategyIds: readonly string[];
   settings: Settings | null;
+  cohortPolicy: CohortPolicy;
   captureMode: boolean;
   openrouter: OpenRouterStatus;
   aiTest: AiTestResult | null;
@@ -76,6 +79,7 @@ export function buildDebugReport(input: DebugReportInput): DebugReport {
     settings: {
       enabledStrategyIds: [...input.enabledStrategyIds],
       primaryStrategyId: input.settings?.primaryStrategyId ?? null,
+      cohortPolicy: input.cohortPolicy,
       captureMode: input.captureMode,
     },
     ai: { connected: input.openrouter.connected, lastTest: input.aiTest },
