@@ -26,7 +26,7 @@ export function CohortControls({ policy, onCutoffKind, onChange }: CohortControl
         size="xs"
         data={[...SETTINGS_COPY.cutoffChoices]}
         value={yearCutoff.kind}
-        onChange={(kind) => onCutoffKind(kind as CutoffKind)}
+        onChange={onCutoffKind}
         data-testid="cohort-cutoff"
       />
       <Group align="flex-end" grow>

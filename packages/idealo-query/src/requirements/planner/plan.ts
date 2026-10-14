@@ -1,21 +1,10 @@
-import {
-  type FacetGroup,
-  type FilterCatalog,
-  facetsOf,
-  type LabelFacet,
-  type ModelFacet,
-  type NumericFacet,
-} from "../../catalog";
+import { type FacetGroup, type FilterCatalog, facetsOf } from "../../catalog";
 import type { FilterId } from "../../ids";
 import { type IdealoQuery, normalizeQuery } from "../../query";
 import type { ModelScorer } from "../port";
-import {
-  type Bound,
-  type ModelRequirement,
-  type RequirementsInput,
-  RequirementsSchema,
-} from "../schema";
+import { type RequirementsInput, RequirementsSchema } from "../schema";
 import type { FacetPlan, RequirementsPlan } from "../types";
+import { entriesOf } from "./entries";
 import { hitsOf } from "./hits";
 import { planLabel } from "./label";
 import { planModel } from "./model";
@@ -62,22 +51,19 @@ export function planRequirements(
     );
   };
 
-  for (const [facet, bound] of Object.entries(requirements.numeric) as [NumericFacet, Bound][])
+  for (const [facet, bound] of entriesOf(requirements.numeric))
     plan(
       facet,
       (g): g is Extract<FacetGroup, { kind: "numeric" }> => g.kind === "numeric",
       (g, alone) => planNumeric(facet, g, bound, alone),
     );
-  for (const [facet, requirement] of Object.entries(requirements.models) as [
-    ModelFacet,
-    ModelRequirement,
-  ][])
+  for (const [facet, requirement] of entriesOf(requirements.models))
     plan(
       facet,
       (g): g is Extract<FacetGroup, { kind: "model" }> => g.kind === "model",
       (g, alone) => planModel(facet, g, requirement, scorer, alone),
     );
-  for (const [facet, wanted] of Object.entries(requirements.labels) as [LabelFacet, string[]][])
+  for (const [facet, wanted] of entriesOf(requirements.labels))
     plan(
       facet,
       (g): g is Extract<FacetGroup, { kind: "label" }> => g.kind === "label",
@@ -96,10 +82,9 @@ export function planRequirements(
     ...applied.flatMap((f) => f.selected.map((o) => o.filterId)),
   ];
   const groupHits = applied.map((f) => hitsOf(f.selected));
+  const knownHits = groupHits.filter((h): h is number => h !== null);
   const hitsUpperBound =
-    groupHits.length === 0 || groupHits.some((h) => h === null)
-      ? null
-      : Math.min(...(groupHits as number[]));
+    groupHits.length === 0 || knownHits.length < groupHits.length ? null : Math.min(...knownHits);
 
   return {
     query: normalizeQuery({

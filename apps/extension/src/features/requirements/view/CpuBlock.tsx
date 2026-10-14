@@ -35,7 +35,7 @@ export function CpuBlock({ model, onMinimum, onCombine }: CpuBlockProps) {
         ]}
         value={model.combine}
         disabled={model.combineDisabled}
-        onChange={(value) => onCombine(value as Combine)}
+        onChange={onCombine}
         data-testid="req-combine"
         aria-label={COPY.combineAria}
       />

@@ -3,6 +3,7 @@ export {
   type DecisionCache,
   type DecisionKeyInput,
   decisionKey,
+  type JsonValue,
 } from "./cache";
 export {
   type ChooseRecordInput,

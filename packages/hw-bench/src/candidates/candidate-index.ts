@@ -109,15 +109,18 @@ export function createCandidateIndex<R>(
       }
 
       const queryName = text.trim().toLowerCase();
-      const scored = [...overlap].map(([position, score]) => {
-        const row = rows[position] as Row<R>;
-        return {
-          position,
-          row,
-          score: round(score),
-          exact: row.lowerName === queryName,
-          extra: round((totalWeight[position] ?? 0) - score),
-        };
+      const scored = [...overlap].flatMap(([position, score]) => {
+        const row = rows[position];
+        if (row === undefined) return [];
+        return [
+          {
+            position,
+            row,
+            score: round(score),
+            exact: row.lowerName === queryName,
+            extra: round((totalWeight[position] ?? 0) - score),
+          },
+        ];
       });
       scored.sort(
         (a, b) =>

@@ -7,11 +7,15 @@ default:
 install:
     pnpm install
 
-# Lint + format check, typecheck, tests, docs YAML parse, module boundaries, dead code.
-check: lint typecheck test docs-check boundaries deadcode
+# Lint + format check, anti-slop rules, typecheck, tests, docs YAML parse, module boundaries, dead code.
+check: lint slop typecheck test docs-check boundaries deadcode
 
 lint:
     pnpm exec biome check .
+
+# Anti-slop Oxlint subset (tools/oxlint/anti-slop, see docs/adr/0017): casts, unknown, module mocks; exits non-zero on a finding.
+slop:
+    pnpm exec oxlint -c .oxlintrc.json .
 
 # Apply Biome fixes.
 fix:

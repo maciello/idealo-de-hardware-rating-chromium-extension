@@ -42,7 +42,7 @@ export function classifyCpu(name: string, identity?: CpuIdentity | null): Device
       if (family.startsWith("Athlon")) return athlonClass(model);
     }
     if (vendor === "Apple")
-      return /ULTRA$/.test(model.toUpperCase())
+      return model.toUpperCase().endsWith("ULTRA")
         ? DESKTOP("apple-m/ultra")
         : BOTH("apple-m/base-pro-max");
     if (vendor === "Qualcomm") return LAPTOP("snapdragon-x");

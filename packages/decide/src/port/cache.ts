@@ -1,14 +1,26 @@
 import { sha256Hex, stableStringify } from "../hash";
 
-/** Port: durable key-value store for decisions, so reruns are idempotent and free. Values are JSON. */
+/** What a cache can hold: anything that survives a JSON round trip. */
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | readonly JsonValue[]
+  | { readonly [key: string]: JsonValue };
+
+/**
+ * Port: durable key-value store for decisions, so reruns are idempotent and free. A stored entry
+ * may have been written by an older build, so readers parse it against a schema before use.
+ */
 export interface DecisionCache {
-  get(key: string): Promise<unknown>;
-  set(key: string, value: unknown): Promise<void>;
+  get(key: string): Promise<JsonValue | undefined>;
+  set(key: string, value: JsonValue): Promise<void>;
 }
 
 /** In-memory adapter; the extension supplies one backed by extension storage. */
 export function createMemoryDecisionCache(): DecisionCache & { readonly size: number } {
-  const entries = new Map<string, unknown>();
+  const entries = new Map<string, JsonValue>();
   return {
     get size() {
       return entries.size;

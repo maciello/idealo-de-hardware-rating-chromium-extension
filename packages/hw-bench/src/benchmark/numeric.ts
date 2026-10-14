@@ -6,11 +6,11 @@ const PLAIN_NUMBER = /^[-+]?(?:\d+\.?\d*|\.\d+)$/;
 const isMissing = (text: string): boolean => text === "" || /^n\/?a$/i.test(text);
 
 /**
- * Turns a raw PassMark cell into `null` (missing), a number, or the untouched input
+ * Turns a raw PassMark cell into `null` (missing), a number, or the untouched input `T`
  * (so the downstream zod schema reports it as invalid instead of silently guessing).
  * `unit` is stripped from the end first, e.g. "MHz" for "500 MHz".
  */
-export function coerceNumeric(raw: unknown, unit?: string): unknown {
+export function coerceNumeric<T>(raw: T, unit?: string): T | number | null {
   if (raw === null || raw === undefined) return null;
   if (typeof raw !== "string") return raw;
   let text = raw.trim();

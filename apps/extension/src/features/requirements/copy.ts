@@ -1,5 +1,25 @@
 import type { NumericFacet } from "@idealo-hw/idealo-query";
 
+/** Looked up by the facet name of a plan; a facet without an entry has no noun. */
+interface NounTable {
+  readonly [facet: string]: string;
+}
+
+const MODEL_NOUNS: NounTable = { cpu_model: "CPUs", gpu_model: "GPUs" };
+
+/** Slider labels; facets without a slider (RAM speed, core counts, ...) have none. */
+const NUMERIC_LABELS: Readonly<Partial<Record<NumericFacet, string>>> = {
+  ram_gb: "RAM",
+  ssd_gb: "SSD",
+  storage_gb: "Storage",
+  display_inch: "Display size",
+  refresh_hz: "Refresh rate",
+  brightness_nits: "Brightness",
+  weight_kg: "Weight",
+  battery_h: "Battery",
+  release_year: "Release year",
+};
+
 export const REQUIREMENTS_COPY = {
   heading: "Requirements",
 
@@ -24,17 +44,7 @@ export const REQUIREMENTS_COPY = {
   from: (value: string): string => `≥ ${value}`,
   between: (low: string, high: string): string => `${low} – ${high}`,
 
-  numericLabels: {
-    ram_gb: "RAM",
-    ssd_gb: "SSD",
-    storage_gb: "Storage",
-    display_inch: "Display size",
-    refresh_hz: "Refresh rate",
-    brightness_nits: "Brightness",
-    weight_kg: "Weight",
-    battery_h: "Battery",
-    release_year: "Release year",
-  } as Readonly<Record<NumericFacet, string>>,
+  numericLabels: NUMERIC_LABELS,
 
   price: {
     label: "Price",
@@ -59,6 +69,6 @@ export const REQUIREMENTS_COPY = {
     partly: (n: number): string => `, ${n} partly`,
     cap: (noun: string): string => `100-option cap: unlisted ${noun} excluded`,
     joined: (main: string, cap: string): string => `${main} · ${cap}`,
-    modelNouns: { cpu_model: "CPUs", gpu_model: "GPUs" } as Readonly<Record<string, string>>,
+    modelNouns: MODEL_NOUNS,
   },
 } as const;

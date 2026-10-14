@@ -39,11 +39,13 @@ export function cpuScoreBounds(
 ): CpuScoreBounds | null {
   const records = recordsOf(result);
   if (records.length === 0) return null;
-  const single = records.map((record) => record.singleThreadMark);
+  const single = records.flatMap((record) =>
+    record.singleThreadMark === null ? [] : [record.singleThreadMark],
+  );
   return {
     variants: records.map((record) => record.name),
     cpuMark: rangeOf(records.map((record) => record.cpuMark)),
-    singleThread: single.every((mark) => mark !== null) ? rangeOf(single as number[]) : null,
+    singleThread: single.length === records.length ? rangeOf(single) : null,
   };
 }
 

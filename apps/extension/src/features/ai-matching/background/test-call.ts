@@ -10,12 +10,12 @@ import { AI_COPY } from "../copy";
 import type { KeyProvider } from "./key-provider";
 import { isExtensionPage } from "./service";
 
+const EXPECTED: DecisionCandidate = { id: "i5-13400", label: "Intel Core i5-13400" };
 const CANDIDATES: readonly DecisionCandidate[] = [
-  { id: "i5-13400", label: "Intel Core i5-13400" },
+  EXPECTED,
   { id: "i5-13400F", label: "Intel Core i5-13400F" },
   { id: "i5-13500", label: "Intel Core i5-13500" },
 ];
-const EXPECTED = CANDIDATES[0] as DecisionCandidate;
 
 /** Fixed case with one unambiguous answer: exactly the model number and suffix named in `cpu_text`. */
 const PROBE: ChooseRecordInput = {

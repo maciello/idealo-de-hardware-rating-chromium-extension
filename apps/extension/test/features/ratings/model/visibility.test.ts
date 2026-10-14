@@ -1,3 +1,4 @@
+import type { CpuBenchmarkRecord, Rating } from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
 import {
   hasChip,
@@ -9,8 +10,42 @@ import {
 
 const noMatch: ItemRating = { status: "no_match" };
 const ambiguous: ItemRating = { status: "ambiguous", candidates: [] };
-const matched = (ratings: number): ItemRating =>
-  ({ status: "matched", ratings: Array.from({ length: ratings }) }) as unknown as ItemRating;
+const record: CpuBenchmarkRecord = {
+  id: 1,
+  name: "Testcorp Core X1-1000",
+  cpuMark: 10_000,
+  singleThreadMark: 2_500,
+  cores: 8,
+  threadsPerCore: 2,
+  efficiencyCores: 0,
+  efficiencyThreadsPerCore: 0,
+  socketCount: 1,
+  baseClockMhz: 3_400,
+  turboClockMhz: 4_600,
+  tdpWatts: 65,
+  priceUsd: null,
+  socket: "LGA9999",
+  segments: ["desktop"],
+  released: { year: 2022, month: 3 },
+  rank: 100,
+  samples: 10,
+};
+const numberRating: Rating = {
+  strategyId: "raw_multithread_score",
+  value: 10_000,
+  display: "10.000",
+  explanation: "",
+};
+const matched = (ratings: number): ItemRating => ({
+  status: "matched",
+  record,
+  via: "exact",
+  formFactor: "desktop",
+  ramType: null,
+  ratings: Array.from({ length: ratings }, () => numberRating),
+  signals: [],
+  pageRank: null,
+});
 const gpu = { primary: {}, companion: null } as never;
 
 describe("visibility", () => {

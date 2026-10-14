@@ -18,6 +18,7 @@ export {
   type DecisionKeyInput,
   decisionKey,
   type FilterSelection,
+  type JsonValue,
   NONE_OF_THE_ABOVE,
   NOOP_MODEL,
   noopDecider,

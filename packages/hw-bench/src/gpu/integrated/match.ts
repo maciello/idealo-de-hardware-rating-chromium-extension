@@ -40,9 +40,10 @@ const TESTS: Tests = {
 };
 
 const matches = (match: IgpuMatch, probe: Probe): boolean =>
+  // SAFETY: rules are object literals typed IgpuMatch, so their own keys are the declared optional keys.
   (Object.keys(match) as (keyof IgpuMatch)[]).every((key) => {
     const wanted = match[key];
-    // The cast joins the per-key test signatures; TESTS[key] always receives its own key's value.
+    // SAFETY: TS cannot correlate key and value; TESTS[key] only ever receives the value stored under its own key.
     return wanted === undefined || (TESTS[key] as (w: unknown, p: Probe) => boolean)(wanted, probe);
   });
 

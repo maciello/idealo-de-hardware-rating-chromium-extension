@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createScanLoop,
+  type ErrorRecorder,
+} from "../../../../src/features/ratings/controller/scan-loop";
 
-vi.mock("../../../../src/platform/errors", () => ({ recordError: vi.fn(async () => undefined) }));
-
-import { createScanLoop } from "../../../../src/features/ratings/controller/scan-loop";
-import { recordError } from "../../../../src/platform/errors";
+const recordError = vi.fn<ErrorRecorder>(async () => undefined);
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
@@ -14,7 +15,7 @@ afterEach(() => {
 describe("createScanLoop", () => {
   it("runs the scan once after the delay, the latest schedule winning", async () => {
     const scan = vi.fn(async () => undefined);
-    const loop = createScanLoop(scan);
+    const loop = createScanLoop(scan, recordError);
     loop.schedule(250);
     await vi.advanceTimersByTimeAsync(200);
     loop.schedule(250);
@@ -32,7 +33,7 @@ describe("createScanLoop", () => {
           release = resolve;
         }),
     );
-    const loop = createScanLoop(scan);
+    const loop = createScanLoop(scan, recordError);
     const first = loop.refresh();
     await loop.refresh();
     await loop.refresh();
@@ -47,7 +48,7 @@ describe("createScanLoop", () => {
   it("reports a failing scan and keeps accepting refreshes", async () => {
     const failure = new Error("boom");
     const scan = vi.fn().mockRejectedValueOnce(failure).mockResolvedValue(undefined);
-    const loop = createScanLoop(scan);
+    const loop = createScanLoop(scan, recordError);
     await loop.refresh();
     expect(recordError).toHaveBeenCalledWith("content", failure);
     await loop.refresh();
@@ -56,7 +57,7 @@ describe("createScanLoop", () => {
 
   it("stops a pending run", async () => {
     const scan = vi.fn(async () => undefined);
-    const loop = createScanLoop(scan);
+    const loop = createScanLoop(scan, recordError);
     loop.schedule(100);
     loop.stop();
     await vi.advanceTimersByTimeAsync(500);

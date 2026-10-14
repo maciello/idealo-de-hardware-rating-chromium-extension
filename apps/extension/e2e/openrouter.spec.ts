@@ -36,7 +36,7 @@ interface JevRequest {
 async function stubAuthFlow(mode: "approve" | "cancel"): Promise<void> {
   await worker.evaluate((flowMode) => {
     const calls: string[] = [];
-    Reflect.set(globalThis, "__authCalls", calls);
+    globalThis.__authCalls = calls;
     chrome.identity.launchWebAuthFlow = async (details) => {
       calls.push(details.url);
       if (flowMode === "cancel") throw new Error("The user did not approve access.");
@@ -124,9 +124,7 @@ test("openrouter: connect shows status without ever rendering the key, disconnec
   await expect(page.getByTestId("openrouter-status")).toHaveText("Connected");
   await expect(page.getByTestId("openrouter-details")).toContainText("user_test");
 
-  const authCalls = (await worker.evaluate(() =>
-    Reflect.get(globalThis, "__authCalls"),
-  )) as string[];
+  const authCalls = (await worker.evaluate(() => globalThis.__authCalls)) ?? [];
   const authUrl = new URL(authCalls[0] ?? "");
   expect(`${authUrl.origin}${authUrl.pathname}`).toBe("https://openrouter.ai/auth");
   expect(authUrl.searchParams.get("callback_url")).toBe(`https://${extensionId}.chromiumapp.org/`);
