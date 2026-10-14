@@ -16,7 +16,7 @@ const SHOWN: Readonly<Record<FlagField, (facts: ProductFacts) => EvidenceValue |
   ramGb: (f) => amount(f.ramGb, "GB"),
   ramType: (f) => stated(f.ramType, ({ label }) => ({ kind: "ram_type", label })),
   storageGb: (f) => amount(f.storageGb, "GB"),
-  storageKind: (f) => stated(f.storageKind, (storage) => ({ kind: "storage", storage })),
+  storageKind: (f) => stated(f.storageKind, (drive) => ({ kind: "storage", storage: drive })),
   displayHeightPx: (f) => amount(f.displayHeightPx, "px"),
   brightnessNits: (f) => amount(f.brightnessNits, "nits"),
   batteryWh: (f) => amount(f.batteryWh, "Wh"),
