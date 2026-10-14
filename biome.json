@@ -43,6 +43,10 @@
       }
     },
     {
+      "includes": ["packages/*/src/**"],
+      "plugins": ["./tools/biome/no-locale-formatting.grit"]
+    },
+    {
       "includes": [
         "**/src/features/*/view/**",
         "**/src/features/*/model/**",

@@ -20,3 +20,4 @@ docs:
   - adr/0015-product-sensors.yaml
   - adr/0016-igpu-from-cpu.yaml
   - adr/0017-anti-slop-oxlint-subset.yaml
+  - adr/0018-packages-return-data.yaml

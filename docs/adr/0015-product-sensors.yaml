@@ -18,7 +18,7 @@ adr.0015:
       sensors:
         port: "Sensor = {id, sense(input: SensorInput): Signal[]}"
         input: "{facts: ProductFacts, cpu: {name, cpuMark, tdpWatts, releaseYear} | null, deviceClass: laptop | desktop | unknown}"
-        signal: "{sensorId, id, kind: badge | flag, severity: red | amber | info, label, detail, evidence: [{field, value}]}"
+        signal: "{sensorId, id, kind: badge | flag, severity: red | amber | info, params, evidence: [{field, value}]} (data only, ADR 0018)"
       registry: ordered list of sensors; the extension renders signals, it does not know rules
     power_extremes:
       metric: CPU TDP (vendor base power class); datasheet "Leistungsaufnahme max. (TDP)" first, PassMark tdpWatts second

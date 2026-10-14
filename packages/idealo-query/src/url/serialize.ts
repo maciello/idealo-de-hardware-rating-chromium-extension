@@ -12,6 +12,7 @@ export class UnrepresentableQueryError extends Error {
   }
 }
 
+// biome-ignore lint/plugin: idealo's URL grammar writes a whole-euro bound as "12.0"; this is wire format, not display text
 const formatBound = (n: number): string => (Number.isInteger(n) ? n.toFixed(1) : String(n));
 
 /** idealo answers 404 to an open lower bound (p=-2000.0), so a missing min is written as 0.0. */

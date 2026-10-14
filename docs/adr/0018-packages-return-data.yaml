@@ -1,0 +1,36 @@
+adr.0018:
+  title: Packages return data, the extension words it
+  status: accepted
+  date: 2026-10-14
+  context:
+    goal: packages/* are the reusable backend for a later backend, MCP server or AI; they must not return English UI prose or locale-formatted numbers
+    measured_before:
+      rating: hw-bench Rating carried display ("P77", "50,0/€") and explanation (a sentence) and formatted them with a de-DE Intl formatter
+      signal: sensors Signal carried label, detail and evidence strings and formatted them with a de-DE Intl formatter
+      places_with_intl_in_packages: [hw-bench/src/rating/format.ts, sensors/src/red-flags/copy.ts, sensors/src/power/sensor.ts]
+  decision:
+    rating:
+      shape: "Rating = score | per_euro | percentile; every kind has strategyId and the exact value"
+      score: "{metric: cpu_mark | cpu_single | g3d_mark, subject: record name}"
+      per_euro: "{metric, score, priceEur}"
+      percentile: "{metric, score, sampleSize, group: listing | laptop | desktop, cohort: {sinceYear, minScore} | null}"
+      lower_bound: rateGpuMatch reports lowerBound and variants once for the whole result; it appends no text to ratings
+      strategy_label: stays on the port as a static catalogue name; it is derived from no data and holds no number
+    signal:
+      shape: "Signal = {sensorId, id, kind, severity, params, evidence}"
+      params: "SignalParamsById maps each signal id to the exact figures its sentence needs (null when the id says it all)"
+      evidence: "{field, value} with value a union: quantity with a unit, wifi or usb generation, year, ram type label, storage kind, os kind, video outputs, yes/no answer, tdp source"
+      ids: unchanged
+    wording:
+      owner: the extension feature that shows the data (features/ratings/copy/*, view-model/rating-text, view-model/signals)
+      numbers: apps/extension/src/ui/format (de-DE)
+      proof_of_identical_text: view-model tests assert the exact strings of every rating kind and every signal id; before the move 700 generated products (21 signal ids) and 800 generated rating cases (about 3,000 ratings) rendered the same text from the old and the new code
+    guard:
+      tool: Biome GritQL plugin tools/biome/no-locale-formatting.grit, enabled by an override for packages/*/src/** in biome.json, part of just lint and so of just check
+      bans: [Intl.*, toLocaleString, toLocaleDateString, toLocaleTimeString, toFixed]
+      allowed_exception: idealo-query url/serialize.ts formatBound, marked with biome-ignore lint/plugin and a comment (wire format: idealo writes a whole-euro bound as 12.0)
+      verified_to_fire: a throwaway file in packages/sensors/src with new Intl.NumberFormat, toLocaleString, toFixed and toLocaleDateString gives four plugin errors
+  consequences:
+    - a new signal id needs a key in SignalParamsById and an entry in the extension copy and describe tables; the types fail to compile until both exist
+    - a new rating kind needs a branch in view-model/rating-text; the exhaustive switch fails to compile until it exists
+    - ADR 0013 and 0015 describe the explanation and label text as they were; the data they stand for is unchanged

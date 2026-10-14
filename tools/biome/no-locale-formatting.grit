@@ -1,0 +1,14 @@
+language js
+
+// Packages return data, never display text: number and date formats are the consumer's
+// (docs/adr/0018-packages-return-data.yaml). Locale-aware formatting and fixed-decimal text
+// do not belong in packages/*/src.
+or {
+  `Intl.$member`,
+  `$value.toLocaleString($args)`,
+  `$value.toLocaleDateString($args)`,
+  `$value.toLocaleTimeString($args)`,
+  `$value.toFixed($args)`
+} as $violation where {
+  register_diagnostic(span=$violation, message="Packages return data, not display text: format numbers and dates in the consumer (apps/extension/src/ui/format). Intl, toLocaleString and toFixed are banned in packages/*/src.", severity="error")
+}
