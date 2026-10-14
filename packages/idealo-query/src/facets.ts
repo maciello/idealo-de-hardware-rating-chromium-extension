@@ -5,23 +5,27 @@ import type { FilterCatalog, FilterGroup, FilterOption } from "./catalog";
  * Notebooks and 19537 in PC-Systeme). Numeric facets carry a canonical unit; model facets name
  * hardware that a benchmark source resolves; label facets are offered as plain choices.
  */
-export type NumericFacet =
-  | "ram_gb"
-  | "ram_mhz"
-  | "ssd_gb"
-  | "storage_gb"
-  | "vram_gb"
-  | "display_inch"
-  | "refresh_hz"
-  | "brightness_nits"
-  | "weight_kg"
-  | "battery_h"
-  | "release_year"
-  | "cpu_cores"
-  | "cpu_threads"
-  | "psu_w";
-export type ModelFacet = "cpu_model" | "gpu_model";
-export type LabelFacet = "ram_type" | "storage_type" | "device_type";
+export const NUMERIC_FACETS = [
+  "ram_gb",
+  "ram_mhz",
+  "ssd_gb",
+  "storage_gb",
+  "vram_gb",
+  "display_inch",
+  "refresh_hz",
+  "brightness_nits",
+  "weight_kg",
+  "battery_h",
+  "release_year",
+  "cpu_cores",
+  "cpu_threads",
+  "psu_w",
+] as const;
+export const MODEL_FACETS = ["cpu_model", "gpu_model"] as const;
+export const LABEL_FACETS = ["ram_type", "storage_type", "device_type"] as const;
+export type NumericFacet = (typeof NUMERIC_FACETS)[number];
+export type ModelFacet = (typeof MODEL_FACETS)[number];
+export type LabelFacet = (typeof LABEL_FACETS)[number];
 export type Facet = NumericFacet | ModelFacet | LabelFacet;
 
 interface NumericSpec {

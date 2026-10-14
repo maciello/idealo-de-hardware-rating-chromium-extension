@@ -18,8 +18,11 @@ export {
   type FacetOption,
   facetsOf,
   type Interval,
+  LABEL_FACETS,
   type LabelFacet,
+  MODEL_FACETS,
   type ModelFacet,
+  NUMERIC_FACETS,
   type NumericFacet,
 } from "./facets";
 export {
@@ -40,6 +43,16 @@ export {
   type PriceRange,
   type SortKey,
 } from "./model";
+export {
+  type FacetPlan,
+  type FacetPlanStatus,
+  type ModelScorer,
+  planRequirements,
+  type Requirements,
+  type RequirementsInput,
+  type RequirementsPlan,
+  RequirementsSchema,
+} from "./requirements";
 export {
   type EmbeddedSearchResult,
   type ListingItem,
