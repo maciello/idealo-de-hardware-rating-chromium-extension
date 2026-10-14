@@ -1,0 +1,42 @@
+adr.0015:
+  title: Product sensors turn parsed product facts into badges and red flags
+  status: accepted-default
+  date: 2026-10-14
+  issues: ["maciello/idealo-de-hardware-rating-chromium-extension#1", "#5", "#6"]
+  context:
+    goal: owner-requested signals beyond CPU ratings (power extremes, red flags; later webcam, baseline, profiles)
+    sources:
+      listing_tile: characteristics list of the embedded payload or the tile's spec line (bare values, no labels)
+      product_page: datasheet table (label -> value, ADR 0008 har-2026-10-14-product-page)
+      benchmark: matched PassMark CPU record (cpuMark, tdpWatts, released)
+  decision:
+    package: packages/sensors (@idealo-hw/sensors); no dependency on hw-bench, the extension maps records onto its input
+    layers:
+      facts:
+        model: ProductFacts, every field optional (absent = not stated); parsed at the source boundary, never validated later
+        adapters: [fromDatasheet(label -> value), fromCharacteristics(values)]
+      sensors:
+        port: "Sensor = {id, sense(input: SensorInput): Signal[]}"
+        input: "{facts: ProductFacts, cpu: {name, cpuMark, tdpWatts, releaseYear} | null, deviceClass: laptop | desktop | unknown}"
+        signal: "{sensorId, id, kind: badge | flag, severity: red | amber | info, label, detail, evidence: [{field, value}]}"
+      registry: ordered list of sensors; the extension renders signals, it does not know rules
+    power_extremes:
+      metric: CPU TDP (vendor base power class); datasheet "Leistungsaufnahme max. (TDP)" first, PassMark tdpWatts second
+      classes: [very_low, very_high]
+      middle: emits nothing (owner requirement)
+      thresholds:
+        laptop: {very_low: "<= 9 W", very_high: ">= 55 W"}
+        desktop: {very_low: "<= 35 W", very_high: ">= 170 W"}
+        unknown_device_class: no signal
+      evidence:
+        source: idealo MCP availableFilters Prozessor (3751 and 3020, 2026-10-14) matched to PassMark, weighted by product count
+        laptop_tdp_share: {"<=9W": 2.6%, "15W": 38.5%, "17-35W": 24.3%, "45W": 22.1%, ">=54W": 12.5%}
+        desktop_tdp_share: {"<=35W": 5.3%, "45-60W": 3.8%, "65W": 48.7%, "73-154W": 33.5%, ">=170W": 8.6%}
+        coverage: {laptop: "17163 of 21085 products with a TDP", desktop: "30410 of 33165"}
+        rationale: TDP clusters at vendor classes; the thresholds cut the natural tails (<= ~5% low, ~10% high), never a mid class
+      efficiency: CPU Mark per TDP watt shown in the detail text only; not a class (base TDP is not measured draw)
+    red_flags:
+      catalog: "one rule per flag: {id, facts used, predicate, severity, rationale}; thresholds set from the datasheet sample (finding below)"
+  consequences:
+    - the DDR4 chip tag (apps/extension ratings/ram-type.ts) becomes a red-flags rule
+    - webcam (#7), baseline (#2) and profiles (#3) add sensors or options over the same facts

@@ -17,3 +17,4 @@ docs:
   - adr/0012-openrouter-key-acquisition.yaml
   - adr/0013-percentile-reference-cohort.yaml
   - adr/0014-module-boundaries-and-idealo-page.yaml
+  - adr/0015-product-sensors.yaml
