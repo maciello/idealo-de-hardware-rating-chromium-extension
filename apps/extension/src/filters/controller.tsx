@@ -1,9 +1,14 @@
 import type { IdealoQuery } from "@idealo-hw/idealo-query";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { sendMessage } from "../messaging";
+import { formFactorOfCategory } from "../page/device-class";
+import { createModelScorer } from "../requirements/scorer";
+import { loadRequirements, saveRequirements } from "../requirements/storage";
+import { loadCpuSnapshot, loadGpuSnapshot } from "../storage/items";
 import type { Overlay } from "../ui/overlay";
 import type { FilterCatalogSource } from "./catalog-source";
-import { FilterPanel } from "./FilterPanel";
+import { embeddedPriceBounds } from "./embedded-catalog";
+import { FilterPanel, type RequirementsContext, type RequirementsStore } from "./FilterPanel";
 import { type FilterPage, filterPageOf } from "./page";
 
 export interface FilterBuilderHandle {
@@ -36,6 +41,18 @@ export function startFilterBuilder(
   const initialQuery = () => page().query;
   const loadCatalog = (query: IdealoQuery) =>
     catalogSource.load({ document, url: location.href, query });
+  const loadContext = async (query: IdealoQuery): Promise<RequirementsContext> => {
+    const [cpu, gpu] = await Promise.all([loadCpuSnapshot(), loadGpuSnapshot()]);
+    return {
+      scorer: createModelScorer(cpu, gpu, formFactorOfCategory(query.categoryId)),
+      hasData: { cpu: cpu !== null, gpu: gpu !== null },
+      priceBounds: embeddedPriceBounds(document, query.categoryId),
+    };
+  };
+  const requirementsStore: RequirementsStore = {
+    load: loadRequirements,
+    save: saveRequirements,
+  };
   const onApply = (url: string) => location.assign(url);
   const onOpenSettings = () => void sendMessage("openOptions", undefined);
 
@@ -48,6 +65,8 @@ export function startFilterBuilder(
         toUrl={first.toUrl}
         canFilter={first.canFilter}
         loadCatalog={loadCatalog}
+        loadContext={loadContext}
+        requirementsStore={requirementsStore}
         onApply={onApply}
         onOpenSettings={onOpenSettings}
       />

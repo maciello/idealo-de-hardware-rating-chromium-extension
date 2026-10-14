@@ -282,8 +282,9 @@ test("filter builder: the button appears on a search page and the popup can open
   await closed.catch(() => undefined);
 
   await page.bringToFront();
-  await expect(page.getByRole("dialog", { name: "Batch filters" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Filter builder" })).toBeVisible();
   await expect(page.getByTestId("query-text")).toHaveValue("laptop 32GB");
+  await page.getByTestId("options-toggle").click();
   await page.getByTestId("filter-1234").check();
   await expect(page.getByTestId("target-url")).toHaveText(
     "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234.html?q=laptop%2032GB",
@@ -301,11 +302,12 @@ test("filter builder: without a readable catalog it says so and stays usable", a
     "Filters could not be read from this page",
   );
   await expect(page.getByTestId("no-catalog-note")).toContainText("page snapshot");
-  await page.getByTestId("raw-ids").fill("4711");
-  await page.getByTestId("raw-ids").press("Enter");
+  await expect(page.getByTestId("requirements")).toHaveCount(0);
+  await expect(page.getByTestId("raw-ids")).toHaveCount(0);
   await page.getByTestId("query-text").fill("gaming laptop");
+  await page.getByTestId("details-toggle").click();
   await expect(page.getByTestId("target-url")).toHaveText(
-    "https://www.idealo.de/preisvergleich/ProductCategory/19116F4711.html?q=gaming%20laptop",
+    "https://www.idealo.de/preisvergleich/ProductCategory/19116.html?q=gaming%20laptop",
   );
   await expect(page.getByTestId("apply")).toBeEnabled();
   await page.close();
@@ -316,7 +318,7 @@ test("filter builder: a search page without a category still applies text and pr
   await page.goto(NOCAT_SEARCH_URL);
   await page.getByTestId("filter-fab").click();
   await expect(page.getByTestId("no-category-note")).toBeVisible();
-  await expect(page.getByTestId("raw-ids")).toBeDisabled();
+  await expect(page.getByTestId("requirements")).toHaveCount(0);
   await page.getByTestId("query-text").fill("ultrabook");
   await page.getByTestId("price-max").fill("900");
   await expect(page.getByTestId("target-url")).toHaveText(

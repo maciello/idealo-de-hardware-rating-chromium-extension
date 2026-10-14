@@ -3,7 +3,7 @@ import { categoryId, emptyQuery, filterId } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import { firstCatalog } from "../src/filters/catalog-source";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
-import { embeddedCatalog } from "../src/filters/embedded-catalog";
+import { embeddedCatalog, embeddedPriceBounds } from "../src/filters/embedded-catalog";
 import { filterPageOf } from "../src/filters/page";
 import listingHtml from "./fixtures/listing.html?raw";
 import ssrHtml from "./fixtures/listing.idealo-ssr.html?raw";
@@ -26,13 +26,19 @@ describe("embeddedCatalog (real payload shape)", () => {
   it("lists Prozessor, Grafikkarte and Hersteller with their ids and hit counts", async () => {
     const catalog = await embeddedCatalog.load(context(load(ssrHtml)));
     expect(catalog?.categoryId).toBe(categoryId("3751"));
-    expect(catalog?.groups.map((g) => g.name)).toEqual(["Prozessor", "Grafikkarte", "Hersteller"]);
-    expect(catalog?.groups[0]?.filters[0]).toEqual({
+    expect(catalog?.groups.map((g) => g.name)).toEqual(
+      expect.arrayContaining(["Prozessor", "Grafikkarte", "Hersteller"]),
+    );
+    expect(catalog?.groups.find((g) => g.name === "Prozessor")?.filters[0]).toEqual({
       filterId: filterId("107301240"),
       label: "AMD Ryzen 5 150",
       count: 75,
     });
-    expect(catalog?.groups[2]?.filters.map((f) => [f.filterId, f.label])).toEqual([
+    expect(
+      catalog?.groups
+        .find((g) => g.name === "Hersteller")
+        ?.filters.map((f) => [f.filterId, f.label]),
+    ).toEqual([
       ["471878", "Acer"],
       ["1200167", "Alienware"],
       ["104852041", "Ankermann"],
@@ -53,6 +59,14 @@ describe("embeddedCatalog (real payload shape)", () => {
     expect(embedded?.groups.map((g) => g.name)).toContain("Prozessor");
     const dom = await source.load(context(load(listingHtml), "19116"));
     expect(dom?.groups.map((g) => g.name)).toContain("Prozessor-Hersteller");
+  });
+});
+
+describe("embeddedPriceBounds", () => {
+  it("reads the served result set's price range for the category it was served for", () => {
+    expect(embeddedPriceBounds(load(ssrHtml), "3751")).toEqual({ min: 199, max: 3499 });
+    expect(embeddedPriceBounds(load(ssrHtml), "19116")).toBeNull();
+    expect(embeddedPriceBounds(load(listingHtml), "19116")).toBeNull();
   });
 });
 

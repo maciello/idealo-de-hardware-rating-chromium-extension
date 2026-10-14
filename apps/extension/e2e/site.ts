@@ -19,6 +19,8 @@ export const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json")
 /** The CPUs named by the real-markup listing (four) and product page (one). */
 export const SSR_CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.ssr.synthetic.json");
 export const GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.synthetic.csv");
+/** The GPUs named by the real-markup listing's Grafikkarte filters (six, with laptop names). */
+export const SSR_GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.ssr.synthetic.csv");
 export const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
 
 export const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
@@ -36,6 +38,32 @@ export const BARE_SEARCH_URL = `${SEARCH_URL}&variant=bare`;
 export const NOCAT_SEARCH_URL = `${SEARCH_URL}&variant=nocat`;
 export const PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/1001_alpha-book-15.html";
+
+/**
+ * The real-markup listing as PC-Systeme (3020): same tiles, category id swapped, and the RAM-Typ
+ * group that only that category has (Notebooks lists none).
+ */
+function desktopListingHtml(): string {
+  const payload = JSON.parse(
+    Buffer.from(
+      /initialData\['searchResult'\] = "([A-Za-z0-9+/=]+)"/.exec(SSR_LISTING_HTML)?.[1] ?? "",
+      "base64",
+    ).toString("utf8"),
+  );
+  payload.filterGroups.push({
+    id: "19540",
+    name: "RAM Typ",
+    filters: [
+      { id: "19540001", name: "DDR4", hits: 900 },
+      { id: "19540002", name: "DDR5", hits: 3000 },
+      { id: "19540003", name: "LPDDR5X", hits: 1500 },
+    ],
+  });
+  return SSR_LISTING_HTML.replace(
+    /(initialData\['searchResult'\] = ")[A-Za-z0-9+/=]+/,
+    (_, head: string) => head + Buffer.from(JSON.stringify(payload)).toString("base64"),
+  ).replace("initialData['categoryId'] = \"3751\"", "initialData['categoryId'] = \"3020\"");
+}
 
 const withoutFilters = (variant: string): string =>
   LISTING_HTML.replace(/<aside id="filters">[\s\S]*?<\/aside>/, () =>
@@ -60,8 +88,11 @@ export async function installSite(context: BrowserContext): Promise<void> {
     if (pathname === "/api/filters.json") {
       return route.fulfill({ contentType: "application/json", body: FILTERS_JSON });
     }
-    if (pathname.includes("/ProductCategory/3751") || pathname.includes("/ProductCategory/3020")) {
+    if (pathname.includes("/ProductCategory/3751")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: SSR_LISTING_HTML });
+    }
+    if (pathname.includes("/ProductCategory/3020")) {
+      return route.fulfill({ contentType: "text/html; charset=utf-8", body: desktopListingHtml() });
     }
     if (pathname.includes("/ProductCategory/") || pathname.includes("/MainSearchProductCategory")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: LISTING_HTML });
@@ -87,6 +118,19 @@ export async function importCpuFixture(
   await page.goto(`chrome-extension://${extensionId}/options.html`);
   await page.locator('[data-testid="dropzone-cpu"] input[type="file"]').setInputFiles(file);
   await expect(page.getByTestId("count-cpu")).toHaveText(count);
+  await page.close();
+}
+
+export async function importGpuFixture(
+  context: BrowserContext,
+  extensionId: string,
+  file = GPU_FIXTURE,
+  count = "1",
+): Promise<void> {
+  const page = await context.newPage();
+  await page.goto(`chrome-extension://${extensionId}/options.html`);
+  await page.locator('[data-testid="dropzone-gpu"] input[type="file"]').setInputFiles(file);
+  await expect(page.getByTestId("count-gpu")).toHaveText(count);
   await page.close();
 }
 

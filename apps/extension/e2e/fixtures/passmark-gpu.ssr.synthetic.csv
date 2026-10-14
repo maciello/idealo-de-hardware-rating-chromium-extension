@@ -1,0 +1,7 @@
+id,name,g3d,g2d,cat,date,rank,samples
+7201,Radeon 610M,"1,500",300,Mobile,Jan 2022,520,100
+7202,Radeon 660M,"2,600",400,Mobile,Jan 2022,500,200
+7203,Radeon 680M,"3,300",450,Mobile,Jan 2022,480,200
+7204,GeForce RTX 4060 Laptop GPU,"15,000","1,100",Mobile,Feb 2023,150,300
+7205,GeForce RTX 5060 Laptop GPU,"18,000","1,200",Mobile,Jan 2025,120,300
+7206,Intel Arc 140V GPU,"2,900",500,Mobile,Sep 2024,450,100

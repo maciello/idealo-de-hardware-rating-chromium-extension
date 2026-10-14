@@ -85,8 +85,10 @@ test("real markup: the filter builder offers the embedded payload's filters", as
   await page.goto(SSR_LISTING_URL);
   await page.getByTestId("filter-fab").click();
   await expect(page.getByTestId("no-catalog-note")).toHaveCount(0);
+  await page.getByTestId("options-toggle").click();
   await page.getByTestId("filter-107301240").check();
   await page.getByTestId("filter-471878").check();
+  await page.getByTestId("details-toggle").click();
   await expect(page.getByTestId("target-url")).toHaveText(
     "https://www.idealo.de/preisvergleich/ProductCategory/3751F107301240-471878.html",
   );

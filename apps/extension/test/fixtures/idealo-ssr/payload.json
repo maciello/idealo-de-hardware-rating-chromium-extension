@@ -111,6 +111,31 @@
           "id": "106745466",
           "name": "AMD Ryzen 5 230",
           "hits": 40
+        },
+        {
+          "id": "105000001",
+          "name": "Intel Core Ultra 7 258V",
+          "hits": 120
+        },
+        {
+          "id": "105000002",
+          "name": "Intel Core i5-10210U",
+          "hits": 80
+        },
+        {
+          "id": "105000003",
+          "name": "AMD Ryzen 7 260",
+          "hits": 60
+        },
+        {
+          "id": "105000004",
+          "name": "Intel Core i7-1165G7",
+          "hits": 40
+        },
+        {
+          "id": "105000005",
+          "name": "Intel Core Ultra 9 285H",
+          "hits": 50
         }
       ]
     },
@@ -132,6 +157,218 @@
           "id": "103494209",
           "name": "AMD Radeon 680M",
           "hits": 38
+        },
+        {
+          "id": "104100001",
+          "name": "NVIDIA GeForce RTX 4060",
+          "hits": 90
+        },
+        {
+          "id": "104100002",
+          "name": "NVIDIA GeForce RTX 5060",
+          "hits": 60
+        },
+        {
+          "id": "104100003",
+          "name": "Intel Arc Graphics 140V",
+          "hits": 30
+        }
+      ]
+    },
+    {
+      "id": "27570",
+      "name": "RAM",
+      "filters": [
+        {
+          "id": "27570008",
+          "name": "8 GB",
+          "hits": 300
+        },
+        {
+          "id": "27570016",
+          "name": "16 GB",
+          "hits": 5000
+        },
+        {
+          "id": "27570024",
+          "name": "24 GB",
+          "hits": 400
+        },
+        {
+          "id": "27570032",
+          "name": "32 GB",
+          "hits": 2500
+        },
+        {
+          "id": "27570064",
+          "name": "64 GB",
+          "hits": 300
+        }
+      ]
+    },
+    {
+      "id": "27572",
+      "name": "SSD-Speicher",
+      "filters": [
+        {
+          "id": "27572001",
+          "name": "256 GB SSD-Speicher",
+          "hits": 200
+        },
+        {
+          "id": "27572002",
+          "name": "512 GB SSD-Speicher",
+          "hits": 3000
+        },
+        {
+          "id": "27572003",
+          "name": "1.000 GB SSD-Speicher",
+          "hits": 4000
+        },
+        {
+          "id": "27572004",
+          "name": "2.000 GB SSD-Speicher",
+          "hits": 600
+        }
+      ]
+    },
+    {
+      "id": "27573",
+      "name": "Displaygröße",
+      "filters": [
+        {
+          "id": "27573013",
+          "name": "13 Zoll",
+          "hits": 100
+        },
+        {
+          "id": "27573014",
+          "name": "14 Zoll",
+          "hits": 1800
+        },
+        {
+          "id": "27573015",
+          "name": "15 Zoll",
+          "hits": 3200
+        },
+        {
+          "id": "27573016",
+          "name": "16 Zoll",
+          "hits": 1500
+        },
+        {
+          "id": "27573017",
+          "name": "17 Zoll",
+          "hits": 700
+        }
+      ]
+    },
+    {
+      "id": "27574",
+      "name": "Bildwiederholungsrate",
+      "filters": [
+        {
+          "id": "27574060",
+          "name": "60 Hz",
+          "hits": 3000
+        },
+        {
+          "id": "27574090",
+          "name": "90 Hz",
+          "hits": 200
+        },
+        {
+          "id": "27574120",
+          "name": "120 Hz",
+          "hits": 1400
+        },
+        {
+          "id": "27574144",
+          "name": "144 Hz",
+          "hits": 500
+        },
+        {
+          "id": "27574165",
+          "name": "165 Hz",
+          "hits": 300
+        }
+      ]
+    },
+    {
+      "id": "27575",
+      "name": "Gewicht",
+      "filters": [
+        {
+          "id": "27575001",
+          "name": "1,2 kg",
+          "hits": 150
+        },
+        {
+          "id": "27575002",
+          "name": "1,4 kg",
+          "hits": 900
+        },
+        {
+          "id": "27575003",
+          "name": "1,8 kg",
+          "hits": 2500
+        },
+        {
+          "id": "27575004",
+          "name": "2,5 kg",
+          "hits": 800
+        }
+      ]
+    },
+    {
+      "id": "27576",
+      "name": "Akkulaufzeit",
+      "filters": [
+        {
+          "id": "27576008",
+          "name": "8 h",
+          "hits": 600
+        },
+        {
+          "id": "27576010",
+          "name": "10 h",
+          "hits": 1200
+        },
+        {
+          "id": "27576012",
+          "name": "12 h",
+          "hits": 900
+        },
+        {
+          "id": "27576016",
+          "name": "16 h",
+          "hits": 150
+        }
+      ]
+    },
+    {
+      "id": "27577",
+      "name": "Markteinführung",
+      "filters": [
+        {
+          "id": "27577023",
+          "name": "2023",
+          "hits": 1500
+        },
+        {
+          "id": "27577024",
+          "name": "2024",
+          "hits": 2500
+        },
+        {
+          "id": "27577025",
+          "name": "2025",
+          "hits": 3200
+        },
+        {
+          "id": "27577026",
+          "name": "2026",
+          "hits": 800
         }
       ]
     },
@@ -161,6 +398,12 @@
   "metadata": {
     "search": {
       "resultCount": 53609
+    }
+  },
+  "priceRanges": {
+    "dynamicRange": {
+      "fromPrice": 199,
+      "toPrice": 3499
     }
   }
 }

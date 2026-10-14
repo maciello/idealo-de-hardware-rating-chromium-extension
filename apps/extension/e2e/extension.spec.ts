@@ -199,8 +199,9 @@ test("filter builder: batch toggles, one navigation", async () => {
   expect((await settingsTab).url()).toBe(`chrome-extension://${extensionId}/options.html`);
   await (await settingsTab).close();
   await page.bringToFront();
-  await expect(page.locator("idealo-hw-overlay").getByText("Prozessor-Hersteller")).toBeVisible();
 
+  await page.getByTestId("options-toggle").click();
+  await expect(page.locator("idealo-hw-overlay").getByText("Prozessor-Hersteller")).toBeVisible();
   await page.getByTestId("filter-1234").check();
   await page.getByTestId("filter-2222").check();
   const target = page.getByTestId("target-url");
@@ -216,12 +217,10 @@ test("filter builder: batch toggles, one navigation", async () => {
   await page.getByTestId("filter-search").fill("");
 
   await page.getByTestId("price-min").fill("500");
-  await page.getByTestId("raw-ids").fill("9999");
-  await page.getByTestId("raw-ids").press("Enter");
   await expect(target).toHaveText(
-    "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234-2222-9999.html?p=500.0-",
+    "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234-2222.html?p=500.0-",
   );
-  await expect(page.getByTestId("summary")).toContainText("Unknown filter ids: 9999");
+  await expect(page.getByTestId("raw-ids")).toHaveCount(0);
   await shot(page, "filter-drawer");
 
   const navigations: string[] = [];
@@ -229,9 +228,9 @@ test("filter builder: batch toggles, one navigation", async () => {
     if (frame === page.mainFrame()) navigations.push(frame.url());
   });
   await page.getByTestId("apply").click();
-  await page.waitForURL("**/19116F1234-2222-9999.html?p=500.0-");
+  await page.waitForURL("**/19116F1234-2222.html?p=500.0-");
   expect(navigations).toEqual([
-    "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234-2222-9999.html?p=500.0-",
+    "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234-2222.html?p=500.0-",
   ]);
   await page.close();
 });

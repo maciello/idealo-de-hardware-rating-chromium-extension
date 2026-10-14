@@ -14,3 +14,12 @@ export const embeddedCatalog: FilterCatalogSource = {
     return embedded.page.catalog.groups.length > 0 ? embedded.page.catalog : null;
   },
 };
+
+/** Cheapest and dearest price of the served result set, for the price slider; null without a matching payload. */
+export function embeddedPriceBounds(
+  document: Document,
+  categoryId: string,
+): { min: number; max: number } | null {
+  const embedded = embeddedListing(document);
+  return embedded?.categoryId === categoryId ? embedded.page.priceBounds : null;
+}

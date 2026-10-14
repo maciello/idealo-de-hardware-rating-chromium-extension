@@ -1,19 +1,21 @@
 import {
-  addFilters,
   describeQuery,
   type FilterCatalog,
-  filterId,
   type IdealoQuery,
   KNOWN_SORT_KEYS,
-  removeFilters,
+  type ModelScorer,
+  planRequirements,
+  type Requirements,
   setPrice,
   setSort,
   setText,
   toggleFilter,
 } from "@idealo-hw/idealo-query";
 import {
+  Accordion,
   ActionIcon,
   Alert,
+  Box,
   Button,
   Checkbox,
   Code,
@@ -23,19 +25,22 @@ import {
   ScrollArea,
   Select,
   Stack,
-  TagsInput,
   Text,
   TextInput,
   Title,
   Tooltip,
 } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import {
   IconAdjustmentsHorizontal,
   IconInfoCircle,
   IconSearch,
   IconSettings,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { formatInteger } from "../ratings/present";
+import { RequirementsSection } from "../requirements/RequirementsSection";
+import { emptyRequirements, isEmpty } from "../requirements/state";
 
 export interface FilterPanelProps {
   opened: boolean;
@@ -46,11 +51,34 @@ export interface FilterPanelProps {
   /** False on a search page that names no category: only text, price and sort can be applied. */
   canFilter: boolean;
   loadCatalog: (query: IdealoQuery) => Promise<FilterCatalog | null>;
+  /** What the requirement controls need besides the catalog; read each time the panel opens. */
+  loadContext: (query: IdealoQuery) => Promise<RequirementsContext>;
+  /** Where the last requirements of each category are kept. */
+  requirementsStore: RequirementsStore;
   onApply: (url: string) => void;
   onOpenSettings: () => void;
 }
 
-const DIGITS = /^\d+$/;
+export interface RequirementsContext {
+  scorer: ModelScorer;
+  /** Which PassMark exports are imported. */
+  hasData: { cpu: boolean; gpu: boolean };
+  /** Cheapest and dearest price of the page's result set; null when the page has no payload. */
+  priceBounds: { min: number; max: number } | null;
+}
+
+export interface RequirementsStore {
+  load(categoryId: string): Promise<Requirements>;
+  save(categoryId: string, requirements: Requirements): Promise<void>;
+}
+
+const NO_CONTEXT: RequirementsContext = {
+  scorer: () => null,
+  hasData: { cpu: false, gpu: false },
+  priceBounds: null,
+};
+
+const SAVE_DELAY_MS = 300;
 const Z_INDEX = 2_147_483_000;
 
 const SORT_LABELS: Readonly<Record<string, string>> = { minPrice: "Lowest price first" };
@@ -117,6 +145,8 @@ export function FilterPanel({
   toUrl,
   canFilter,
   loadCatalog,
+  loadContext,
+  requirementsStore,
   onApply,
   onOpenSettings,
 }: FilterPanelProps) {
@@ -137,6 +167,21 @@ export function FilterPanel({
   const [catalog, setCatalog] = useState<FilterCatalog | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
+  const [requirements, setRequirements] = useState<Requirements>(emptyRequirements);
+  const [context, setContext] = useState<RequirementsContext>(NO_CONTEXT);
+  // Edits made before the stored requirements arrive win over them.
+  const edited = useRef(false);
+
+  const save = useDebouncedCallback(
+    (categoryId: string, next: Requirements) =>
+      void requirementsStore.save(categoryId, next).catch(() => undefined),
+    { delay: SAVE_DELAY_MS, flushOnUnmount: true },
+  );
+  const changeRequirements = (next: Requirements): void => {
+    edited.current = true;
+    setRequirements(next);
+    save(query.categoryId, next);
+  };
 
   useEffect(() => {
     if (!opened) return;
@@ -145,27 +190,41 @@ export function FilterPanel({
       setStartQuery(fresh);
       setQuery(fresh);
     }
+    edited.current = false;
     let cancelled = false;
-    void loadCatalog(fresh).then((result) => {
+    void Promise.all([
+      loadCatalog(fresh),
+      loadContext(fresh),
+      requirementsStore.load(fresh.categoryId).catch(emptyRequirements),
+    ]).then(([result, loadedContext, stored]) => {
       if (cancelled) return;
       setCatalog(result);
+      setContext(loadedContext);
+      if (!edited.current) setRequirements(stored);
       setLoaded(true);
     });
     return () => {
       cancelled = true;
     };
-  }, [opened, initialQuery, loadCatalog, startQuery, targetUrl]);
+  }, [opened, initialQuery, loadCatalog, loadContext, requirementsStore, startQuery, targetUrl]);
 
   const effectiveCatalog = useMemo<FilterCatalog>(
     () => catalog ?? { categoryId: query.categoryId, groups: [], manufacturers: [] },
     [catalog, query.categoryId],
   );
-  const known = useMemo(
-    () => new Set(effectiveCatalog.groups.flatMap((g) => g.filters.map((f) => f.filterId))),
-    [effectiveCatalog],
-  );
   const selected = useMemo(() => new Set(query.filterIds), [query.filterIds]);
-  const rawIds = query.filterIds.filter((id) => !known.has(id));
+
+  const plan = useMemo(() => {
+    if (catalog === null || catalog.categoryId !== query.categoryId || isEmpty(requirements)) {
+      return null;
+    }
+    try {
+      return planRequirements(requirements, catalog, query, context.scorer);
+    } catch {
+      return null;
+    }
+  }, [catalog, query, requirements, context.scorer]);
+  const effectiveQuery = plan?.query ?? query;
 
   const needle = search.trim().toLowerCase();
   const visibleGroups = effectiveCatalog.groups
@@ -175,8 +234,8 @@ export function FilterPanel({
     }))
     .filter((group) => group.filters.length > 0);
 
-  const summary = describeQuery(query, effectiveCatalog).summary;
-  const url = targetUrl(query);
+  const summary = describeQuery(effectiveQuery, effectiveCatalog).summary;
+  const url = targetUrl(effectiveQuery);
   const unchanged = url === targetUrl(startQuery);
   const sortOptions = [
     { value: "", label: "Default order" },
@@ -185,13 +244,7 @@ export function FilterPanel({
       ...(query.sort && !KNOWN_SORT_KEYS.some((k) => k === query.sort) ? [query.sort] : []),
     ].map((key) => ({ value: key, label: SORT_LABELS[key] ?? key })),
   ];
-
-  const changeRawIds = (next: string[]) => {
-    const valid = next.filter((id) => DIGITS.test(id));
-    const removed = rawIds.filter((id) => !valid.includes(id));
-    const added = valid.filter((id) => !query.filterIds.some((existing) => existing === id));
-    setQuery((q) => addFilters(removeFilters(q, removed.map(filterId)), added.map(filterId)));
-  };
+  const sliderPrice = canFilter && context.priceBounds !== null;
 
   return (
     <>
@@ -215,7 +268,7 @@ export function FilterPanel({
         onClose={close}
         position="right"
         size={420}
-        title={<Title order={4}>Batch filters</Title>}
+        title={<Title order={4}>Filter builder</Title>}
         data-testid="filter-drawer"
       >
         <Stack gap="md">
@@ -237,8 +290,8 @@ export function FilterPanel({
               icon={<IconInfoCircle size={16} />}
               data-testid="no-category-note"
             >
-              This search page does not name a category, so filter ids cannot be applied here. Text,
-              price and sort still work.
+              This search page does not name a category, so hardware filters cannot be applied here.
+              Text, price and sort still work.
             </Alert>
           )}
           {canFilter && loaded && catalog === null && (
@@ -248,43 +301,28 @@ export function FilterPanel({
               icon={<IconInfoCircle size={16} />}
               data-testid="no-catalog-note"
             >
-              Filters could not be read from this page. You can still type filter ids below and
-              search by text. A page snapshot would help to read them: save one from the extension
-              popup and share it.
+              Filters could not be read from this page. Text, price and sort still work. A page
+              snapshot would help to read them: save one from the extension popup and share it.
             </Alert>
           )}
 
-          <TextInput
-            placeholder="Search filters"
-            leftSection={<IconSearch size={16} />}
-            value={search}
-            onChange={(event) => setSearch(event.currentTarget.value)}
-            data-testid="filter-search"
-          />
+          {canFilter && catalog !== null && (
+            <RequirementsSection
+              catalog={catalog}
+              requirements={requirements}
+              plan={plan}
+              scorer={context.scorer}
+              hasData={context.hasData}
+              priceBounds={context.priceBounds}
+              pagePrice={query.price}
+              onChange={changeRequirements}
+              onPriceChange={() => setQuery((q) => setPrice(q, undefined))}
+            />
+          )}
 
-          <ScrollArea.Autosize mah={320} type="auto">
-            <Stack gap="sm">
-              {visibleGroups.map((group) => (
-                <Stack key={group.attributeId} gap={4}>
-                  <Text size="xs" fw={600} c="dimmed">
-                    {group.name}
-                  </Text>
-                  {group.filters.map((option) => (
-                    <Checkbox
-                      key={option.filterId}
-                      size="sm"
-                      label={option.label}
-                      checked={selected.has(option.filterId)}
-                      onChange={() => setQuery((q) => toggleFilter(q, option.filterId))}
-                      data-testid={`filter-${option.filterId}`}
-                    />
-                  ))}
-                </Stack>
-              ))}
-            </Stack>
-          </ScrollArea.Autosize>
-
-          <PriceRange query={query} onChange={(price) => setQuery((q) => setPrice(q, price))} />
+          {!sliderPrice && (
+            <PriceRange query={query} onChange={(price) => setQuery((q) => setPrice(q, price))} />
+          )}
 
           <Select
             label="Sort"
@@ -296,54 +334,105 @@ export function FilterPanel({
             data-testid="sort-select"
           />
 
-          <TagsInput
-            label="Other filter ids"
-            description="Ids that are not listed above"
-            disabled={!canFilter}
-            placeholder="Type an id, press Enter"
-            splitChars={[",", " "]}
-            acceptValueOnBlur
-            value={rawIds}
-            onChange={changeRawIds}
-            data-testid="raw-ids"
-          />
+          <Accordion variant="contained" chevronPosition="left" multiple>
+            {effectiveCatalog.groups.length > 0 && (
+              <Accordion.Item value="options">
+                <Accordion.Control data-testid="options-toggle">
+                  Pick filters by name
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Stack gap="xs">
+                    <TextInput
+                      placeholder="Search filters"
+                      leftSection={<IconSearch size={16} />}
+                      value={search}
+                      onChange={(event) => setSearch(event.currentTarget.value)}
+                      data-testid="filter-search"
+                    />
+                    <ScrollArea.Autosize mah={280} type="auto">
+                      <Stack gap="sm">
+                        {visibleGroups.map((group) => (
+                          <Stack key={group.attributeId} gap={4}>
+                            <Text size="xs" fw={600} c="dimmed">
+                              {group.name}
+                            </Text>
+                            {group.filters.map((option) => (
+                              <Checkbox
+                                key={option.filterId}
+                                size="sm"
+                                label={option.label}
+                                checked={selected.has(option.filterId)}
+                                onChange={() => setQuery((q) => toggleFilter(q, option.filterId))}
+                                data-testid={`filter-${option.filterId}`}
+                              />
+                            ))}
+                          </Stack>
+                        ))}
+                      </Stack>
+                    </ScrollArea.Autosize>
+                  </Stack>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+            <Accordion.Item value="details">
+              <Accordion.Control data-testid="details-toggle">Selection and link</Accordion.Control>
+              <Accordion.Panel>
+                <Stack gap={4}>
+                  <Code block data-testid="summary">
+                    {summary}
+                  </Code>
+                  <Code
+                    block
+                    data-testid="target-url"
+                    style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
+                  >
+                    {url}
+                  </Code>
+                </Stack>
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
 
-          <Stack gap={4}>
-            <Text size="xs" fw={600} c="dimmed">
-              Selection
-            </Text>
-            <Code block data-testid="summary">
-              {summary}
-            </Code>
-            <Text size="xs" fw={600} c="dimmed">
-              Target
-            </Text>
-            <Code
-              block
-              data-testid="target-url"
-              style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
-            >
-              {url}
-            </Code>
-          </Stack>
-
-          <Group justify="space-between">
-            <Group gap="xs">
-              <ActionIcon variant="subtle" aria-label="Open settings" onClick={onOpenSettings}>
-                <IconSettings size={18} />
-              </ActionIcon>
-              <Button variant="default" onClick={() => setQuery(startQuery)}>
-                Reset
-              </Button>
+          <Box
+            style={{
+              position: "sticky",
+              bottom: 0,
+              background: "var(--mantine-color-body)",
+              borderTop: "1px solid var(--hw-line)",
+              paddingBlock: "var(--mantine-spacing-xs)",
+            }}
+          >
+            <Group justify="space-between" wrap="nowrap">
+              <Group gap="xs" wrap="nowrap">
+                <ActionIcon variant="subtle" aria-label="Open settings" onClick={onOpenSettings}>
+                  <IconSettings size={18} />
+                </ActionIcon>
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    setQuery(startQuery);
+                    changeRequirements(emptyRequirements());
+                  }}
+                >
+                  Reset
+                </Button>
+              </Group>
+              <Group gap="sm" wrap="nowrap">
+                {plan?.hitsUpperBound != null && (
+                  <Text size="sm" fw={600} data-testid="hits">
+                    ≤ {formatInteger(plan.hitsUpperBound)} products
+                  </Text>
+                )}
+                <Button
+                  disabled={unchanged || url === ""}
+                  onClick={() => onApply(url)}
+                  data-testid="apply"
+                >
+                  Open
+                </Button>
+              </Group>
             </Group>
-            <Button
-              disabled={unchanged || url === ""}
-              onClick={() => onApply(url)}
-              data-testid="apply"
-            >
-              Apply
-            </Button>
-          </Group>
+          </Box>
         </Stack>
       </Drawer>
     </>
