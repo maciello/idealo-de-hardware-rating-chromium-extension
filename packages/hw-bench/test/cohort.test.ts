@@ -118,6 +118,32 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
       expect(rate("AMD Ryzen 9 9950X", DEFAULT_COHORT_POLICY)).toBeGreaterThan(90);
     });
 
+    it("ranks CPUs against the pool of the page's device class, not PassMark's first segment", () => {
+      const snapshot = passmarkCpuSource.parse(readFileSync(cpuPath, "utf8"));
+      const strategy = segmentPercentile(snapshot, DEFAULT_COHORT_POLICY);
+      const cpuNamed = (name: string) => {
+        const cpu = snapshot.records.find((r) => r.name === name && r.socketCount === 1);
+        if (cpu === undefined) throw new Error(`${name} missing from snapshot`);
+        return cpu;
+      };
+      const ryzen = cpuNamed("AMD Ryzen AI 7 445");
+      expect(ryzen.segments[0]).toBe("desktop");
+      const own = strategy.rate({ cpu: ryzen });
+      const laptop = strategy.rate({ cpu: ryzen, formFactor: "laptop" });
+      expect(own?.explanation).toContain("desktop CPUs");
+      expect(laptop?.explanation).toContain("laptop CPUs");
+      expect(laptop?.value).toBeGreaterThan(own?.value ?? Number.NaN);
+
+      const celeron = cpuNamed("Intel Celeron N5095 @ 2.00GHz");
+      expect(strategy.rate({ cpu: celeron, formFactor: "laptop" })?.explanation).toContain(
+        "laptop CPUs",
+      );
+      const ultra = cpuNamed("Intel Core Ultra 9 285H");
+      expect(strategy.rate({ cpu: ultra, formFactor: "desktop" })?.explanation).toContain(
+        "desktop CPUs",
+      );
+    });
+
     it("applies to GPU records the same way", () => {
       const snapshot = passmarkGpuSource.parse(readFileSync(gpuPath, "utf8"));
       const rtx4060 = snapshot.records.find((r) => r.name === "GeForce RTX 4060");

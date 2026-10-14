@@ -209,6 +209,92 @@ describe("segmentPercentile", () => {
   });
 });
 
+describe("segmentPercentile with a page form factor", () => {
+  const snapshot = cpuSnapshotOf(
+    cpuRow({ name: "D1", cpumark: "1,000", cat: "Desktop" }),
+    cpuRow({ name: "D2", cpumark: "2,000", cat: "Desktop" }),
+    cpuRow({ name: "D3", cpumark: "9,000", cat: "Desktop" }),
+    cpuRow({ name: "D4", cpumark: "10,000", cat: "Desktop, Laptop" }),
+    cpuRow({ name: "L1", cpumark: "500", cat: "Laptop" }),
+    cpuRow({ name: "M1", cpumark: "1,500", cat: "Mobile/Embedded" }),
+    cpuRow({ name: "LM", cpumark: "3,000", cat: "Laptop, Mobile/Embedded" }),
+    cpuRow({ name: "S1", cpumark: "50,000", cat: "Server" }),
+    cpuRow({ name: "M-dual", cpumark: "99,000", cat: "Mobile/Embedded", cpuCount: "2" }),
+  );
+  const strategy = segmentPercentile(snapshot);
+  // laptop pool: L1 500, M1 1500, LM 3000 (listed under both segments, counted once), D4 10000
+  // desktop pool: D1 1000, D2 2000, D3 9000, D4 10000
+
+  it("ranks a CPU filed under desktop against the laptop pool on a laptop page", () => {
+    const rating = strategy.rate({
+      cpu: cpuRecord({ cpuMark: 2_000, segments: ["desktop"] }),
+      formFactor: "laptop",
+    });
+    expect(rating?.value).toBe(50);
+    expect(rating?.explanation).toContain("of 4 laptop CPUs");
+  });
+
+  it("ranks a CPU filed under mobile/embedded or laptop+desktop against the laptop pool", () => {
+    expect(
+      strategy.rate({
+        cpu: cpuRecord({ cpuMark: 9_000, segments: ["mobile_embedded"] }),
+        formFactor: "laptop",
+      })?.value,
+    ).toBe(75);
+    expect(
+      strategy.rate({
+        cpu: cpuRecord({ cpuMark: 9_000, segments: ["desktop", "laptop"] }),
+        formFactor: "laptop",
+      })?.value,
+    ).toBe(75);
+  });
+
+  it("ranks against the desktop pool on a desktop page, whatever segment the CPU is filed under", () => {
+    const rating = strategy.rate({
+      cpu: cpuRecord({ cpuMark: 2_000, segments: ["laptop"] }),
+      formFactor: "desktop",
+    });
+    expect(rating?.value).toBe(50);
+    expect(rating?.explanation).toContain("of 4 desktop CPUs");
+  });
+
+  it("rates CPUs without any usable PassMark segment when the page names the device class", () => {
+    expect(
+      strategy.rate({
+        cpu: cpuRecord({ cpuMark: 2_000, segments: ["unknown"] }),
+        formFactor: "laptop",
+      }),
+    ).not.toBeNull();
+    expect(
+      strategy.rate({
+        cpu: cpuRecord({ cpuMark: 2_000, segments: ["server"] }),
+        formFactor: "desktop",
+      }),
+    ).not.toBeNull();
+  });
+
+  it("falls back to the CPU's own first segment for an unknown or absent form factor", () => {
+    const cpu = cpuRecord({ cpuMark: 2_000, segments: ["desktop", "laptop"] });
+    const own = strategy.rate({ cpu });
+    expect(own?.explanation).toContain("desktop CPUs");
+    expect(strategy.rate({ cpu, formFactor: "unknown" })).toEqual(own);
+    expect(
+      strategy.rate({ cpu: cpuRecord({ segments: ["unknown"] }), formFactor: "unknown" }),
+    ).toBeNull();
+  });
+
+  it("excludes multi-socket records from the laptop pool", () => {
+    expect(
+      strategy.rate({ cpu: cpuRecord({ cpuMark: 100_000 }), formFactor: "laptop" })?.value,
+    ).toBe(100);
+  });
+
+  it("returns null for a laptop page when the snapshot has no laptop-class records", () => {
+    const desktopOnly = segmentPercentile(cpuSnapshotOf(cpuRow({ cat: "Desktop" })));
+    expect(desktopOnly.rate({ cpu: cpuRecord(), formFactor: "laptop" })).toBeNull();
+  });
+});
+
 describe("registry", () => {
   it("defaultStrategies have unique ids and need no snapshot", () => {
     const ids = defaultStrategies.map((s) => s.id);

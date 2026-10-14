@@ -1,4 +1,5 @@
 import type { CpuBenchmarkRecord } from "../benchmark/records";
+import type { FormFactor } from "../identity/form-factor";
 
 /** Another listing's CPU, supplied by the caller as comparison context. */
 export interface PeerSample {
@@ -10,6 +11,8 @@ export interface RatingInput {
   readonly cpu: CpuBenchmarkRecord;
   readonly priceEur?: number;
   readonly peers?: readonly PeerSample[];
+  /** Device class of the listing the CPU was found in; absent or "unknown" leaves device-class strategies on the CPU's own PassMark segment. */
+  readonly formFactor?: FormFactor;
 }
 
 export interface Rating {
