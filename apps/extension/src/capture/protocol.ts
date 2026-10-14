@@ -14,7 +14,7 @@ export const CapturedResponseSchema = z.object({
   /** Empty when `bodyCaptured` is false. */
   body: z.string(),
   truncated: z.boolean(),
-  /** False for metadata-only records (third-party host or a body that is not JSON); absent means true. */
+  /** False for metadata-only records (a body that is not JSON); absent means true. */
   bodyCaptured: z.boolean().optional(),
   capturedAt: z.string(),
 });

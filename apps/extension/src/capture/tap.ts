@@ -31,37 +31,36 @@ export interface ObservedResponse {
   method: string;
   status: number;
   contentType: string;
-  /** Reads the body lazily; only called for idealo hosts. May reject (consumed or aborted body). */
+  /** Reads the body lazily. May reject (consumed or aborted body). */
   readText(): Promise<string>;
 }
 
 /**
- * Every response becomes a record. The body is kept only for idealo hosts and only when the text
- * parses as JSON: the content-type header is not trusted (the real site labels JSON differently),
- * and third-party bodies are never stored.
+ * Responses from idealo hosts become records; anything else (trackers, ads, CDNs) yields null and is
+ * never stored, so the ring spans more page views. The body is kept only when the text parses as
+ * JSON: the content-type header is not trusted (the real site labels JSON differently).
  */
 export async function toCapturedResponse(
   observed: ObservedResponse,
   base = location.href,
   now: () => Date = () => new Date(),
-): Promise<CapturedResponse> {
+): Promise<CapturedResponse | null> {
   const { url, method, status, contentType } = observed;
-  const meta = { url, method, status, contentType, capturedAt: now().toISOString() };
   const host = hostOf(url, base);
-  if (host !== null && isIdealoHost(host)) {
-    try {
-      const text = await observed.readText();
-      if (isJsonText(text)) {
-        return {
-          ...meta,
-          body: text.slice(0, MAX_BODY_CHARS),
-          truncated: text.length > MAX_BODY_CHARS,
-          bodyCaptured: true,
-        };
-      }
-    } catch {
-      // body already consumed or aborted: fall through to metadata only
+  if (host === null || !isIdealoHost(host)) return null;
+  const meta = { url, method, status, contentType, capturedAt: now().toISOString() };
+  try {
+    const text = await observed.readText();
+    if (isJsonText(text)) {
+      return {
+        ...meta,
+        body: text.slice(0, MAX_BODY_CHARS),
+        truncated: text.length > MAX_BODY_CHARS,
+        bodyCaptured: true,
+      };
     }
+  } catch {
+    // body already consumed or aborted: fall through to metadata only
   }
   return { ...meta, body: "", truncated: false, bodyCaptured: false };
 }
@@ -77,15 +76,14 @@ export function startNetworkTap(emit: (response: CapturedResponse) => void): () 
   });
 
   interceptor.on("response", async ({ request, response }) => {
-    emit(
-      await toCapturedResponse({
-        url: request.url,
-        method: request.method,
-        status: response.status,
-        contentType: response.headers.get("content-type") ?? "",
-        readText: () => response.clone().text(),
-      }),
-    );
+    const captured = await toCapturedResponse({
+      url: request.url,
+      method: request.method,
+      status: response.status,
+      contentType: response.headers.get("content-type") ?? "",
+      readText: () => response.clone().text(),
+    });
+    if (captured !== null) emit(captured);
   });
 
   interceptor.apply();

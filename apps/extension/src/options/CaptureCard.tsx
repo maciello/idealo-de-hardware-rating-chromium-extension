@@ -27,9 +27,9 @@ export function CaptureCard() {
       <Stack gap="sm">
         <Title order={4}>Network capture</Title>
         <Text size="sm" c="dimmed">
-          Records the url, method and status of every request the page makes (newest 300), plus the
-          body of JSON responses from idealo hosts, so filter and spec adapters can be written from
-          real data. Nothing is sent anywhere.
+          Records the url, method and status of idealo requests (newest 300), plus the body of their
+          JSON responses, so filter and spec adapters can be written from real data. Requests to
+          other hosts are not recorded. Nothing is sent anywhere.
         </Text>
         <Switch
           label="Capture mode"

@@ -67,9 +67,9 @@ describe("toCapturedResponse", () => {
     });
   });
 
-  it("records third-party responses as metadata only, even when they are JSON", async () => {
+  it("records nothing for third-party hosts, whatever the response", async () => {
     let read = false;
-    const result = await toCapturedResponse(
+    const tracker = await toCapturedResponse(
       observed({
         url: "https://tracker.example.net/collect",
         method: "POST",
@@ -82,13 +82,13 @@ describe("toCapturedResponse", () => {
       BASE,
       NOW,
     );
-    expect(result).toMatchObject({
-      url: "https://tracker.example.net/collect",
-      method: "POST",
-      status: 202,
-      body: "",
-      bodyCaptured: false,
-    });
+    const lookalike = await toCapturedResponse(
+      observed({ url: "https://idealo.de.evil.example/api/x", body: "{}" }),
+      BASE,
+      NOW,
+    );
+    const unparseable = await toCapturedResponse(observed({ url: "http://[bad" }), BASE, NOW);
+    expect([tracker, lookalike, unparseable]).toEqual([null, null, null]);
     expect(read).toBe(false);
   });
 
@@ -131,7 +131,7 @@ describe("toCapturedResponse", () => {
   it("truncates huge JSON bodies to MAX_BODY_CHARS", async () => {
     const body = JSON.stringify({ blob: "x".repeat(MAX_BODY_CHARS + 10) });
     const result = await toCapturedResponse(observed({ body }), BASE, NOW);
-    expect(result.body).toHaveLength(MAX_BODY_CHARS);
+    expect(result?.body).toHaveLength(MAX_BODY_CHARS);
     expect(result).toMatchObject({ truncated: true, bodyCaptured: true });
   });
 });
