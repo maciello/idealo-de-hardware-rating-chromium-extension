@@ -133,6 +133,11 @@ function specTextOf(root: ParentNode): string {
   return text.slice(0, MAX_SPEC_CHARS);
 }
 
+/** Low price from the product script, else the page's price node. */
+export const productPriceOf = (root: ParentNode): number | undefined =>
+  readProductJson(root).priceEur ??
+  parseGermanPrice(collapse(root.querySelector(PRICE)?.textContent), true);
+
 export const heuristicIdealoAdapter: PageAdapter = {
   id: ID,
 
@@ -169,8 +174,7 @@ export const heuristicIdealoAdapter: PageAdapter = {
     const heading = root.querySelector("h1");
     const title = json.title ?? collapse(heading?.textContent);
     if (title === "") return null;
-    const priceEur =
-      json.priceEur ?? parseGermanPrice(collapse(root.querySelector(PRICE)?.textContent), true);
+    const priceEur = productPriceOf(root);
     return {
       element: heading,
       title,

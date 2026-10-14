@@ -1,5 +1,5 @@
 import type { ListingItem, PageAdapter, PageKind, ProductInfo } from "./adapter";
-import { heuristicIdealoAdapter } from "./heuristic-idealo-adapter";
+import { heuristicIdealoAdapter, productPriceOf } from "./heuristic-idealo-adapter";
 import { ssrProductInfo } from "./ssr-product";
 import { ssrTileItems } from "./ssr-tiles";
 
@@ -19,12 +19,9 @@ export const idealoAdapter: PageAdapter = {
   },
 
   productInfo(root): ProductInfo | null {
-    const heuristic = heuristicIdealoAdapter.productInfo(root);
     const real = ssrProductInfo(root);
-    if (real === null) return heuristic;
-    return {
-      ...real,
-      ...(heuristic?.priceEur === undefined ? {} : { priceEur: heuristic.priceEur }),
-    };
+    if (real === null) return heuristicIdealoAdapter.productInfo(root);
+    const priceEur = productPriceOf(root);
+    return { ...real, ...(priceEur === undefined ? {} : { priceEur }) };
   },
 };
