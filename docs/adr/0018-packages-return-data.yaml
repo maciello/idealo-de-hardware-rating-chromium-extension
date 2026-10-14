@@ -28,7 +28,7 @@ adr.0018:
     guard:
       tool: Biome GritQL plugin tools/biome/no-locale-formatting.grit, enabled by an override for packages/*/src/** in biome.json, part of just lint and so of just check
       bans: [Intl.*, toLocaleString, toLocaleDateString, toLocaleTimeString, toFixed]
-      allowed_exception: idealo-query url/serialize.ts formatBound, marked with biome-ignore lint/plugin and a comment (wire format: idealo writes a whole-euro bound as 12.0)
+      allowed_exception: idealo-query url/serialize.ts formatBound, marked with biome-ignore lint/plugin and a comment saying it is wire format (idealo writes a whole-euro bound as 12.0)
       verified_to_fire: a throwaway file in packages/sensors/src with new Intl.NumberFormat, toLocaleString, toFixed and toLocaleDateString gives four plugin errors
   consequences:
     - a new signal id needs a key in SignalParamsById and an entry in the extension copy and describe tables; the types fail to compile until both exist
