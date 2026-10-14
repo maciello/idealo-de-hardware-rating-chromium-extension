@@ -1,7 +1,6 @@
-import type { CpuBenchmarkRecord, FormFactor, Rating } from "@idealo-hw/hw-bench";
+import type { CpuBenchmarkRecord, FormFactor, RamType, Rating } from "@idealo-hw/hw-bench";
 import type { Signal } from "@idealo-hw/sensors";
 import type { RatingQuery } from "../query";
-import type { RamType } from "./ram-type";
 
 export interface PageRank {
   rank: number;

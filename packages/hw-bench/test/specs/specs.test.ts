@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSpecBlock, productContextFromSpecs, SPEC_LABELS } from "../src";
+import { parseSpecBlock, productContextFromSpecs, SPEC_LABELS } from "../../src";
 
 describe("parseSpecBlock", () => {
   it("parses tab-separated idealo lines", () => {

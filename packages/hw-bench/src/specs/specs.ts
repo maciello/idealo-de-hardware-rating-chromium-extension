@@ -7,6 +7,8 @@ import type { FormFactor } from "../identity";
 export const SPEC_LABELS = {
   cpu: ["Prozessor", "Prozessortyp", "Prozessor-Typ", "Prozessormodell", "CPU"],
   gpu: ["Grafikkarte", "Grafikprozessor", "Grafikchip", "Grafikeinheit", "GPU"],
+  /** Datasheet row naming the system memory type ("RAM-Typ: DDR4-3200 SDRAM"). */
+  ramType: ["RAM-Typ", "Arbeitsspeichertyp"],
   /** Present on notebook pages ("Notebook-Typ: Gaming Notebook"). */
   laptopMarker: ["Notebook-Typ", "Notebooktyp", "Laptop-Typ"],
   /** Present on desktop PC pages ("PC-Typ: Gaming PC"). */
@@ -69,6 +71,17 @@ function lookup(specs: ReadonlyMap<string, string>, labels: readonly string[]): 
     if (value !== undefined) return value;
   }
   return undefined;
+}
+
+/** Values of every row whose label is one of `labels`, in the order the rows appear. */
+export function valuesOfLabels(
+  specs: ReadonlyMap<string, string>,
+  labels: readonly string[],
+): string[] {
+  const wanted = new Set(labels.map(normalizeLabel));
+  const values: string[] = [];
+  for (const [label, value] of specs) if (wanted.has(normalizeLabel(label))) values.push(value);
+  return values;
 }
 
 const hasLabel = (specs: ReadonlyMap<string, string>, labels: readonly string[]): boolean =>

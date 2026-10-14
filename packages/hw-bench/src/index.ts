@@ -114,11 +114,17 @@ export {
   valuePerEuroStrategy,
 } from "./rating";
 export {
+  compareRamLabels,
   DESKTOP_TITLE_WORDS,
+  KNOWN_RAM_TYPES,
   LAPTOP_TITLE_WORDS,
   type ProductContext,
   type ProductContextOptions,
+  parseRamLabel,
   parseSpecBlock,
   productContextFromSpecs,
+  type RamLabel,
+  type RamType,
+  ramTypeOf,
   SPEC_LABELS,
-} from "./specs/specs";
+} from "./specs";
