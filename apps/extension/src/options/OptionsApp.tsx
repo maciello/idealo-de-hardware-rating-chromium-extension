@@ -1,9 +1,6 @@
-import { Container, Stack, Text, Title } from "@mantine/core";
 import { passmarkCpuSource, passmarkGpuSource } from "@idealo-hw/hw-bench";
-import {
-  cpuSnapshotItem,
-  gpuSnapshotItem,
-} from "../storage/items";
+import { Container, Stack, Text, Title } from "@mantine/core";
+import { cpuSnapshotItem, gpuSnapshotItem } from "../storage/items";
 import { CpuSnapshotSchema, GpuSnapshotSchema } from "../storage/schemas";
 import { CaptureCard } from "./CaptureCard";
 import { ImportCard } from "./ImportCard";

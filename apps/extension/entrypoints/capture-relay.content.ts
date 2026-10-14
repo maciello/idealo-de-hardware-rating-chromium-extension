@@ -1,5 +1,5 @@
-import { captureRing } from "../src/capture/ring";
 import { TapMessageSchema } from "../src/capture/protocol";
+import { captureRing } from "../src/capture/ring";
 import { captureModeItem } from "../src/storage/items";
 
 export default defineContentScript({

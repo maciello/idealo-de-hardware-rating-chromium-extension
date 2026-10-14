@@ -24,9 +24,7 @@ export async function startFilterBuilder(
     node: (
       <FilterPanel
         initialQuery={() => currentQuery() ?? query}
-        loadCatalog={(q) =>
-          catalogSource.load({ document, url: location.href, query: q })
-        }
+        loadCatalog={(q) => catalogSource.load({ document, url: location.href, query: q })}
         onApply={(url) => location.assign(url)}
         onOpenSettings={() => void sendMessage("openOptions", undefined)}
       />

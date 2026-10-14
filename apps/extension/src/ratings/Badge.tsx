@@ -50,7 +50,14 @@ export function RatingBadge({
       <Group gap={4} wrap="nowrap" data-testid="rating-badge" data-status="matched">
         <IconCpu size={14} aria-hidden />
         {rating.ratings.map((r) => (
-          <Badge key={r.strategyId} size="sm" radius="sm" variant="light" tt="none">
+          <Badge
+            key={r.strategyId}
+            size="sm"
+            radius="sm"
+            variant="light"
+            tt="none"
+            title={labelOf(labels, r.strategyId)}
+          >
             {r.display}
           </Badge>
         ))}

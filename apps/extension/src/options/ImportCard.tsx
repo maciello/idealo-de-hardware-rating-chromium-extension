@@ -1,11 +1,11 @@
-import { Alert, Button, Card, Group, Stack, Text, Title } from "@mantine/core";
-import { Dropzone } from "@mantine/dropzone";
-import { IconFileImport, IconTrash } from "@tabler/icons-react";
 import {
   BenchmarkFormatError,
   type BenchmarkSnapshot,
   type BenchmarkSource,
 } from "@idealo-hw/hw-bench";
+import { Alert, Button, Card, Group, Stack, Text, Title } from "@mantine/core";
+import { Dropzone } from "@mantine/dropzone";
+import { IconFileImport, IconTrash } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import type { z } from "zod";
 import { type StoredItem, useStorageItem } from "./use-storage-item";
@@ -26,7 +26,7 @@ const ACCEPT = {
 };
 
 export function ImportCard<R>({ kind, title, source, item, schema }: ImportCardProps<R>) {
-  const stored = useStorageItem(item);
+  const [stored] = useStorageItem(item);
   const snapshot = useMemo(() => {
     const parsed = schema.safeParse(stored);
     return parsed.success ? parsed.data : null;
@@ -63,7 +63,9 @@ export function ImportCard<R>({ kind, title, source, item, schema }: ImportCardP
         >
           <Group justify="center" gap="sm" mih={80} style={{ pointerEvents: "none" }}>
             <IconFileImport size={32} />
-            <Text size="sm">Drop PassMark {kind.toUpperCase()} file (.json / .csv) or click to choose</Text>
+            <Text size="sm">
+              Drop PassMark {kind.toUpperCase()} file (.json / .csv) or click to choose
+            </Text>
           </Group>
         </Dropzone>
         {error && (
@@ -78,7 +80,8 @@ export function ImportCard<R>({ kind, title, source, item, schema }: ImportCardP
                 <b data-testid={`count-${kind}`}>{snapshot.records.length}</b> records imported
               </Text>
               <Text size="sm" c="dimmed">
-                <span data-testid={`rejected-${kind}`}>{snapshot.rejected.length}</span> rows rejected
+                <span data-testid={`rejected-${kind}`}>{snapshot.rejected.length}</span> rows
+                rejected
               </Text>
               <Text size="xs" c="dimmed">
                 Imported {snapshot.importedAt ?? "at unknown time"} ({snapshot.sourceId})

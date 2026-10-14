@@ -1,6 +1,6 @@
 import { BatchInterceptor } from "@mswjs/interceptors";
-import { XMLHttpRequestInterceptor } from "@mswjs/interceptors/XMLHttpRequest/web";
 import { FetchInterceptor } from "@mswjs/interceptors/fetch/web";
+import { XMLHttpRequestInterceptor } from "@mswjs/interceptors/XMLHttpRequest/web";
 import { type CapturedResponse, MAX_BODY_CHARS } from "./protocol";
 
 const isJson = (contentType: string): boolean => /json/i.test(contentType);

@@ -1,17 +1,17 @@
 import { Card, Stack, Switch, Text, Title } from "@mantine/core";
-import { STRATEGY_CATALOG, resolveEnabledStrategyIds } from "../ratings/engine";
+import { resolveEnabledStrategyIds, STRATEGY_CATALOG } from "../ratings/engine";
 import { settingsItem } from "../storage/items";
 import { useStorageItem } from "./use-storage-item";
 
 export function StrategiesCard() {
-  const settings = useStorageItem(settingsItem);
+  const [settings, saveSettings] = useStorageItem(settingsItem);
   const enabled = new Set(resolveEnabledStrategyIds(settings?.enabledStrategyIds));
 
-  const toggle = (id: string, on: boolean): Promise<void> => {
+  const toggle = (id: string, on: boolean): void => {
     const next = new Set(enabled);
     if (on) next.add(id);
     else next.delete(id);
-    return settingsItem.setValue({
+    saveSettings({
       enabledStrategyIds: STRATEGY_CATALOG.map((s) => s.id).filter((known) => next.has(known)),
     });
   };
@@ -29,7 +29,7 @@ export function StrategiesCard() {
             label={strategy.label}
             description={strategy.id}
             checked={enabled.has(strategy.id)}
-            onChange={(event) => void toggle(strategy.id, event.currentTarget.checked)}
+            onChange={(event) => toggle(strategy.id, event.currentTarget.checked)}
             data-testid={`strategy-${strategy.id}`}
           />
         ))}

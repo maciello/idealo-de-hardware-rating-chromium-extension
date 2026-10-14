@@ -1,6 +1,10 @@
 import { passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
-import { STRATEGY_CATALOG, createRatingEngine, resolveEnabledStrategyIds } from "../src/ratings/engine";
+import {
+  createRatingEngine,
+  resolveEnabledStrategyIds,
+  STRATEGY_CATALOG,
+} from "../src/ratings/engine";
 
 const row = (id: number, name: string, cpumark: string) => ({
   id: String(id),

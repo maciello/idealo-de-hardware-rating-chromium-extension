@@ -1,4 +1,17 @@
 import {
+  addFilters,
+  describeQuery,
+  type FilterCatalog,
+  filterId,
+  type IdealoQuery,
+  KNOWN_SORT_KEYS,
+  removeFilters,
+  setPrice,
+  setSort,
+  toggleFilter,
+  toWebUrl,
+} from "@idealo-hw/idealo-query";
+import {
   ActionIcon,
   Button,
   Checkbox,
@@ -17,19 +30,6 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAdjustmentsHorizontal, IconSearch, IconSettings } from "@tabler/icons-react";
-import {
-  type FilterCatalog,
-  type IdealoQuery,
-  KNOWN_SORT_KEYS,
-  addFilters,
-  describeQuery,
-  filterId,
-  removeFilters,
-  setPrice,
-  setSort,
-  toWebUrl,
-  toggleFilter,
-} from "@idealo-hw/idealo-query";
 import { useEffect, useMemo, useState } from "react";
 
 export interface FilterPanelProps {
@@ -105,7 +105,12 @@ function PriceRange({
   );
 }
 
-export function FilterPanel({ initialQuery, loadCatalog, onApply, onOpenSettings }: FilterPanelProps) {
+export function FilterPanel({
+  initialQuery,
+  loadCatalog,
+  onApply,
+  onOpenSettings,
+}: FilterPanelProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const [startQuery, setStartQuery] = useState(initialQuery);
   const [query, setQuery] = useState(startQuery);
@@ -152,21 +157,17 @@ export function FilterPanel({ initialQuery, loadCatalog, onApply, onOpenSettings
   const unchanged = url === targetUrl(startQuery);
   const sortOptions = [
     { value: "", label: "Default" },
-    ...[...KNOWN_SORT_KEYS, ...(query.sort && !KNOWN_SORT_KEYS.some((k) => k === query.sort) ? [query.sort] : [])].map(
-      (key) => ({ value: key, label: key }),
-    ),
+    ...[
+      ...KNOWN_SORT_KEYS,
+      ...(query.sort && !KNOWN_SORT_KEYS.some((k) => k === query.sort) ? [query.sort] : []),
+    ].map((key) => ({ value: key, label: key })),
   ];
 
   const changeRawIds = (next: string[]) => {
     const valid = next.filter((id) => DIGITS.test(id));
     const removed = rawIds.filter((id) => !valid.includes(id));
     const added = valid.filter((id) => !query.filterIds.some((existing) => existing === id));
-    setQuery((q) =>
-      addFilters(
-        removeFilters(q, removed.map(filterId)),
-        added.map(filterId),
-      ),
-    );
+    setQuery((q) => addFilters(removeFilters(q, removed.map(filterId)), added.map(filterId)));
   };
 
   return (
@@ -262,7 +263,11 @@ export function FilterPanel({ initialQuery, loadCatalog, onApply, onOpenSettings
             <Text size="xs" fw={700} tt="uppercase" c="dimmed">
               Target
             </Text>
-            <Code block data-testid="target-url" style={{ wordBreak: "break-all" }}>
+            <Code
+              block
+              data-testid="target-url"
+              style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
+            >
               {url}
             </Code>
           </Stack>
@@ -276,7 +281,11 @@ export function FilterPanel({ initialQuery, loadCatalog, onApply, onOpenSettings
                 Reset
               </Button>
             </Group>
-            <Button disabled={unchanged || url === ""} onClick={() => onApply(url)} data-testid="apply">
+            <Button
+              disabled={unchanged || url === ""}
+              onClick={() => onApply(url)}
+              data-testid="apply"
+            >
               Apply
             </Button>
           </Group>

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { heuristicIdealoAdapter as adapter } from "../src/page/heuristic-idealo-adapter";
 import listingHtml from "./fixtures/listing.html?raw";
@@ -44,7 +45,8 @@ describe("heuristicIdealoAdapter.listingItems (synthetic fixture)", () => {
   });
 
   it("does not merge neighbouring items that share a plain container", () => {
-    const doc = load(`<div><div><a href="/preisvergleich/OffersOfProduct/1_a.html">A i5-1235U</a></div>
+    const doc =
+      load(`<div><div><a href="/preisvergleich/OffersOfProduct/1_a.html">A i5-1235U</a></div>
       <div><a href="/preisvergleich/OffersOfProduct/2_b.html">B i7-1255U</a></div></div>`);
     const found = adapter.listingItems(doc);
     expect(found.map((i) => i.title)).toEqual(["A i5-1235U", "B i7-1255U"]);

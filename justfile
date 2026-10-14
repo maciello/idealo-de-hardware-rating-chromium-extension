@@ -35,6 +35,10 @@ fetch-passmark:
 build:
     pnpm --filter @idealo-hw/extension build
 
+# Build the extension and run Playwright e2e against it (headless Chromium, synthetic idealo fixtures).
+e2e:
+    pnpm --filter @idealo-hw/extension e2e
+
 # Extension dev server with HMR.
 dev:
     pnpm --filter @idealo-hw/extension dev

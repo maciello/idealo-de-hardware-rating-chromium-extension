@@ -1,4 +1,5 @@
-import { type IdealoQuery, categoryId, filterId, parseIdealoUrl } from "@idealo-hw/idealo-query";
+// @vitest-environment jsdom
+import { categoryId, filterId, type IdealoQuery, parseIdealoUrl } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
 import listingHtml from "./fixtures/listing.html?raw";
@@ -22,9 +23,23 @@ describe("domLinkCatalog (synthetic fixture)", () => {
   it("derives options from toggle links and groups them by nearest heading or legend", async () => {
     const catalog = await load(base);
     expect(catalog?.categoryId).toBe(categoryId("19116"));
-    expect(catalog?.groups.map((g) => [g.name, g.filters.map((f) => [f.filterId, f.label])])).toEqual([
-      ["Prozessor-Hersteller", [["1234", "Intel"], ["5678", "AMD"]]],
-      ["Arbeitsspeicher", [["2222", "16 GB"], ["3333", "32 GB"]]],
+    expect(
+      catalog?.groups.map((g) => [g.name, g.filters.map((f) => [f.filterId, f.label])]),
+    ).toEqual([
+      [
+        "Prozessor-Hersteller",
+        [
+          ["1234", "Intel"],
+          ["5678", "AMD"],
+        ],
+      ],
+      [
+        "Arbeitsspeicher",
+        [
+          ["2222", "16 GB"],
+          ["3333", "32 GB"],
+        ],
+      ],
       ["Other", [["4444", "Touchscreen"]]],
     ]);
   });
@@ -37,7 +52,9 @@ describe("domLinkCatalog (synthetic fixture)", () => {
 
   it("also recognises removal links of already selected filters", async () => {
     const html = `<h4>Marke</h4><ul><li><a href="/preisvergleich/ProductCategory/19116.html">Intel</a></li></ul>`;
-    const selected = queryOf("https://www.idealo.de/preisvergleich/ProductCategory/19116F1234.html");
+    const selected = queryOf(
+      "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234.html",
+    );
     const catalog = await load(selected, html);
     expect(catalog?.groups[0]?.filters[0]?.filterId).toBe(filterId("1234"));
   });

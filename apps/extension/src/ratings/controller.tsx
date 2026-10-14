@@ -1,15 +1,15 @@
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import type { PageAdapter } from "../page/adapter";
 import { cpuSnapshotItem, loadCpuSnapshot, settingsItem } from "../storage/items";
-import { mountReact, type MountedReactUi } from "../ui/mount";
+import { type MountedReactUi, mountReact } from "../ui/mount";
 import { RatingBadge } from "./Badge";
 import {
+  createRatingEngine,
   type ItemRating,
   type RatingEngine,
   type RatingQuery,
-  STRATEGY_CATALOG,
-  createRatingEngine,
   resolveEnabledStrategyIds,
+  STRATEGY_CATALOG,
 } from "./engine";
 
 const BADGE_TAG = "idealo-hw-badge";
@@ -119,7 +119,9 @@ export function startRatings(ctx: ContentScriptContext, adapter: PageAdapter): v
       engine ??= buildEngine();
       ratings = (await engine)?.rate(targets.map((t) => t.query)) ?? [];
     }
-    sync(targets.flatMap((t, i) => (ratings[i] ? [{ element: t.element, rating: ratings[i] }] : [])));
+    sync(
+      targets.flatMap((t, i) => (ratings[i] ? [{ element: t.element, rating: ratings[i] }] : [])),
+    );
   };
 
   const refresh = async (): Promise<void> => {

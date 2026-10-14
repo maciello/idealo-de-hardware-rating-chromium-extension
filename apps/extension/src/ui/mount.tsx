@@ -1,7 +1,7 @@
-import { MantineProvider, createTheme } from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 import mantineCss from "@mantine/core/styles.css?inline";
 import { type ReactNode, useMemo } from "react";
-import { type Root, createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
 
@@ -45,9 +45,7 @@ function ShadowMantine({
       getRootElement={() => host}
       cssVariablesSelector=":host"
     >
-      <div style={{ fontFamily: "var(--mantine-font-family)", fontSize: 14, lineHeight: 1.4 }}>
-        {children}
-      </div>
+      {children}
     </MantineProvider>
   );
 }
@@ -91,6 +89,12 @@ export async function mountReact(
       if (sharedSheet) shadow.adoptedStyleSheets = [sharedSheet];
       shadowHost = host;
       container = uiContainer;
+      // Mantine styles use `[data-mantine-color-scheme] .x` descendant selectors, which cannot match
+      // across the shadow boundary from the attribute MantineProvider puts on the host.
+      uiContainer.setAttribute("data-mantine-color-scheme", "light");
+      // Portals render next to the app root, so base typography goes on the shared container.
+      uiContainer.style.cssText =
+        "font-family: var(--mantine-font-family); font-size: 14px; line-height: 1.4; color: var(--mantine-color-text);";
       root = createRoot(uiContainer);
       root.render(wrap(node));
     },

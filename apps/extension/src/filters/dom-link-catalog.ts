@@ -11,13 +11,21 @@ const OTHER_GROUP = "Other";
 const HEADING = "legend, h1, h2, h3, h4, h5, h6, [role='heading']";
 const MAX_CLIMB = 8;
 
-const collapse = (text: string | null | undefined): string => (text ?? "").replace(/\s+/g, " ").trim();
+const collapse = (text: string | null | undefined): string =>
+  (text ?? "").replace(/\s+/g, " ").trim();
 /** Result counts such as "(1.234)" are not part of the label. */
 const stripCount = (label: string): string => label.replace(/\s*\(\d[\d.]*\)\s*$/, "").trim();
-const slug = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slug = (name: string): string =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
 /** The id that differs between two filter sets when they differ by exactly one id. */
-function singleDifference(current: readonly string[], other: readonly string[]): string | undefined {
+function singleDifference(
+  current: readonly string[],
+  other: readonly string[],
+): string | undefined {
   const a = new Set(current);
   const b = new Set(other);
   const added = [...b].filter((id) => !a.has(id));
@@ -33,7 +41,11 @@ function groupNameOf(anchor: Element): string {
   if (fieldsetLegend) return collapse(fieldsetLegend.textContent) || OTHER_GROUP;
   let branch: Element | null = anchor;
   for (let depth = 0; depth < MAX_CLIMB && branch; depth++, branch = branch.parentElement) {
-    for (let sibling = branch.previousElementSibling; sibling; sibling = sibling.previousElementSibling) {
+    for (
+      let sibling = branch.previousElementSibling;
+      sibling;
+      sibling = sibling.previousElementSibling
+    ) {
       const heading = sibling.matches(HEADING)
         ? sibling
         : sibling.querySelector("a") // a sibling holding links is another group, not a title block

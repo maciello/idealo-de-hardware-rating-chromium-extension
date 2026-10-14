@@ -6,7 +6,9 @@ import { captureModeItem } from "../storage/items";
 import { useStorageItem } from "./use-storage-item";
 
 function download(filename: string, json: unknown): void {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], { type: "application/json" }));
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(json, null, 2)], { type: "application/json" }),
+  );
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
@@ -15,7 +17,8 @@ function download(filename: string, json: unknown): void {
 }
 
 export function CaptureCard() {
-  const enabled = useStorageItem(captureModeItem) ?? false;
+  const [stored, setCaptureMode] = useStorageItem(captureModeItem);
+  const enabled = stored ?? false;
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -43,7 +46,7 @@ export function CaptureCard() {
         <Switch
           label="Capture mode"
           checked={enabled}
-          onChange={(event) => void captureModeItem.setValue(event.currentTarget.checked)}
+          onChange={(event) => setCaptureMode(event.currentTarget.checked)}
           data-testid="capture-mode"
         />
         <Group justify="space-between">

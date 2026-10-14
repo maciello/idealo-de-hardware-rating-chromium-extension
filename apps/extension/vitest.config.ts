@@ -5,7 +5,6 @@ export default defineProject({
   plugins: [WxtVitest({ root: import.meta.dirname })],
   test: {
     name: "extension",
-    environment: "jsdom",
     include: ["test/**/*.test.{ts,tsx}"],
   },
 });

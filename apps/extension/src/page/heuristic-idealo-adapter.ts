@@ -13,9 +13,13 @@ const CONTAINER_TAGS = new Set(["BODY", "MAIN", "UL", "OL", "HTML", "SECTION"]);
 const ITEM_TAGS = new Set(["LI", "ARTICLE"]);
 const MAX_SPEC_CHARS = 20_000;
 
-const collapse = (text: string | null | undefined): string => (text ?? "").replace(/\s+/g, " ").trim();
+const collapse = (text: string | null | undefined): string =>
+  (text ?? "").replace(/\s+/g, " ").trim();
 
-const idString = z.union([z.string(), z.number()]).transform(String).pipe(z.string().regex(/^\d+$/));
+const idString = z
+  .union([z.string(), z.number()])
+  .transform(String)
+  .pipe(z.string().regex(/^\d+$/));
 
 function idFromHeart(raw: string | null): string | undefined {
   if (raw === null) return undefined;
@@ -63,7 +67,8 @@ function itemRootOf(seed: Seed, seeds: readonly Seed[]): Element {
   for (;;) {
     const parent = current.parentElement;
     if (parent === null || CONTAINER_TAGS.has(parent.tagName)) return current;
-    if (seeds.some((other) => other.id !== seed.id && parent.contains(other.element))) return current;
+    if (seeds.some((other) => other.id !== seed.id && parent.contains(other.element)))
+      return current;
     current = parent;
     if (ITEM_TAGS.has(current.tagName)) return current;
   }
@@ -74,12 +79,17 @@ function titleOf(item: Element, text: string): string {
     .map((a) => collapse(a.getAttribute("title") ?? a.getAttribute("aria-label") ?? a.textContent))
     .filter(Boolean)
     .sort((a, b) => b.length - a.length);
-  return links[0] || collapse(item.querySelector("h1, h2, h3, h4")?.textContent) || text.slice(0, 160);
+  return (
+    links[0] || collapse(item.querySelector("h1, h2, h3, h4")?.textContent) || text.slice(0, 160)
+  );
 }
 
 function priceOf(item: Element, text: string): number | undefined {
   const node = item.querySelector(PRICE);
-  return (node ? parseGermanPrice(collapse(node.textContent)) : undefined) ?? parseGermanPrice(text, true);
+  return (
+    (node ? parseGermanPrice(collapse(node.textContent)) : undefined) ??
+    parseGermanPrice(text, true)
+  );
 }
 
 const ProductJsonSchema = z.object({
@@ -110,11 +120,15 @@ function readProductJson(root: ParentNode): { title?: string; priceEur?: number 
   };
 }
 
-const SPEC_SELECTORS = 'table, dl, [class*="datasheet" i], [class*="spec" i], [data-testid*="spec" i]';
+const SPEC_SELECTORS =
+  'table, dl, [class*="datasheet" i], [class*="spec" i], [data-testid*="spec" i]';
 
 function specTextOf(root: ParentNode): string {
   const specs = [...root.querySelectorAll(SPEC_SELECTORS)].map((n) => collapse(n.textContent));
-  const text = specs.length > 0 ? specs.join(" ") : collapse((root.querySelector("main") ?? root.querySelector("body"))?.textContent);
+  const text =
+    specs.length > 0
+      ? specs.join(" ")
+      : collapse((root.querySelector("main") ?? root.querySelector("body"))?.textContent);
   return text.slice(0, MAX_SPEC_CHARS);
 }
 
@@ -152,7 +166,8 @@ export const heuristicIdealoAdapter: PageAdapter = {
     const heading = root.querySelector("h1");
     const title = json.title ?? collapse(heading?.textContent);
     if (title === "") return null;
-    const priceEur = json.priceEur ?? parseGermanPrice(collapse(root.querySelector(PRICE)?.textContent), true);
+    const priceEur =
+      json.priceEur ?? parseGermanPrice(collapse(root.querySelector(PRICE)?.textContent), true);
     return {
       element: heading,
       title,

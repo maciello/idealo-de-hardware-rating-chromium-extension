@@ -1,11 +1,11 @@
 import {
   type BenchmarkSnapshot,
   type CpuBenchmarkRecord,
-  type Rating,
-  type RatingStrategy,
   createCanonicalKeyMatcher,
   createStrategies,
   extractCpuIdentity,
+  type Rating,
+  type RatingStrategy,
 } from "@idealo-hw/hw-bench";
 
 export interface RatingQuery {

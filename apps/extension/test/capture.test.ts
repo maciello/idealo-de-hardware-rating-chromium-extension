@@ -1,5 +1,5 @@
-import { fakeBrowser } from "wxt/testing/fake-browser";
 import { beforeEach, describe, expect, it } from "vitest";
+import { fakeBrowser } from "wxt/testing/fake-browser";
 import {
   type CapturedResponse,
   RING_CAPACITY,
@@ -47,9 +47,13 @@ describe("captureRing", () => {
 
 describe("TapMessageSchema", () => {
   it("accepts tagged messages and rejects everything else", () => {
-    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: entry(1) }).success).toBe(true);
+    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: entry(1) }).success).toBe(
+      true,
+    );
     expect(TapMessageSchema.safeParse({ source: "other", response: entry(1) }).success).toBe(false);
-    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: { url: 1 } }).success).toBe(false);
+    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: { url: 1 } }).success).toBe(
+      false,
+    );
     expect(TapMessageSchema.safeParse("hello").success).toBe(false);
   });
 });

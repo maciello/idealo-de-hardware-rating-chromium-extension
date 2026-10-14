@@ -1,8 +1,59 @@
 {
   "data": [
-    {"id": "9101", "name": "Intel Core i7-13700H", "cpumark": "28,000", "thread": "3,900", "tdp": "45", "price": "NA", "date": "Jan 2023", "socket": "FCBGA1744", "cat": "Laptop", "cpuCount": 1, "cores": "6", "logicals": "2", "secondaryCores": "8", "secondaryLogicals": "1", "rank": 300, "samples": "1000"},
-    {"id": "9102", "name": "AMD Ryzen 5 7640U", "cpumark": "17,000", "thread": "3,700", "tdp": "28", "price": "NA", "date": "Apr 2023", "socket": "FP8", "cat": "Laptop", "cpuCount": 1, "cores": "6", "logicals": "2", "secondaryCores": "0", "secondaryLogicals": "0", "rank": 900, "samples": "500"},
-    {"id": "9103", "name": "Intel Core i9-13900HX", "cpumark": "45,000", "thread": "4,100", "tdp": "55", "price": "NA", "date": "Jan 2023", "socket": "FCBGA1964", "cat": "Laptop", "cpuCount": 1, "cores": "8", "logicals": "2", "secondaryCores": "16", "secondaryLogicals": "1", "rank": 50, "samples": "700"},
-    {"id": "9104", "name": "Invalid Row Without Score", "cpumark": "NA", "cat": "Laptop"}
+    {
+      "id": "9101",
+      "name": "Intel Core i7-13700H",
+      "cpumark": "28,000",
+      "thread": "3,900",
+      "tdp": "45",
+      "price": "NA",
+      "date": "Jan 2023",
+      "socket": "FCBGA1744",
+      "cat": "Laptop",
+      "cpuCount": 1,
+      "cores": "6",
+      "logicals": "2",
+      "secondaryCores": "8",
+      "secondaryLogicals": "1",
+      "rank": 300,
+      "samples": "1000"
+    },
+    {
+      "id": "9102",
+      "name": "AMD Ryzen 5 7640U",
+      "cpumark": "17,000",
+      "thread": "3,700",
+      "tdp": "28",
+      "price": "NA",
+      "date": "Apr 2023",
+      "socket": "FP8",
+      "cat": "Laptop",
+      "cpuCount": 1,
+      "cores": "6",
+      "logicals": "2",
+      "secondaryCores": "0",
+      "secondaryLogicals": "0",
+      "rank": 900,
+      "samples": "500"
+    },
+    {
+      "id": "9103",
+      "name": "Intel Core i9-13900HX",
+      "cpumark": "45,000",
+      "thread": "4,100",
+      "tdp": "55",
+      "price": "NA",
+      "date": "Jan 2023",
+      "socket": "FCBGA1964",
+      "cat": "Laptop",
+      "cpuCount": 1,
+      "cores": "8",
+      "logicals": "2",
+      "secondaryCores": "16",
+      "secondaryLogicals": "1",
+      "rank": 50,
+      "samples": "700"
+    },
+    { "id": "9104", "name": "Invalid Row Without Score", "cpumark": "NA", "cat": "Laptop" }
   ]
 }

@@ -1,12 +1,13 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { type BrowserContext, type Page, expect, test } from "@playwright/test";
+import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
 
 const here = import.meta.dirname;
 const LISTING_HTML = readFileSync(resolve(here, "../test/fixtures/listing.html"), "utf8");
 const PRODUCT_HTML = readFileSync(resolve(here, "../test/fixtures/product.html"), "utf8");
 const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json");
+const GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.synthetic.csv");
 const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
 
 const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
@@ -64,6 +65,9 @@ test("options: import synthetic PassMark data, enable capture mode", async () =>
   await expect(page.getByTestId("import-error-cpu")).toBeVisible();
   await expect(page.getByTestId("count-cpu")).toHaveText("3");
 
+  await page.locator('[data-testid="dropzone-gpu"] input[type="file"]').setInputFiles(GPU_FIXTURE);
+  await expect(page.getByTestId("count-gpu")).toHaveText("1");
+
   await shot(page, "options");
   await page.close();
 });
@@ -83,6 +87,7 @@ test("listing: badges for known CPUs only, idempotent for new items", async () =
   await badgeOf(page, "1001").getByTestId("rating-badge").hover();
   await expect(page.getByText("PassMark match via normalized model key")).toBeVisible();
   await expect(page.getByText("Intel Core i7-13700H").first()).toBeVisible();
+  await page.waitForTimeout(400);
   await shot(page, "listing-badges");
   await page.mouse.move(0, 0);
 
@@ -128,6 +133,23 @@ test("listing: tap leaves the page's own fetch untouched and capture mode record
   await options.close();
 });
 
+test("settings: disabling strategies updates open badges live", async () => {
+  const listing = await context.newPage();
+  await listing.goto(LISTING_URL);
+  await expect(badgeOf(listing, "1001")).toContainText("3,900");
+
+  const options = await context.newPage();
+  await options.goto(`chrome-extension://${extensionId}/options.html`);
+  for (const id of ["single_thread_score", "value_per_euro", "peer_percentile_on_listing"]) {
+    await options.getByTestId(`strategy-${id}`).uncheck({ force: true });
+  }
+  await expect(badgeOf(listing, "1001")).not.toContainText("3,900");
+  await expect(badgeOf(listing, "1001")).toContainText("28,000");
+  await expect(badgeOf(listing, "1001")).toContainText("P67");
+  await options.close();
+  await listing.close();
+});
+
 test("product page: badge next to the title, CPU read from the spec table", async () => {
   const page = await context.newPage();
   await page.goto(PRODUCT_URL);
@@ -142,10 +164,16 @@ test("filter builder: batch toggles, one navigation", async () => {
 
   await page.getByTestId("filter-fab").click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByText("Prozessor-Hersteller")).toBeVisible();
 
-  await page.getByTestId("filter-1234").check({ force: true });
-  await page.getByTestId("filter-2222").check({ force: true });
+  const settingsTab = context.waitForEvent("page");
+  await page.getByRole("button", { name: "Open settings" }).click();
+  expect((await settingsTab).url()).toBe(`chrome-extension://${extensionId}/options.html`);
+  await (await settingsTab).close();
+  await page.bringToFront();
+  await expect(page.locator("idealo-hw-filter").getByText("Prozessor-Hersteller")).toBeVisible();
+
+  await page.getByTestId("filter-1234").check();
+  await page.getByTestId("filter-2222").check();
   const target = page.getByTestId("target-url");
   await expect(target).toHaveText(
     "https://www.idealo.de/preisvergleich/ProductCategory/19116F1234-2222.html",

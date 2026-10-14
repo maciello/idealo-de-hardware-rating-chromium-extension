@@ -8,8 +8,13 @@ export interface StoredItem<T> {
   watch(callback: (value: T) => void): () => void;
 }
 
-/** Live value of a storage item; `undefined` until the first read completes. */
-export function useStorageItem<T>(item: StoredItem<T>): T | undefined {
+/**
+ * Live value of a storage item (`undefined` until the first read completes) plus an optimistic
+ * setter: the UI updates immediately, storage and other contexts follow.
+ */
+export function useStorageItem<T>(
+  item: StoredItem<T>,
+): readonly [T | undefined, (next: T) => void] {
   const [value, setValue] = useState<T>();
   useEffect(() => {
     let active = true;
@@ -26,5 +31,9 @@ export function useStorageItem<T>(item: StoredItem<T>): T | undefined {
       unwatch();
     };
   }, [item]);
-  return value;
+  const set = (next: T): void => {
+    setValue(next);
+    void item.setValue(next);
+  };
+  return [value, set];
 }
