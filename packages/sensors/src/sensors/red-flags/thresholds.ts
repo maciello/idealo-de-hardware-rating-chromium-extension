@@ -1,4 +1,4 @@
-import type { VideoOutput } from "../facts";
+import type { VideoOutput } from "../../facts";
 
 const MODERN_VIDEO_KINDS: readonly VideoOutput["kind"][] = ["displayport", "thunderbolt", "usb_c"];
 

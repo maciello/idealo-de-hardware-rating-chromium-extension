@@ -1,4 +1,4 @@
-import type { Sensor, SensorInput, Signal } from "../signal";
+import type { Sensor, SensorInput, Signal } from "../../signal";
 import { FLAG_RULES, type FlagRule } from "./catalog";
 import { evidenceOf } from "./evidence";
 import { RED_FLAGS_SENSOR_ID } from "./ids";

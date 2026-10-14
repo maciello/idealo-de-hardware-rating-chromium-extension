@@ -1,4 +1,4 @@
-import { quantity, type Sensor, type SensorInput, type Signal } from "../signal";
+import { quantity, type Sensor, type SensorInput, type Signal } from "../../signal";
 import { POWER_THRESHOLDS } from "./thresholds";
 
 export const POWER_SENSOR_ID = "power";

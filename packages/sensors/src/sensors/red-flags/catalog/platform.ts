@@ -1,4 +1,4 @@
-import type { VideoOutput } from "../../facts";
+import type { VideoOutput } from "../../../facts";
 import { RED_FLAG_IDS as ID } from "../ids";
 import { RED_FLAG_THRESHOLDS as T } from "../thresholds";
 import { atMost, below, type FlagRule, flagRule } from "./model";

@@ -1,5 +1,5 @@
-import type { ProductFacts } from "../facts";
-import { type Evidence, type EvidenceUnit, type EvidenceValue, quantity } from "../signal";
+import type { ProductFacts } from "../../facts";
+import { type Evidence, type EvidenceUnit, type EvidenceValue, quantity } from "../../signal";
 import type { FlagField } from "./catalog";
 
 /** The evidence for a fact the product states; undefined when it does not. */

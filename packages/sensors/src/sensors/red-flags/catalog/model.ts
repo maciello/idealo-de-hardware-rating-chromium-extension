@@ -1,5 +1,5 @@
-import type { ProductFacts } from "../../facts";
-import type { SensorClock, Signal, SignalParamsById } from "../../signal";
+import type { ProductFacts } from "../../../facts";
+import type { SensorClock, Signal, SignalParamsById } from "../../../signal";
 import type { FlagId } from "../ids";
 
 /** The facts a rule can read and show as evidence. */

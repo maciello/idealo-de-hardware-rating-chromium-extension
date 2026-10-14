@@ -1,5 +1,5 @@
-import type { WebcamFact } from "../facts";
-import { type Evidence, quantity, type Sensor, type SensorInput, type Signal } from "../signal";
+import type { WebcamFact } from "../../facts";
+import { type Evidence, quantity, type Sensor, type SensorInput, type Signal } from "../../signal";
 import { WEBCAM_THRESHOLDS as T } from "./thresholds";
 
 export const WEBCAM_SENSOR_ID = "webcam";

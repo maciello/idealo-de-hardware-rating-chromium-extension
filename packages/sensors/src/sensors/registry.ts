@@ -1,6 +1,6 @@
+import type { Sensor, SensorInput, Signal } from "../signal";
 import { powerSensor } from "./power/sensor";
 import { redFlagsSensor } from "./red-flags";
-import type { Sensor, SensorInput, Signal } from "./signal";
 import { webcamSensor } from "./webcam/sensor";
 
 /** Every sensor, in the order their signals are reported. */

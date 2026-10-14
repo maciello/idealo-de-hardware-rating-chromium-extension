@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { POWER_SIGNAL_IDS, powerSensor } from "../../src/power/sensor";
-import type { DeviceClass, SensorCpu, SensorInput } from "../../src/signal";
+import { POWER_SIGNAL_IDS, powerSensor } from "../../../src/sensors/power/sensor";
+import type { DeviceClass, SensorCpu, SensorInput } from "../../../src/signal";
 
 const NOW = { year: 2026 };
 

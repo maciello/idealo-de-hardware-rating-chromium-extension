@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { fromDatasheet } from "../../src/facts";
-import type { DeviceClass, Signal } from "../../src/signal";
-import { WEBCAM_SIGNAL_IDS as ID, WEBCAM_SENSOR_ID, webcamSensor } from "../../src/webcam/sensor";
-import { datasheet, type Overrides } from "../fixtures/datasheets";
+import { fromDatasheet } from "../../../src/facts";
+import {
+  WEBCAM_SIGNAL_IDS as ID,
+  WEBCAM_SENSOR_ID,
+  webcamSensor,
+} from "../../../src/sensors/webcam/sensor";
+import type { DeviceClass, Signal } from "../../../src/signal";
+import { datasheet, type Overrides } from "../../fixtures/datasheets";
 
 const sense = (rows: Overrides, deviceClass: DeviceClass = "laptop"): Signal[] =>
   webcamSensor.sense({

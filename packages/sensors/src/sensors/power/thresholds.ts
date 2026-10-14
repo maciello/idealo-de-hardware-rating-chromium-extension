@@ -1,4 +1,4 @@
-import type { DeviceClass } from "../signal";
+import type { DeviceClass } from "../../signal";
 
 export interface PowerThresholds {
   /** Inclusive: a TDP at or below this is very low. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { SENSORS, senseAll } from "../src/registry";
-import type { Sensor, SensorInput, Signal } from "../src/signal";
+import { SENSORS, senseAll } from "../../src/sensors/registry";
+import type { Sensor, SensorInput, Signal } from "../../src/signal";
 
 const NOW = { year: 2026 };
 

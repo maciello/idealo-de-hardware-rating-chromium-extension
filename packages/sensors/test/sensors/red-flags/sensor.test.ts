@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { fromDatasheet, type RamType } from "../../src/facts";
-import { RED_FLAG_IDS as ID, RED_FLAGS_SENSOR_ID, redFlagsSensor } from "../../src/red-flags";
-import type { DeviceClass, Signal } from "../../src/signal";
-import { datasheet, ddr, LPDDR5X, type Overrides } from "../fixtures/datasheets";
+import { fromDatasheet, type RamType } from "../../../src/facts";
+import {
+  RED_FLAG_IDS as ID,
+  RED_FLAGS_SENSOR_ID,
+  redFlagsSensor,
+} from "../../../src/sensors/red-flags";
+import type { DeviceClass, Signal } from "../../../src/signal";
+import { datasheet, ddr, LPDDR5X, type Overrides } from "../../fixtures/datasheets";
 
 const NOW = { year: 2026 };
 

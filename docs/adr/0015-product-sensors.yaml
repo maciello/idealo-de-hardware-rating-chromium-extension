@@ -36,7 +36,7 @@ adr.0015:
         rationale: TDP clusters at vendor classes; the thresholds cut the natural tails (<= ~5% low, ~10% high), never a mid class
       efficiency: CPU Mark per TDP watt shown in the detail text only; not a class (base TDP is not measured draw)
     red_flags:
-      code: packages/sensors/src/red-flags (catalog/*.ts rules, thresholds.ts cut-offs); ids are RED_FLAG_IDS
+      code: packages/sensors/src/sensors/red-flags (catalog/*.ts rules, thresholds.ts cut-offs); ids are RED_FLAG_IDS
       engine: one FlagRule per flag {id, device laptop|any, fields, severity, trips}; rules sharing a tier emit only the worst
       facts: fromDatasheet(label -> value) and fromCharacteristics(tile values); numeric labels resolve through idealo-query measureOf (same vocabulary as the filter groups), other labels through facts/readers/table.ts; silence states nothing
       severity_semantics:
@@ -73,7 +73,7 @@ adr.0015:
         - https://www.laptopmag.com/articles/laptop-screen-guide
         - https://www.pcworld.com/article/2872662/when-an-ssd-upgrade-is-not-worthwhile.html
     webcam:
-      code: packages/sensors/src/webcam (GH #7)
+      code: packages/sensors/src/sensors/webcam (GH #7)
       facts: "webcam: {present: false} | {present: true, heightPx?, megapixels?, irCamera?}; absent = datasheet silent, never 'no webcam' (idealo often omits the camera that the shop text mentions)"
       signals:
         - {id: webcam.full_hd, kind: badge, severity: info, rule: "height >= 1080 or >= 2 MP"}
