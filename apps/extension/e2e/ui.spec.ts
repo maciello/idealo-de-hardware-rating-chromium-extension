@@ -304,7 +304,9 @@ test("filter builder: without a readable catalog it says so and stays usable", a
   await expect(page.getByTestId("no-catalog-note")).toContainText("page snapshot");
   await expect(page.getByTestId("requirements")).toHaveCount(0);
   await expect(page.getByTestId("raw-ids")).toHaveCount(0);
-  await page.getByTestId("query-text").fill("gaming laptop");
+  await page.getByTestId("query-text").clear();
+  await page.getByTestId("query-text").pressSequentially("gaming laptop");
+  await expect(page.getByTestId("query-text")).toHaveValue("gaming laptop");
   await page.getByTestId("details-toggle").click();
   await expect(page.getByTestId("target-url")).toHaveText(
     "https://www.idealo.de/preisvergleich/ProductCategory/19116.html?q=gaming%20laptop",

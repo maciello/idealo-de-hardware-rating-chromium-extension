@@ -41,6 +41,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatInteger } from "../ratings/present";
 import { RequirementsSection } from "../requirements/RequirementsSection";
 import { emptyRequirements, isEmpty } from "../requirements/state";
+import { useDraftText } from "./draft-text";
 
 export interface FilterPanelProps {
   opened: boolean;
@@ -164,6 +165,7 @@ export function FilterPanel({
   const close = () => onOpenedChange(false);
   const [startQuery, setStartQuery] = useState(initialQuery);
   const [query, setQuery] = useState(startQuery);
+  const [shownText, setDraftText] = useDraftText(query.text);
   const [catalog, setCatalog] = useState<FilterCatalog | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
@@ -275,9 +277,10 @@ export function FilterPanel({
           <TextInput
             label="Search text"
             placeholder="For example: laptop 32GB"
-            value={query.text ?? ""}
+            value={shownText}
             onChange={(event) => {
               const text = event.currentTarget.value;
+              setDraftText(text);
               setQuery((q) => setText(q, text === "" ? undefined : text));
             }}
             data-testid="query-text"
