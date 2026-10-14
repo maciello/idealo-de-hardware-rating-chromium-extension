@@ -7,12 +7,17 @@ export interface GpuIdentity {
   readonly vendor: "NVIDIA" | "AMD" | "Intel";
   readonly family: string;
   readonly model: string;
-  /** Memory in GB when the text states it ("(8GB)", "16 GB", "16384 MB"); not part of `key`. */
+  /**
+   * VRAM in GB when the text states it directly after the model ("RTX 4060 (8GB)", "RTX 4060 Ti 16 GB",
+   * "16384 MB"); not part of `key`. System RAM elsewhere in a title ("16GB RAM", "- 16GB DDR4") never counts.
+   */
   readonly memoryGb: number | null;
   /** "laptop" when the text itself says Laptop GPU / (Mobile) / Max-Q; null when it says nothing. */
   readonly variant: "laptop" | null;
   /** The text says Max-Q. */
   readonly maxQ: boolean;
+  /** Integrated graphics (Radeon nnnM/S, Iris, HD, UHD, Arc): not tied to laptops or desktops. */
+  readonly integrated: boolean;
   /** Text left over after the model and known noise words; empty means the text is exactly this GPU. */
   readonly residual: string;
 }
@@ -24,6 +29,9 @@ interface Found {
   readonly family: string;
   readonly model: string;
 }
+
+/** Families that live in the CPU/APU package: no form factor of their own, PassMark's category is only where samples came from. */
+const INTEGRATED_FAMILY = /^(?:Radeon|Iris|HD Graphics|UHD Graphics|Arc)(?:\s|$)/;
 
 type Extractor = (text: string) => Found | null;
 
@@ -142,26 +150,21 @@ const EXTRACTORS: readonly Extractor[] = [
   quadroT,
 ];
 
-/** Memory sizes, in GB. "16384 MB" -> 16. */
-const MEMORY_GB = /\(?\s*\b(\d{1,3})\s*gb\b\s*\)?/;
-const MEMORY_MB = /\(?\s*\b(\d{3,6})\s*mb\b\s*\)?/;
+/** A memory size directly after the model: "6GB", "(8 GB)", "16384 MB". Sizes followed by system-memory words are not VRAM. */
+const MEMORY_AFTER_MODEL =
+  /^\s*[([]?\s*(?:(\d{1,3})\s*gb|(\d{3,6})\s*mb)\b\s*[)\]]?(?!\s*(?:ram\b|ddr\d|ssd|hdd|nvme|arbeitsspeicher))/;
 const LAPTOP_MARK = /\blaptop(?:\s+gpu)?\b|\(\s*mobile\s*\)|\bmobile\b|\bnotebook(?:\s+gpu)?\b/;
 const MAX_Q = /\b(?:with\s+)?max[\s-]?q(?:\s+design)?\b/;
 /** Words that appear around a GPU name but are not part of its identity. */
 const NOISE =
   /\b(?:nvidia|amd|ati|intel|graphics|gpu|grafik|grafikkarte|with|design|series)\b|gddr\d+x?/g;
 
-function takeMemoryGb(text: string): { text: string; memoryGb: number | null } {
-  const gb = MEMORY_GB.exec(text);
-  if (gb !== null) {
-    return { text: text.replace(MEMORY_GB, " "), memoryGb: Number(gb[1]) };
-  }
-  const mb = MEMORY_MB.exec(text);
-  if (mb !== null) {
-    const gigabytes = Math.round(Number(mb[1]) / 1024);
-    return { text: text.replace(MEMORY_MB, " "), memoryGb: gigabytes > 0 ? gigabytes : null };
-  }
-  return { text, memoryGb: null };
+/** Reads the VRAM size right behind the model at `from`; returns where the size ends. */
+function memoryAfter(text: string, from: number): { end: number; memoryGb: number | null } {
+  const m = MEMORY_AFTER_MODEL.exec(text.slice(from));
+  if (m === null) return { end: from, memoryGb: null };
+  const gigabytes = m[1] !== undefined ? Number(m[1]) : Math.round(Number(m[2]) / 1024);
+  return { end: from + m[0].length, memoryGb: gigabytes > 0 ? gigabytes : null };
 }
 
 /**
@@ -172,8 +175,7 @@ function takeMemoryGb(text: string): { text: string; memoryGb: number | null } {
  * Returns null for anything else rather than guessing.
  */
 export function extractGpuIdentity(text: string): GpuIdentity | null {
-  const memory = takeMemoryGb(cleanText(text));
-  let rest = memory.text;
+  let rest = cleanText(text);
   const maxQ = MAX_Q.test(rest);
   rest = rest.replace(MAX_Q, " ");
   const laptop = maxQ || LAPTOP_MARK.test(rest);
@@ -192,7 +194,8 @@ export function extractGpuIdentity(text: string): GpuIdentity | null {
     }
   }
   if (best === null) return null;
-  const residual = `${rest.slice(0, best.start)} ${rest.slice(best.end)}`
+  const memory = memoryAfter(rest, best.end);
+  const residual = `${rest.slice(0, best.start)} ${rest.slice(memory.end)}`
     .replace(NOISE, " ")
     .replace(/[(),;/]+/g, " ")
     .replace(/\s+/g, " ")
@@ -205,6 +208,7 @@ export function extractGpuIdentity(text: string): GpuIdentity | null {
     memoryGb: memory.memoryGb,
     variant: laptop ? "laptop" : null,
     maxQ,
+    integrated: INTEGRATED_FAMILY.test(best.family),
     residual,
   };
 }

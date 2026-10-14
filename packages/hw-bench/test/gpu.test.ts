@@ -48,6 +48,27 @@ describe("extractGpuIdentity", () => {
     expect(identity?.variant === "laptop").toBe(laptop);
   });
 
+  it("reads VRAM only when the size directly follows the model, never system RAM", () => {
+    const memoryOf = (text: string) => extractGpuIdentity(text)?.memoryGb;
+    expect(memoryOf("Gaming-PC, RTX 3050 6GB, 16GB RAM, 240GB SSD")).toBe(6);
+    expect(memoryOf("Gaming-PC, 16GB RAM, RTX 3050 6GB, 240GB SSD")).toBe(6);
+    expect(memoryOf("RTX 3050 (6 GB)")).toBe(6);
+    expect(memoryOf("RTX 5060 Ti 16GB")).toBe(16);
+    expect(memoryOf("RTX 4060 8GB GDDR6")).toBe(8);
+    expect(memoryOf("RTX 3050 6144 MB")).toBe(6);
+    expect(memoryOf("i5 10400F - RTX 3050 - 16GB DDR4 - 512GB SSD")).toBeNull();
+    expect(memoryOf("i5 10400F, RTX 3050, 16GB DDR4")).toBeNull();
+    expect(memoryOf("RTX 3050 16GB DDR4")).toBeNull();
+    expect(memoryOf("RTX 3050 16GB RAM")).toBeNull();
+    expect(memoryOf("16GB RAM, RTX 3050")).toBeNull();
+    expect(memoryOf("16GB RTX 3050")).toBeNull();
+  });
+
+  it("keeps system RAM in the residual so a full title is not mistaken for the plain model", () => {
+    expect(extractGpuIdentity("RTX 3050 6GB, 16GB RAM")?.residual).toContain("16gb ram");
+    expect(extractGpuIdentity("RTX 3050 6GB")?.residual).toBe("");
+  });
+
   it("reports leftover text so decorated names are not mistaken for plain ones", () => {
     expect(extractGpuIdentity("GeForce RTX 3050 OEM")?.residual).toBe("oem");
     expect(extractGpuIdentity("Radeon 610M Ryzen 5 7645HX")?.residual).not.toBe("");
@@ -87,6 +108,7 @@ describe("createGpuMatcher", () => {
       { name: "GeForce RTX 9060", cat: "Desktop", g3d: "19,003" },
       { name: "GeForce RTX 9060 Laptop GPU", cat: "Mobile", g3d: "17,004" },
       { name: "GeForce RTX 9060 Ti", cat: "Desktop", g3d: "22,005" },
+      { name: "GeForce RTX 9060 Ti Laptop GPU", cat: "Mobile", g3d: "20,020" },
       { name: "GeForce RTX 9050 6GB", cat: "Desktop", g3d: "9,006" },
       { name: "GeForce RTX 9050 6GB Laptop GPU", cat: "Mobile", g3d: "8,007" },
       { name: "GeForce RTX 9050 Laptop GPU", cat: "Mobile", g3d: "7,008" },
@@ -142,7 +164,8 @@ describe("createGpuMatcher", () => {
   });
 
   it("keeps variants apart: Ti, XT and M/S suffixes are different GPUs", () => {
-    expect(nameOf("GeForce RTX 9060 Ti", "laptop")).toBe("GeForce RTX 9060 Ti");
+    expect(nameOf("GeForce RTX 9060 Ti", "laptop")).toBe("GeForce RTX 9060 Ti Laptop GPU");
+    expect(nameOf("GeForce RTX 9060 Ti", "desktop")).toBe("GeForce RTX 9060 Ti");
     expect(nameOf("Radeon RX 9600M XT", "laptop")).toBe("Radeon RX 9600M XT");
     expect(nameOf("Radeon RX 9600 XT", "desktop")).toBe("Radeon RX 9600 XT");
   });
@@ -344,6 +367,147 @@ describe("createGpuMatcher with Max-Q-only mobile records", () => {
     });
     expect(matcher.match("NVIDIA GeForce RTX 8070 Super", { formFactor: "desktop" })).toMatchObject(
       { status: "matched", record: { name: "GeForce RTX 8070 Super" } },
+    );
+  });
+});
+
+describe("createGpuMatcher never crosses the form factor", () => {
+  const record = (name: string, cat: string, samples = "500") => ({ name, cat, samples });
+  const build = (...rows: readonly { name: string; cat: string; samples: string }[]) =>
+    createGpuMatcher(
+      passmarkGpuSource.parse(
+        asJson(
+          rows.map((r, i) =>
+            gpuRow({ id: String(7300 + i), name: r.name, cat: r.cat, samples: r.samples }),
+          ),
+        ),
+      ),
+    );
+  const nameOf = (
+    matcher: ReturnType<typeof build>,
+    query: string,
+    formFactor: "laptop" | "desktop" | "unknown",
+  ) => {
+    const result = matcher.match(query, { formFactor });
+    return result.status === "matched"
+      ? result.record.name
+      : result.status === "ambiguous"
+        ? result.candidates.map((c) => c.name)
+        : result.status;
+  };
+
+  // The RTX 3050 shape: a plain "Laptop GPU" record, sized laptop records, and desktop cards that only exist per size.
+  const sized = build(
+    record("GeForce RTX 9031 4GB Laptop GPU", "Mobile", "21000"),
+    record("GeForce RTX 9031 6GB Laptop GPU", "Mobile", "7500"),
+    record("GeForce RTX 9031 Laptop GPU", "Mobile", "4"),
+    record("GeForce RTX 9031 6GB", "Desktop", "8000"),
+    record("GeForce RTX 9031 8GB", "Desktop", "9800"),
+    record("GeForce RTX 9031 OEM", "Desktop", "600"),
+  );
+
+  it("R1: a desktop never gets the plain Laptop GPU record just because it is the only unsized one", () => {
+    expect(nameOf(sized, "NVIDIA GeForce RTX 9031", "desktop")).toEqual([
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 8GB",
+    ]);
+    expect(nameOf(sized, "GeForce RTX 9031 - 16GB DDR4", "desktop")).toEqual([
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 8GB",
+    ]);
+  });
+
+  it("R1: laptop text never lists desktop cards, desktop text never lists laptop cards", () => {
+    for (const text of [
+      "NVIDIA GeForce RTX 9031",
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 8GB",
+    ]) {
+      const laptop = nameOf(sized, text, "laptop");
+      expect([laptop].flat().filter((n) => !n.includes("Laptop GPU"))).toEqual([]);
+      const desktop = nameOf(sized, text, "desktop");
+      expect([desktop].flat().filter((n) => n.includes("Laptop GPU"))).toEqual([]);
+    }
+  });
+
+  it("R1: no record of the requested form factor means no_match, not a fallback", () => {
+    const matcher = build(
+      record("GeForce RTX 9041 Ti", "Desktop"),
+      record("GeForce RTX 9042 Laptop GPU", "Mobile"),
+      record("GeForce RTX 9043 6GB", "Desktop"),
+      record("GeForce RTX 9043 8GB", "Desktop"),
+      record("GeForce RTX 9044 4GB Laptop GPU", "Mobile"),
+    );
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9041 Ti", "laptop")).toBe("no_match");
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9041 Ti", "desktop")).toBe("GeForce RTX 9041 Ti");
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9042", "desktop")).toBe("no_match");
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9042", "laptop")).toBe(
+      "GeForce RTX 9042 Laptop GPU",
+    );
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9043", "laptop")).toBe("no_match");
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9043 6GB", "laptop")).toBe("no_match");
+    expect(nameOf(matcher, "NVIDIA GeForce RTX 9044", "desktop")).toBe("no_match");
+    // Text that itself says Laptop GPU for a desktop-only model is a laptop request, so it finds nothing either.
+    expect(nameOf(matcher, "GeForce RTX 9041 Ti Laptop GPU", "desktop")).toBe("no_match");
+    expect(nameOf(matcher, "GeForce RTX 9041 Ti Laptop GPU", "laptop")).toBe("no_match");
+  });
+
+  it("R1: an unknown form factor still reports every record that exists", () => {
+    expect(nameOf(sized, "NVIDIA GeForce RTX 9031", "unknown")).toEqual([
+      "GeForce RTX 9031 4GB Laptop GPU",
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 6GB Laptop GPU",
+      "GeForce RTX 9031 8GB",
+    ]);
+  });
+
+  it("R1: integrated graphics carry no form factor, whatever PassMark's category says", () => {
+    const matcher = build(
+      record("Radeon 9060S", "Desktop"),
+      record("Radeon 9040M", "Mobile"),
+      record("Intel UHD Graphics 9620", "Desktop"),
+    );
+    expect(nameOf(matcher, "AMD Radeon 9060S", "laptop")).toBe("Radeon 9060S");
+    expect(nameOf(matcher, "AMD Radeon 9040M", "desktop")).toBe("Radeon 9040M");
+    expect(nameOf(matcher, "Intel UHD Graphics 9620", "laptop")).toBe("Intel UHD Graphics 9620");
+  });
+
+  it("R2: a size right behind the model picks among the sized records", () => {
+    expect(nameOf(sized, "GeForce RTX 9031 6GB", "desktop")).toBe("GeForce RTX 9031 6GB");
+    expect(nameOf(sized, "GeForce RTX 9031 8 GB", "desktop")).toBe("GeForce RTX 9031 8GB");
+    expect(nameOf(sized, "GeForce RTX 9031 4GB", "laptop")).toBe("GeForce RTX 9031 4GB Laptop GPU");
+    expect(nameOf(sized, "GeForce RTX 9031 (6GB)", "laptop")).toBe(
+      "GeForce RTX 9031 6GB Laptop GPU",
+    );
+    expect(nameOf(sized, "GeForce RTX 9031 4GB", "desktop")).toBe("no_match");
+  });
+
+  it("R2: system RAM in a title is not a VRAM size, whatever its position", () => {
+    const title = (text: string) => nameOf(sized, text, "desktop");
+    expect(title("Gaming-PC Xeon, RTX 9031 6GB, 16GB RAM, 240GB SSD")).toBe("GeForce RTX 9031 6GB");
+    expect(title("Gaming-PC 16GB RAM, RTX 9031 8GB, 240GB SSD")).toBe("GeForce RTX 9031 8GB");
+    expect(title("Entry Gaming PC - i5 - RTX 9031 - 16GB DDR4 - 512GB SSD")).toEqual([
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 8GB",
+    ]);
+    expect(title("Gaming-PC, RTX 9031 16GB RAM")).toEqual([
+      "GeForce RTX 9031 6GB",
+      "GeForce RTX 9031 8GB",
+    ]);
+  });
+
+  it("R2: without a size the sized cards are all candidates, and a noise-level plain record is not one of them", () => {
+    expect(nameOf(sized, "NVIDIA GeForce RTX 9031", "laptop")).toEqual([
+      "GeForce RTX 9031 4GB Laptop GPU",
+      "GeForce RTX 9031 6GB Laptop GPU",
+    ]);
+    // With real support the plain record stays the model's default (here: as many samples as the sized one).
+    const supported = build(
+      record("GeForce RTX 9032 6GB Laptop GPU", "Mobile", "700"),
+      record("GeForce RTX 9032 Laptop GPU", "Mobile", "300"),
+    );
+    expect(nameOf(supported, "NVIDIA GeForce RTX 9032", "laptop")).toBe(
+      "GeForce RTX 9032 Laptop GPU",
     );
   });
 });

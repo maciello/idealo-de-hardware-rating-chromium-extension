@@ -40,8 +40,15 @@ const formFactorOf = (tile: Tile): FormFactor =>
  * Many tiles name no CPU at all (workstations, barebones), so the tile floor stays well below the tile count.
  *
  * Floors at the time the yardstick was introduced: CPU labels 231/250, GPU labels 121/195, tile CPUs 52/106, tile GPUs 44/106.
+ *
+ * gpuLabels was 152 and is 138 since the matcher stopped returning records of the other form factor. The 13 labels
+ * below were false matches (a desktop-only card handed to a laptop; PassMark lists no Laptop GPU for them) and
+ * "NVIDIA GeForce RTX 3050" is now ambiguous between the 4GB and 6GB laptop cards instead of resolving to a plain
+ * "Laptop GPU" record with 4 samples:
+ * GT 710, GT 730, GT 1030, RTX 2080 Ti, RTX 3060 Ti, RTX 3090, RTX 4060 Ti, RTX 4070 Super, RTX 4070 Ti,
+ * RTX 4070 Ti Super, RTX 4080 Super (all "NVIDIA GeForce ..."), "NVIDIA RTX A400", "NVIDIA RTX PRO 4500 Blackwell".
  */
-const FLOOR = { cpuLabels: 232, gpuLabels: 152, tileCpus: 53, tileGpus: 48 } as const;
+const FLOOR = { cpuLabels: 232, gpuLabels: 138, tileCpus: 53, tileGpus: 48 } as const;
 
 describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
   "idealo vocabulary against PassMark data",
@@ -216,3 +223,59 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
     });
   },
 );
+
+/**
+ * Holdout defects: form-factor fallback and VRAM. The text of a desktop PC names the GPU in the title; the
+ * characteristics fragment "NVIDIA GeForce RTX 3050" says no size, and PassMark has no plain desktop record for it.
+ */
+describe.skipIf(!existsSync(gpuPath))("RTX 3050 against PassMark data", () => {
+  const matcher = () => createGpuMatcher(passmarkGpuSource.parse(readFileSync(gpuPath, "utf8")));
+  const outcome = (text: string, formFactor: FormFactor) => {
+    const result = matcher().match(text, { formFactor });
+    return result.status === "matched"
+      ? result.record.name
+      : result.status === "ambiguous"
+        ? result.candidates.map((c) => c.name)
+        : result.status;
+  };
+  const DESKTOP_3050 = ["GeForce RTX 3050 6GB", "GeForce RTX 3050 8GB"];
+  const XEON_PC =
+    "PC Store NCA Triorama Gaming-PC Intel Xeon E5-2678v3, RTX 3050 6GB, 16GB RAM, 240GB SSD, Wasserkühlung, weiß";
+  const GREED_PC =
+    "GREED MK2 Lite - Entry Gaming PC - i5 10400F - RTX 3050 - 16GB DDR4 - 512GB SSD - RGB - WLAN";
+
+  it("takes the stated 6GB from a desktop title, ignoring the 16GB of RAM", () => {
+    expect(outcome(XEON_PC, "desktop")).toBe("GeForce RTX 3050 6GB");
+  });
+
+  it("leaves a desktop with an unsized RTX 3050 ambiguous across the desktop cards, never the laptop one", () => {
+    expect(outcome("NVIDIA GeForce RTX 3050", "desktop")).toEqual(DESKTOP_3050);
+    expect(outcome(GREED_PC, "desktop")).toEqual(DESKTOP_3050);
+  });
+
+  it("leaves a laptop's RTX 3050 ambiguous across the sized laptop cards", () => {
+    // PassMark's unsized "GeForce RTX 3050 Laptop GPU" has 4 samples (4GB: 21179, 6GB: 7510) and a G3D mark above
+    // both sized cards, so it is an outlier rather than the model's default.
+    expect(outcome("NVIDIA GeForce RTX 3050", "laptop")).toEqual([
+      "GeForce RTX 3050 4GB Laptop GPU",
+      "GeForce RTX 3050 6GB Laptop GPU",
+    ]);
+  });
+
+  it("never offers a record of the other form factor", () => {
+    const records = passmarkGpuSource.parse(readFileSync(gpuPath, "utf8")).records;
+    const byName = new Map(records.map((r) => [r.name, r]));
+    const namesOf = (value: string | string[]) => (typeof value === "string" ? [value] : value);
+    for (const text of ["NVIDIA GeForce RTX 3050", XEON_PC, GREED_PC]) {
+      for (const name of namesOf(outcome(text, "desktop"))) {
+        expect(byName.get(name)?.segments).not.toEqual(["mobile"]);
+        expect(name).not.toContain("Laptop");
+      }
+    }
+    for (const name of namesOf(outcome("NVIDIA GeForce RTX 3050", "laptop"))) {
+      expect(byName.get(name)?.segments).not.toContain("desktop");
+    }
+    expect(outcome("NVIDIA GeForce RTX 3090", "laptop")).toBe("no_match");
+    expect(outcome("NVIDIA GeForce RTX 4050", "desktop")).toBe("no_match");
+  });
+});

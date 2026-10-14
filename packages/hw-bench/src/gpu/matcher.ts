@@ -14,29 +14,46 @@ export interface GpuMatcher {
   match(query: string | GpuIdentity, options?: GpuMatchOptions): MatchResult<GpuBenchmarkRecord>;
 }
 
+/** What a record says about where it is used. "neutral" fits both: integrated graphics, workstation and uncategorised cards. */
+type RecordForm = "laptop" | "desktop" | "neutral";
+
 interface Entry {
   readonly record: GpuBenchmarkRecord;
   readonly maxQ: boolean;
+  readonly form: RecordForm;
 }
 
 interface Group {
-  readonly laptop: Entry[];
-  readonly desktop: Entry[];
+  readonly entries: Entry[];
 }
+
+/**
+ * A memoryless record below this share of its model's samples is noise, not the model's default: PassMark files
+ * a handful of unsized submissions next to the sized cards ("RTX 3050 Laptop GPU": 4 samples beside 21179 and 7510).
+ */
+const NEGLIGIBLE_SAMPLE_SHARE = 0.01;
 
 const byNameThenId = (a: GpuBenchmarkRecord, b: GpuBenchmarkRecord): number =>
   a.name.localeCompare(b.name) || a.id - b.id;
 
-/** A record is the laptop variant when its name says so, or PassMark files it under Mobile only. */
-function isLaptopRecord(record: GpuBenchmarkRecord, identity: GpuIdentity): boolean {
-  if (identity.variant === "laptop") return true;
-  return record.segments.includes("mobile") && !record.segments.includes("desktop");
+/**
+ * The name says Laptop GPU / (Mobile) / Max-Q, or PassMark files the card under Mobile only. Integrated graphics
+ * carry no form factor through PassMark's category (the same iGPU is benchmarked in laptops and desktops).
+ */
+function formOf(record: GpuBenchmarkRecord, identity: GpuIdentity): RecordForm {
+  if (identity.variant === "laptop") return "laptop";
+  if (identity.integrated) return "neutral";
+  const mobile = record.segments.includes("mobile");
+  const desktop = record.segments.includes("desktop");
+  if (mobile && !desktop) return "laptop";
+  if (desktop && !mobile) return "desktop";
+  return "neutral";
 }
 
 const groupFor = (map: Map<string, Group>, key: string): Group => {
   const existing = map.get(key);
   if (existing !== undefined) return existing;
-  const created: Group = { laptop: [], desktop: [] };
+  const created: Group = { entries: [] };
   map.set(key, created);
   return created;
 };
@@ -61,6 +78,16 @@ function narrowByMaxQ(entries: readonly Entry[], maxQ: boolean): Entry[] {
   return preferred.length > 0 ? preferred : [...entries];
 }
 
+const samplesOf = (entries: readonly Entry[]): number =>
+  entries.reduce((sum, e) => sum + (e.record.samples ?? 0), 0);
+
+/** True when the plain records carry so few samples next to the sized siblings that they cannot stand for the model. */
+function isNegligible(plain: readonly Entry[], sized: readonly Entry[]): boolean {
+  if (sized.length === 0 || plain.some((e) => e.record.samples === null)) return false;
+  const plainSamples = samplesOf(plain);
+  return plainSamples < NEGLIGIBLE_SAMPLE_SHARE * (plainSamples + samplesOf(sized));
+}
+
 /** PassMark lists some GPUs twice ("Intel UHD 770", "Intel UHD Graphics 770"); an exact name settles it. */
 function collapseByExactName(entries: readonly Entry[], query: string | GpuIdentity): Entry[] {
   if (typeof query !== "string" || entries.length < 2) return [...entries];
@@ -70,14 +97,17 @@ function collapseByExactName(entries: readonly Entry[], query: string | GpuIdent
 
 /**
  * Builds the lookup tables once. Records are grouped by identity key (model without "Laptop GPU",
- * "(Mobile)", "with Max-Q Design"); a group splits into laptop and desktop variants. Lookup order:
+ * "(Mobile)", "with Max-Q Design"); every record in a group is a laptop, desktop or neutral one. Lookup order:
  * identity key with memory ("rtx-3050-6gb"), identity key, then the whole normalized name. Never fuzzy.
  * A text without memory whose model only exists per memory size ("RTX 5060 Ti" -> 8GB, 16GB) yields all of them, so it is ambiguous.
  *
- * Variant policy per group (L = laptop records, D = other records):
- * - laptop: L when it exists, else D (desktop-only GPUs such as integrated "Radeon 8060S" are kept).
- * - desktop: D when it exists, else L.
- * - unknown: both exist -> ambiguous with both; otherwise the one that exists.
+ * Variant policy per group (L = laptop records, D = desktop records, N = neutral ones: integrated graphics,
+ * workstation and uncategorised cards). A record of the other form factor is never returned, not even as a candidate:
+ * - laptop: L when it exists, else N, else nothing (no_match).
+ * - desktop: D and N together, else nothing.
+ * - unknown: everything that exists -> ambiguous when more than one record.
+ * Memory: a size stated right behind the model picks the sized records. Without a size, a plain record is the model's
+ * default; where PassMark lists the model only per size (or the plain record is statistical noise) all sizes are candidates.
  * A laptop (or laptop-only) result that consists solely of Max-Q records, for text that does not say Max-Q, is
  * reported ambiguous even with one candidate: it is the slower variant, so its score is a lower bound.
  */
@@ -95,7 +125,7 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
     const identity = extractGpuIdentity(record.name);
     // Only names that are exactly one recognised model join a variant group; "RTX 3050 OEM" stays by name.
     if (identity === null || identity.residual !== "") continue;
-    const entry: Entry = { record, maxQ: identity.maxQ };
+    const entry: Entry = { record, maxQ: identity.maxQ, form: formOf(record, identity) };
     const target =
       identity.memoryGb === null
         ? groupFor(base, identity.key)
@@ -104,7 +134,7 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
       const variants = memoryVariants.get(identity.key) ?? [];
       if (!variants.includes(target)) memoryVariants.set(identity.key, [...variants, target]);
     }
-    (isLaptopRecord(record, identity) ? target.laptop : target.desktop).push(entry);
+    target.entries.push(entry);
   }
 
   const resolveGroup = (
@@ -117,33 +147,51 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
         ? undefined
         : withMemory.get(`${identity.key}-${identity.memoryGb}gb`);
     const baseGroup = base.get(identity.key);
-    const unstated =
-      identity.memoryGb === null && baseGroup === undefined
-        ? memoryVariants.get(identity.key)
-        : undefined;
-    if (memoryGroup === undefined && baseGroup === undefined && unstated === undefined) return null;
-    const pick = (side: "laptop" | "desktop"): Entry[] => {
-      if (unstated !== undefined) return unstated.flatMap((group) => group[side]);
-      const fromMemory = memoryGroup?.[side] ?? [];
-      return fromMemory.length > 0 ? fromMemory : (baseGroup?.[side] ?? []);
+    const sizedGroups = memoryVariants.get(identity.key) ?? [];
+    if (memoryGroup === undefined && baseGroup === undefined && sizedGroups.length === 0) {
+      return null;
+    }
+    const pick = (accept: (entry: Entry) => boolean): Entry[] => {
+      const plain = baseGroup?.entries.filter(accept) ?? [];
+      if (identity.memoryGb !== null) {
+        const fromMemory = memoryGroup?.entries.filter(accept) ?? [];
+        return fromMemory.length > 0 ? fromMemory : plain;
+      }
+      const sized = sizedGroups.flatMap((group) => group.entries.filter(accept));
+      return plain.length > 0 && !isNegligible(plain, sized)
+        ? plain
+        : sized.length > 0
+          ? sized
+          : plain;
     };
-    const mobile = pick("laptop");
-    const laptop = collapseByExactName(narrowByMaxQ(mobile, identity.maxQ), query);
-    const desktop = collapseByExactName(pick("desktop"), query);
+    const pickForm = (form: RecordForm): Entry[] => pick((entry) => entry.form === form);
+    /** Everything usable in a desktop: desktop and neutral records, never a laptop one. */
+    const pickDesktop = (): Entry[] => pick((entry) => entry.form !== "laptop");
     const found = (entries: readonly Entry[], unsure = false) => ({
       records: entries.map((e) => e.record),
       unsure,
     });
-    // Text without "Max-Q" for a model PassMark only lists as Max-Q: the card may be the faster full-power one.
-    const onlyMaxQ = !identity.maxQ && mobile.length > 0 && mobile.every((e) => e.maxQ);
 
     const effective: FormFactor = identity.variant === "laptop" ? "laptop" : formFactor;
-    if (effective === "laptop") {
-      return laptop.length > 0 ? found(laptop, onlyMaxQ) : found(desktop);
+    if (effective === "unknown") {
+      const mobile = pickForm("laptop");
+      const laptop = collapseByExactName(narrowByMaxQ(mobile, identity.maxQ), query);
+      const other = collapseByExactName(
+        pick((entry) => entry.form !== "laptop"),
+        query,
+      );
+      return found([...other, ...laptop]);
     }
-    if (effective === "desktop")
-      return found(desktop.length > 0 ? desktop : laptop, onlyMaxQ && desktop.length === 0);
-    return found([...desktop, ...laptop]);
+    if (effective === "laptop") {
+      const mobile = pickForm("laptop");
+      if (mobile.length > 0) {
+        // Text without "Max-Q" for a model PassMark only lists as Max-Q: the card may be the faster full-power one.
+        const onlyMaxQ = !identity.maxQ && mobile.every((e) => e.maxQ);
+        return found(collapseByExactName(narrowByMaxQ(mobile, identity.maxQ), query), onlyMaxQ);
+      }
+      return found(collapseByExactName(pickForm("neutral"), query));
+    }
+    return found(collapseByExactName(pickDesktop(), query));
   };
 
   return {
