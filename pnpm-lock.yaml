@@ -91,6 +91,28 @@ importers:
         specifier: ^0.21.4
         version: 0.21.4(rolldown@1.2.14)(typescript@5.9.3)(vite@8.3.4(@types/node@26.6.5)(jiti@2.7.0)(sugarss@5.0.2(postcss@8.5.30)))
 
+  packages/decide:
+    dependencies:
+      '@idealo-hw/hw-bench':
+        specifier: workspace:*
+        version: link:../hw-bench
+      '@idealo-hw/idealo-query':
+        specifier: workspace:*
+        version: link:../idealo-query
+      '@typesafe-ai/sdk':
+        specifier: ^0.6.0
+        version: 0.6.0
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.5
+      fast-check:
+        specifier: ^4.10.2
+        version: 4.10.2
+
   packages/hw-bench:
     dependencies:
       papaparse:
@@ -516,6 +538,10 @@ packages:
 
   '@types/react@19.3.0':
     resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
+
+  '@typesafe-ai/sdk@0.6.0':
+    resolution: {integrity: sha512-IddX+Q0XM+VagOUZFeP7wZjaO4SHMdvnh2zEBdrZZnXedWI3BNK1lKhMx3ayrkFWvVLbVcUHJy6AVZlY+e6Jaw==}
+    engines: {node: '>=20'}
 
   '@vitejs/plugin-react@6.1.2':
     resolution: {integrity: sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw==}
@@ -1875,6 +1901,8 @@ snapshots:
   '@types/react@19.3.0':
     dependencies:
       csstype: 3.2.3
+
+  '@typesafe-ai/sdk@0.6.0': {}
 
   '@vitejs/plugin-react@6.1.2(vite@8.3.4(@types/node@26.6.5)(jiti@2.7.0)(sugarss@5.0.2(postcss@8.5.30)))':
     dependencies:

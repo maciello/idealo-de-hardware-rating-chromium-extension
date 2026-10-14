@@ -13,3 +13,4 @@ docs:
   - adr/0008-idealo-data-acquisition.yaml
   - adr/0009-query-model.yaml
   - adr/0010-dependency-policy.yaml
+  - adr/0011-jev-decision-adapter.yaml

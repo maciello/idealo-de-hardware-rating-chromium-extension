@@ -1,0 +1,29 @@
+adr.0011:
+  title: Bounded judgments via TypeSafe Jev behind a decision port
+  status: accepted
+  date: 2026-10-14
+  context:
+    gap: deterministic matcher returns no_match/ambiguous for vendor-less titles ("OneXPlayer ... AI MAX+ 395") and variant choices (notebook "RTX 5080" -> "RTX 5080 Laptop GPU" 26,301 vs desktop 35,635 G3D)
+    jev_1_13:
+      kind: structured decision model (not generative); question types choice (<=255 options), score (2-10 levels), noul (yes/no); calibrated probabilities + confidence
+      api: POST https://api.typesafe.ai/v1/systemone ; SDK @typesafe-ai/sdk (TypeSafeClient.systemOne, choice/score/noul builders)
+      price: 0.042 USD per 1M input tokens; output free (~0.00002 USD per call)
+      limits: {context: 64k, state_plus_longest_question: 32k, rate: 80 req/s}
+      rough_edges: [first-option bias (shuffle + compare), no counting/arithmetic]
+  decision:
+    principle: deterministic code generates candidates and does arithmetic; Jev only chooses among them. Jev never invents a CPU/GPU name or filter id.
+    port: Decider (packages/decide) with adapters jev (live) and none (offline default)
+    uses:
+      U1_match_residue: candidate generation from model-number tokens -> choice over candidates + none_of_the_above; accept if confidence >= threshold (default 0.7)
+      U2_variant: product context (notebook vs desktop) -> laptop/desktop GPU variant choice when rule is undecided
+      U3_intent_to_filters: natural-language request + FilterCatalog -> noul per filter value (parallel questions) -> FilterSelection; numeric ranges (price, RAM >= N) stay deterministic
+      U4_experimental_rating: score questions as RatingStrategy adapters (e.g. CPU/GPU balance, fit for use case), labelled experimental
+    model_pinning: jev-1.13.0 (never jev-latest in thresholds)
+    caching: key = hash(model, state, questions); stored locally; idempotent reruns
+    key_handling: user-supplied API key in extension storage; calls only from background service worker, never from page context
+  rejected:
+    - generative LLM for extraction (unbounded output, needs validation, costlier)
+  evidence: [context7 /typesafe-docs/typesafeai docs/12-models.md, docs/11-sdk-javascript.md, docs/09-api-reference.md, npm @typesafe-ai/sdk 0.6.0]
+  open:
+    - api.typesafe.ai unreachable from build sandbox; live calls verified only on owner machine
+    - threshold calibration needs labelled idealo samples (yardstick: match-report)
