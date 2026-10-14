@@ -28,20 +28,17 @@ describe("describeQuery", () => {
     expect(d.manufacturers.map((m) => m.name)).toEqual(["Lenovo", "ASUS"]);
     expect(d.unknownFilterIds).toEqual([f("424242")]);
     expect(d.unknownManufacturerIds).toEqual([manufacturerId("99")]);
-    expect(d.summary).toBe(
-      [
-        "Category 16073",
-        "Prozessor: Intel Core i7",
-        "Arbeitsspeicher: 16 GB",
-        "Manufacturer: Lenovo, ASUS",
-        "Unknown filter ids: 424242",
-        "Unknown manufacturer ids: 99",
-        "Price: 100-900 EUR",
-        "Sort: minPrice",
-        "Search text: oled",
-        "Result offset: 16",
-      ].join("\n"),
-    );
+    expect(d.categoryId).toBe("16073");
+    expect(d.groups.map((g) => g.filters.map((filter) => filter.label))).toEqual([
+      ["Intel Core i7"],
+      ["16 GB"],
+    ]);
+    expect(d).toMatchObject({
+      price: { min: 100, max: 900 },
+      sort: "minPrice",
+      text: "oled",
+      offset: 16,
+    });
   });
 
   it("treats everything as unknown for a catalog of another category", () => {

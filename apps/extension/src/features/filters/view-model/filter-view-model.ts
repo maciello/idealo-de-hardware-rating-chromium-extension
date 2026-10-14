@@ -12,6 +12,7 @@ import type { RequirementsSectionProps } from "../../requirements";
 import { FILTERS_COPY, SORT_LABELS } from "../copy";
 import type { RequirementsContext } from "../model";
 import { type PanelNote, panelNote } from "./status";
+import { summaryOf } from "./summary";
 
 export interface FilterViewInput {
   query: IdealoQuery;
@@ -116,7 +117,7 @@ export function buildFilterViewModel(input: FilterViewInput): FilterViewModel {
       groups: groupsMatching(effectiveCatalog.groups, input.search),
       selected: new Set(query.filterIds),
     },
-    summary: describeQuery(effectiveQuery, effectiveCatalog).summary,
+    summary: summaryOf(describeQuery(effectiveQuery, effectiveCatalog)),
     url,
     applyDisabled: url === input.urlOf(input.startQuery) || url === "",
     hits:

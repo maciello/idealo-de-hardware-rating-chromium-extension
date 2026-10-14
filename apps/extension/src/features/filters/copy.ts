@@ -24,6 +24,24 @@ export const FILTERS_COPY = {
   pickerSearch: "Search filters",
   detailsTitle: "Selection and link",
 
+  /** The lines of the selection summary under "Selection and link". */
+  summary: {
+    category: (id: string): string => `Category ${id}`,
+    group: (name: string, labels: string): string => `${name}: ${labels}`,
+    manufacturer: (names: string): string => `Manufacturer: ${names}`,
+    unknownFilters: (ids: string): string => `Unknown filter ids: ${ids}`,
+    unknownManufacturers: (ids: string): string => `Unknown manufacturer ids: ${ids}`,
+    price: (range: string): string => `Price: ${range}`,
+    priceBetween: (min: number, max: number): string => `${min}-${max} EUR`,
+    priceFrom: (min: number): string => `from ${min} EUR`,
+    priceUpTo: (max: number | undefined): string => `up to ${max} EUR`,
+    sort: (key: string): string => `Sort: ${key}`,
+    text: (text: string): string => `Search text: ${text}`,
+    offset: (offset: number): string => `Result offset: ${offset}`,
+    listSeparator: ", ",
+    lineSeparator: "\n",
+  },
+
   settingsAria: "Open settings",
   reset: "Reset",
   open: "Open",
