@@ -1,22 +1,15 @@
 import { parseIdealoUrl } from "@idealo-hw/idealo-query";
-import { Anchor, Button, Group, SegmentedControl, Stack, Text } from "@mantine/core";
+import { Anchor, Button, Group, Stack, Text } from "@mantine/core";
 import { IconAdjustmentsHorizontal, IconBug } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { PageStats } from "../contracts";
-import { SettingsSchema } from "../contracts";
 import { exportDebugReport } from "../diagnostics/export";
 import { OpenRouterConnectedRow } from "../features/ai-matching";
 import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
 import { CaptureConnectedRow } from "../features/capture";
-import {
-  DEFAULT_PRIMARY_ID,
-  PRIMARY_CHOICES,
-  resolveEnabledStrategyIds,
-} from "../features/ratings";
+import { PrimaryNumberConnectedRow } from "../features/settings";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
-import { settingsItem } from "../platform/storage";
-import { useStorageItem } from "../platform/storage/use-storage-item";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
 import { LabeledRow, StatusNote } from "../ui";
 
@@ -33,32 +26,6 @@ function pageSummary(tab: TargetTab | null, stats: PageStats | null | "loading")
   if (stats.kind !== "listing") return "Open an idealo listing or product page";
   if (stats.total === 0) return "No products found on this page";
   return `${stats.rated} of ${stats.total} products rated`;
-}
-
-function PrimaryNumber() {
-  const [stored, save] = useStorageItem(settingsItem);
-  const settings = useMemo(() => {
-    const parsed = SettingsSchema.safeParse(stored);
-    return parsed.success ? parsed.data : null;
-  }, [stored]);
-  return (
-    <LabeledRow label="Primary number" stacked>
-      <SegmentedControl
-        fullWidth
-        size="xs"
-        data={PRIMARY_CHOICES.map((c) => ({ value: c.id, label: c.label }))}
-        value={settings?.primaryStrategyId ?? DEFAULT_PRIMARY_ID}
-        onChange={(primaryStrategyId) =>
-          save({
-            ...settings,
-            enabledStrategyIds: resolveEnabledStrategyIds(settings?.enabledStrategyIds),
-            primaryStrategyId,
-          })
-        }
-        data-testid="popup-primary"
-      />
-    </LabeledRow>
-  );
 }
 
 function Diagnostics({ tab }: { tab: TargetTab | null }) {
@@ -144,7 +111,7 @@ export function PopupApp() {
           {pageSummary(tab, stats)}
         </Text>
       </LabeledRow>
-      <PrimaryNumber />
+      <PrimaryNumberConnectedRow />
       <Button
         variant="default"
         leftSection={<IconAdjustmentsHorizontal size={16} />}

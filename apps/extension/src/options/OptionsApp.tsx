@@ -2,8 +2,8 @@ import { Container, Stack, Text, Title } from "@mantine/core";
 import { OpenRouterConnectedCard } from "../features/ai-matching";
 import { CpuImportCard, GpuImportCard } from "../features/benchmark-data";
 import { CaptureConnectedCard } from "../features/capture";
+import { StrategiesConnectedCard } from "../features/settings";
 import { DiagnosticsCard } from "./DiagnosticsCard";
-import { StrategiesCard } from "./StrategiesCard";
 
 export function OptionsApp() {
   return (
@@ -15,7 +15,7 @@ export function OptionsApp() {
         </Text>
         <CpuImportCard />
         <GpuImportCard />
-        <StrategiesCard />
+        <StrategiesConnectedCard />
         <OpenRouterConnectedCard />
         <CaptureConnectedCard />
         <DiagnosticsCard />
