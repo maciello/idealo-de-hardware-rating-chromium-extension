@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { MAX_ERRORS, readErrorLog, recordError } from "../src/diagnostics/error-log";
+import { MAX_ERRORS, readErrorLog, recordError } from "../../../src/platform/errors";
 
 beforeEach(() => fakeBrowser.reset());
 

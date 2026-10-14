@@ -1,14 +1,7 @@
+import type { PageSnapshot } from "../contracts";
+
 export const MAX_SNAPSHOT_BYTES = 5 * 1024 * 1024;
 const MAX_DATA_JSON_CHARS = 2_000_000;
-
-export interface PageSnapshot {
-  url: string;
-  title: string;
-  capturedAt: string;
-  html: string;
-  /** True when the html was cut to fit MAX_SNAPSHOT_BYTES. */
-  truncated: boolean;
-}
 
 const OWN_HOST_PREFIX = "idealo-hw-";
 

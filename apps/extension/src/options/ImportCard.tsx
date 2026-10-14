@@ -8,7 +8,7 @@ import { Dropzone } from "@mantine/dropzone";
 import { IconFileImport, IconTrash } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import type { z } from "zod";
-import { type StoredItem, useStorageItem } from "./use-storage-item";
+import { type StoredItem, useStorageItem } from "../platform/storage/use-storage-item";
 
 interface ImportCardProps<R> {
   kind: "cpu" | "gpu";

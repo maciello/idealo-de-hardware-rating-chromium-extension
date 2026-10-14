@@ -1,7 +1,7 @@
 import { storage } from "@wxt-dev/storage";
 import { z } from "zod";
-import { aiTestResultItem } from "./ai-test-result";
-import { NOT_CONNECTED, type OpenRouterStatus, openrouterStatusItem } from "./openrouter-status";
+import { NOT_CONNECTED, type OpenRouterStatus } from "../../contracts";
+import { aiTestResultItem, openrouterStatusItem } from "./items/ai";
 
 /**
  * BACKGROUND ONLY. The OpenRouter API key is a bearer secret: it must never be imported by content

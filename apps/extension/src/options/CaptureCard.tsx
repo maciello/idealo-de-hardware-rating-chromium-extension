@@ -2,9 +2,9 @@ import { Button, Card, Group, Stack, Switch, Text, Title } from "@mantine/core";
 import { IconDownload, IconTrash } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { captureRing } from "../capture/ring";
-import { captureModeItem } from "../storage/items";
-import { downloadJson } from "../ui/download";
-import { useStorageItem } from "./use-storage-item";
+import { downloadJson } from "../platform/download";
+import { captureModeItem } from "../platform/storage";
+import { useStorageItem } from "../platform/storage/use-storage-item";
 
 export function CaptureCard() {
   const [stored, setCaptureMode] = useStorageItem(captureModeItem);

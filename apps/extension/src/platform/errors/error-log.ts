@@ -1,5 +1,6 @@
 import { storage } from "@wxt-dev/storage";
 import { z } from "zod";
+import { withLock } from "../locks";
 
 export const MAX_ERRORS = 50;
 const MAX_MESSAGE_CHARS = 500;
@@ -16,6 +17,12 @@ export const ErrorEntrySchema = z.object({
 });
 export type ErrorEntry = z.infer<typeof ErrorEntrySchema>;
 export type ErrorSource = ErrorEntry["where"];
+
+/**
+ * Content scripts and extension pages have different origins, so an entry can still be lost when
+ * both write at the same instant: acceptable for a diagnostic log.
+ */
+const ERROR_LOG_LOCK = "idealo-hw-error-log";
 
 const errorLogItem = storage.defineItem<ErrorEntry[]>("local:errorLog", {
   fallback: [],
@@ -34,18 +41,10 @@ function entryOf(where: ErrorSource, error: unknown, now: Date): ErrorEntry {
   };
 }
 
-/**
- * Serialises read-modify-write among contexts of one origin (all idealo tabs; all extension pages).
- * Content scripts and extension pages have different origins, so an entry can still be lost when
- * both write at the same instant: acceptable for a diagnostic log.
- */
-const withLock = async <T>(task: () => Promise<T>): Promise<T> =>
-  globalThis.navigator?.locks ? await navigator.locks.request("idealo-hw-error-log", task) : task();
-
 /** Appends to the persistent log (newest last, at most MAX_ERRORS). Never throws: it runs inside error handlers. */
 export function recordError(where: ErrorSource, error: unknown, now = new Date()): Promise<void> {
   const entry = entryOf(where, error, now);
-  return withLock(async () => {
+  return withLock(ERROR_LOG_LOCK, async () => {
     const current = await readErrorLog();
     await errorLogItem.setValue([...current, entry].slice(-MAX_ERRORS));
   }).catch(() => undefined);
@@ -60,29 +59,4 @@ export async function readErrorLog(): Promise<ErrorEntry[]> {
         return parsed.success ? [parsed.data] : [];
       })
     : [];
-}
-
-const EXTENSION_ORIGIN = "chrome-extension://";
-
-/**
- * Logs uncaught errors and unhandled rejections of this context. A content script shares the page's
- * window object but only sees events from its own world; the extension-url check keeps anything that
- * is not ours out regardless.
- */
-export function installGlobalErrorReporting(
-  where: ErrorSource,
-  target: EventTarget = globalThis,
-): void {
-  const ours = (...traces: (string | undefined)[]): boolean =>
-    where !== "content" || traces.some((trace) => trace?.includes(EXTENSION_ORIGIN));
-  target.addEventListener("error", (event) => {
-    const { error, message, filename } = event as ErrorEvent;
-    if (ours(filename, error instanceof Error ? error.stack : undefined)) {
-      void recordError(where, error ?? message);
-    }
-  });
-  target.addEventListener("unhandledrejection", (event) => {
-    const { reason } = event as PromiseRejectionEvent;
-    if (ours(reason instanceof Error ? reason.stack : undefined)) void recordError(where, reason);
-  });
 }

@@ -1,10 +1,10 @@
 import type { IdealoQuery } from "@idealo-hw/idealo-query";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
-import { sendMessage } from "../messaging";
 import { formFactorOfCategory } from "../page/device-class";
+import { sendMessage } from "../platform/messaging";
+import { loadCpuSnapshot, loadGpuSnapshot } from "../platform/storage";
 import { createModelScorer } from "../requirements/scorer";
 import { loadRequirements, saveRequirements } from "../requirements/storage";
-import { loadCpuSnapshot, loadGpuSnapshot } from "../storage/items";
 import type { Overlay } from "../ui/host";
 import type { FilterCatalogSource } from "./catalog-source";
 import { embeddedPriceBounds } from "./embedded-catalog";

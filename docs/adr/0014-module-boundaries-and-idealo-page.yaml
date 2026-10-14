@@ -31,10 +31,10 @@ adr.0014:
       secret_isolation: entrypoints/*.content.ts, popup and options cannot reach the OpenRouter key module or its key provider, transitively (adr.0012); the network tap in the MAIN world cannot reach storage, React, Mantine or ui
     enforcement:
       tool: dependency-cruiser (root devDependency), config .dependency-cruiser.cjs, command just boundaries, part of just check
-      error_now: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client, R6 idealo-page-no-platform, R9 secret reachability, R11 src-not-to-tests, R12 no-non-package-json]
-      warn_now: [R7 barrel-only imports for packages and features, R8 extension layers (view, model, platform, ui, contracts, screens), R10 main-world tap stays lean]
+      error_now: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client, R6 idealo-page-no-platform, R8 platform-not-to-features-or-ui and ui-not-to-features-or-platform and contracts-pure, R9 secret reachability, R11 src-not-to-tests, R12 no-non-package-json]
+      warn_now: [R7 barrel-only imports for packages and features, R8 extension layers (view, model, screens), R10 main-world tap stays lean]
       why_warn: R7 to R10 target the features/, platform/, ui/ and contracts/ layout that later refactor steps create, or the current tree still violates them; each step flips its rules to error when it lands, and the last step leaves no warnings
-      r9_scope: matches both the current key locations (src/storage/openrouter-key, src/ai/key-provider) and the target ones (platform/storage/openrouter-key, features/ai-matching/background/key-provider); the vitest test openrouter-key-isolation stays as a second, independent proof
+      r9_scope: matches the current key locations (platform/storage/openrouter-key, src/ai/key-provider) and the target key provider (features/ai-matching/background/key-provider); the vitest test openrouter-key-isolation stays as a second, independent proof
       resolver_notes:
         - workspace packages are TS source (exports ".": ./src/index.ts); enhancedResolveOptions exportsFields [exports] resolves them to packages/*/src/index.ts
         - specifiers ending ?raw or ?inline are bundler queries; R3 exempts them

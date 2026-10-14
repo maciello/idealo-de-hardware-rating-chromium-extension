@@ -1,5 +1,6 @@
 import { calculatePKCECodeChallenge, generateRandomCodeVerifier } from "oauth4webapi";
 import { z } from "zod";
+import type { OAuthError, OAuthErrorKind } from "../contracts";
 
 /**
  * OpenRouter OAuth PKCE primitives (https://openrouter.ai/docs/guides/overview/auth/oauth).
@@ -11,22 +12,6 @@ import { z } from "zod";
 
 export const OPENROUTER_AUTH_URL = "https://openrouter.ai/auth";
 export const OPENROUTER_KEYS_URL = "https://openrouter.ai/api/v1/auth/keys";
-
-export type OAuthErrorKind =
-  | "cancelled"
-  | "denied"
-  | "missing_code"
-  | "invalid_callback"
-  | "launch_failed"
-  | "exchange_network"
-  | "exchange_http"
-  | "exchange_invalid";
-
-export interface OAuthError {
-  kind: OAuthErrorKind;
-  /** Human-readable and safe to show: never contains the authorization code or the key. */
-  message: string;
-}
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: OAuthError };
 

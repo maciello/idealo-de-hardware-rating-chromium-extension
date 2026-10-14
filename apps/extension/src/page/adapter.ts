@@ -1,4 +1,6 @@
-export type PageKind = "listing" | "product" | "other";
+import type { PageKind } from "../contracts";
+
+export type { PageKind };
 
 export interface ListingItem {
   /** Element a badge is attached to; stable for as long as the page keeps the item. */

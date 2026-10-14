@@ -4,7 +4,7 @@ import {
   type Decider,
   type DecisionCandidate,
 } from "@idealo-hw/decide";
-import { type AiTestResult, AiTestResultSchema } from "../storage/ai-test-result";
+import { type AiTestResult, AiTestResultSchema } from "../contracts";
 import type { KeyProvider } from "./key-provider";
 import { isExtensionPage } from "./openrouter-service";
 

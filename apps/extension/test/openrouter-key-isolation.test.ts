@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = resolve(import.meta.dirname, "..");
-const SECRET_MODULES = ["src/storage/openrouter-key", "src/ai/key-provider"].map((m) =>
+const SECRET_MODULES = ["src/platform/storage/openrouter-key", "src/ai/key-provider"].map((m) =>
   resolve(root, m),
 );
 

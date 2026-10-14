@@ -1,9 +1,9 @@
 import { Button, Card, Stack, Text, Title } from "@mantine/core";
 import { IconBug } from "@tabler/icons-react";
 import { useState } from "react";
-import { recordError } from "../diagnostics/error-log";
 import { exportDebugReport } from "../diagnostics/export";
-import { findTargetTab } from "../popup/target-tab";
+import { recordError } from "../platform/errors";
+import { findTargetTab } from "../platform/tabs";
 
 export function DiagnosticsCard() {
   const [busy, setBusy] = useState(false);

@@ -1,9 +1,9 @@
-import { storage } from "@wxt-dev/storage";
 import { z } from "zod";
 
 /**
  * Outcome of the "Test AI matching" probe. Deliberately holds no secret: the options page, the popup
- * and the debug report read it, while the key stays with the background (`openrouter-key.ts`).
+ * and the debug report read it, while the key stays with the background
+ * (`platform/storage/openrouter-key.ts`).
  */
 export const AiTestResultSchema = z.object({
   ok: z.boolean(),
@@ -21,14 +21,3 @@ export const AiTestResultSchema = z.object({
   error: z.string().nullable(),
 });
 export type AiTestResult = z.infer<typeof AiTestResultSchema>;
-
-export const aiTestResultItem = storage.defineItem<AiTestResult | null>("local:aiTestResult", {
-  fallback: null,
-  version: 1,
-});
-
-/** Stored result re-validated on read; null when never run or unreadable. */
-export async function loadAiTestResult(): Promise<AiTestResult | null> {
-  const parsed = AiTestResultSchema.nullable().safeParse(await aiTestResultItem.getValue());
-  return parsed.success ? parsed.data : null;
-}

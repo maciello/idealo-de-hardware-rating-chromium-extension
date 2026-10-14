@@ -9,9 +9,9 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { cohortPolicyItem, settingsItem } from "../platform/storage";
+import { useStorageItem } from "../platform/storage/use-storage-item";
 import { resolveEnabledStrategyIds, STRATEGY_CATALOG } from "../ratings/engine";
-import { cohortPolicyItem, settingsItem } from "../storage/items";
-import { useStorageItem } from "./use-storage-item";
 
 type CutoffKind = CohortPolicy["yearCutoff"]["kind"];
 

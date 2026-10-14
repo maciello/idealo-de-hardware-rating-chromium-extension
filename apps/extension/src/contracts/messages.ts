@@ -1,9 +1,7 @@
-import { defineExtensionMessaging } from "@webext-core/messaging";
-import type { ConnectResult } from "./ai/openrouter-connect";
-import type { PageReport } from "./diagnostics/page-report";
-import type { PageKind } from "./page/adapter";
-import type { PageSnapshot } from "./page/snapshot";
-import type { AiTestResult } from "./storage/ai-test-result";
+import type { AiTestResult } from "./ai-test-result";
+import type { ConnectResult } from "./oauth";
+import type { PageKind, PageReport } from "./page-report";
+import type { PageSnapshot } from "./page-snapshot";
 
 /** What the content script knows about the tab it runs in. */
 export interface PageStats {
@@ -14,7 +12,7 @@ export interface PageStats {
   total: number;
 }
 
-interface ProtocolMap {
+export interface ProtocolMap {
   /** Content scripts cannot call `runtime.openOptionsPage`; the background does it for them. */
   openOptions(): void;
   /** Options page -> background: run the OpenRouter OAuth PKCE flow. The result never carries the key. */
@@ -35,5 +33,3 @@ interface ProtocolMap {
   /** Popup -> content script (tabId): sanitized copy of the page, for building real adapters. */
   getPageSnapshot(): PageSnapshot;
 }
-
-export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();

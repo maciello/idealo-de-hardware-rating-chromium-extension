@@ -6,8 +6,8 @@ const EXT = "^apps/extension/";
 const SRC = `${EXT}src/`;
 const FEATURES = `${SRC}features/`;
 const UI_RUNTIME = "node_modules/(wxt|@wxt-dev|@webext-core|react|react-dom|@mantine)/";
-// Current locations first, target locations (platform/, features/) second.
-const SECRET_MODULES = `${SRC}(storage/openrouter-key|ai/key-provider|platform/storage/openrouter-key|features/ai-matching/background/key-provider)\\.ts$`;
+// Current location first, target location (features/) second.
+const SECRET_MODULES = `${SRC}(platform/storage/openrouter-key|ai/key-provider|features/ai-matching/background/key-provider)\\.ts$`;
 const EXTENSION_RUNTIME = "node_modules/(wxt|@wxt-dev|@webext-core)/";
 
 /** @type {import('dependency-cruiser').IConfiguration} */
@@ -165,21 +165,21 @@ module.exports = {
     {
       name: "platform-not-to-features-or-ui",
       comment: "Platform adapters sit below features and UI.",
-      severity: "warn",
+      severity: "error",
       from: { path: `${SRC}platform/` },
       to: { path: `${SRC}(features|ui|app)/` },
     },
     {
       name: "ui-not-to-features-or-platform",
       comment: "Shared UI knows neither features nor platform.",
-      severity: "warn",
+      severity: "error",
       from: { path: `${SRC}ui/` },
       to: { path: `${SRC}(features|platform|app)/` },
     },
     {
       name: "contracts-pure",
       comment: "Contracts are zod schemas and types only.",
-      severity: "warn",
+      severity: "error",
       from: { path: `${SRC}contracts/` },
       to: { path: [`${SRC}(features|platform|ui|app)/`, UI_RUNTIME] },
     },
