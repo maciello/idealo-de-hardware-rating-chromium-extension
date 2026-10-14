@@ -2,7 +2,14 @@ import type { GpuBenchmarkRecord } from "../benchmark/records";
 import type { BenchmarkSnapshot } from "../benchmark/snapshot";
 import type { FormFactor } from "../identity/form-factor";
 import type { MatchResult } from "../matcher/matcher";
-import { extractGpuIdentity, type GpuIdentity, normalizeGpuName } from "./identity";
+import {
+  extractGpuIdentity,
+  type GpuIdentity,
+  looseGpuNameKey,
+  normalizeGpuName,
+  quadroWithoutMobileSuffix,
+  splitCombinedModelName,
+} from "./identity";
 
 export interface GpuMatchOptions {
   /** Where the product is used; defaults to "unknown". Text that says "Laptop GPU" overrides it. */
@@ -21,6 +28,8 @@ interface Entry {
   readonly record: GpuBenchmarkRecord;
   readonly maxQ: boolean;
   readonly form: RecordForm;
+  /** The record is named after several models ("Radeon RX 470/570"); a record of exactly this model outranks it. */
+  readonly combined: boolean;
 }
 
 interface Group {
@@ -72,6 +81,9 @@ const asResult = (
   return { status: "ambiguous", candidates: [...records].sort(byNameThenId) };
 };
 
+const preferSingleModel = (entries: Entry[]): Entry[] =>
+  entries.some((e) => !e.combined) ? entries.filter((e) => !e.combined) : entries;
+
 /** Max-Q is a power variant: say it and get it; do not say it and get the plain mobile record when there is one. */
 function narrowByMaxQ(entries: readonly Entry[], maxQ: boolean): Entry[] {
   const preferred = entries.filter((e) => e.maxQ === maxQ);
@@ -117,24 +129,36 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
   const memoryVariants = new Map<string, Group[]>();
   const base = new Map<string, Group>();
   const byName = new Map<string, GpuBenchmarkRecord[]>();
+  /** Same records under `looseGpuNameKey`; only read when `byName` has nothing. */
+  const byLooseName = new Map<string, GpuBenchmarkRecord[]>();
 
   for (const record of snapshot.records) {
     const nameKey = normalizeGpuName(record.name);
     byName.set(nameKey, [...(byName.get(nameKey) ?? []), record]);
+    const looseKey = looseGpuNameKey(record.name);
+    byLooseName.set(looseKey, [...(byLooseName.get(looseKey) ?? []), record]);
 
-    const identity = extractGpuIdentity(record.name);
-    // Only names that are exactly one recognised model join a variant group; "RTX 3050 OEM" stays by name.
-    if (identity === null || identity.residual !== "") continue;
-    const entry: Entry = { record, maxQ: identity.maxQ, form: formOf(record, identity) };
-    const target =
-      identity.memoryGb === null
-        ? groupFor(base, identity.key)
-        : groupFor(withMemory, `${identity.key}-${identity.memoryGb}gb`);
-    if (identity.memoryGb !== null) {
-      const variants = memoryVariants.get(identity.key) ?? [];
-      if (!variants.includes(target)) memoryVariants.set(identity.key, [...variants, target]);
+    const modelNames = splitCombinedModelName(record.name);
+    for (const modelName of modelNames) {
+      const identity = extractGpuIdentity(modelName);
+      // Only names that are exactly one recognised model join a variant group; "RTX 3050 OEM" stays by name.
+      if (identity === null || identity.residual !== "") continue;
+      const entry: Entry = {
+        record,
+        maxQ: identity.maxQ,
+        form: formOf(record, identity),
+        combined: modelNames.length > 1,
+      };
+      const target =
+        identity.memoryGb === null
+          ? groupFor(base, identity.key)
+          : groupFor(withMemory, `${identity.key}-${identity.memoryGb}gb`);
+      if (identity.memoryGb !== null) {
+        const variants = memoryVariants.get(identity.key) ?? [];
+        if (!variants.includes(target)) memoryVariants.set(identity.key, [...variants, target]);
+      }
+      target.entries.push(entry);
     }
-    target.entries.push(entry);
   }
 
   const resolveGroup = (
@@ -152,12 +176,12 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
       return null;
     }
     const pick = (accept: (entry: Entry) => boolean): Entry[] => {
-      const plain = baseGroup?.entries.filter(accept) ?? [];
+      const plain = preferSingleModel(baseGroup?.entries.filter(accept) ?? []);
       if (identity.memoryGb !== null) {
-        const fromMemory = memoryGroup?.entries.filter(accept) ?? [];
+        const fromMemory = preferSingleModel(memoryGroup?.entries.filter(accept) ?? []);
         return fromMemory.length > 0 ? fromMemory : plain;
       }
-      const sized = sizedGroups.flatMap((group) => group.entries.filter(accept));
+      const sized = sizedGroups.flatMap((group) => preferSingleModel(group.entries.filter(accept)));
       return plain.length > 0 && !isNegligible(plain, sized)
         ? plain
         : sized.length > 0
@@ -209,7 +233,15 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
         if (group !== null) return asResult(group.records, query, group.unsure);
       }
       if (typeof query !== "string") return { status: "no_match" };
-      return asResult(byName.get(normalizeGpuName(query)) ?? [], query);
+      const byWord = byName.get(normalizeGpuName(query)) ?? byLooseName.get(looseGpuNameKey(query));
+      if (byWord !== undefined) return asResult(byWord, query);
+      const unsuffixed = quadroWithoutMobileSuffix(query);
+      if (unsuffixed === null || formFactor === "desktop") return { status: "no_match" };
+      // Mobile "M" omitted by PassMark: only a card PassMark files under Mobile and not under Desktop.
+      const mobile = (byName.get(unsuffixed) ?? []).filter(
+        (r) => r.segments.includes("mobile") && !r.segments.includes("desktop"),
+      );
+      return asResult(mobile, query);
     },
   };
 }

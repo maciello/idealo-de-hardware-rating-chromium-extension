@@ -5,6 +5,7 @@ import {
   cpuNameKeys,
   extractCpuIdentity,
   normalizeCpuName,
+  normalizeCpuNameWithoutVendor,
 } from "../identity/cpu-identity";
 import type { FreeTextMatcher, FreeTextMatchResult, MatchResult } from "./matcher";
 import { bareModelTokens } from "./model-token";
@@ -64,7 +65,9 @@ export function createCanonicalKeyMatcher(
     if (exact.status !== "no_match") return exact;
     const identity = extractCpuIdentity(query);
     if (identity !== null) return matchKey(identity);
-    return resolve(byKey.get(normalizeCpuName(query)), "normalized");
+    const generic = resolve(byKey.get(normalizeCpuName(query)), "normalized");
+    if (generic.status !== "no_match") return generic;
+    return resolve(byKey.get(normalizeCpuNameWithoutVendor(query)), "normalized");
   };
 
   const matchToken = (text: string): FreeTextMatchResult<CpuBenchmarkRecord> => {

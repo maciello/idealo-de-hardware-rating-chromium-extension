@@ -110,19 +110,37 @@ const intelEntry = regexExtractor(
   },
 );
 
+/**
+ * AMD writes "PRO" before the model ("Ryzen 5 PRO 230"); listings often put it behind ("Ryzen 5 230 Pro").
+ * Both positions name the same part, and PRO stays part of the model: a PRO part is never its non-PRO sibling.
+ */
+const withPro = (words: readonly string[], pro: boolean, number: string): string =>
+  [...words.filter((word) => word !== "PRO"), ...(pro ? ["PRO"] : []), number].join(" ");
+
 const ryzenThreadripper = regexExtractor(
-  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+threadripper\s+((?:pro\s+)?\d{4}[a-z]{0,2}(?:3d)?)(?![a-z0-9+])/,
-  (m) => make(m, "AMD", "Ryzen Threadripper", upper(m[1])),
+  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+threadripper\s+(?:(pro)\s+)?(\d{4}[a-z]{0,2}(?:3d)?)(?:\s+(pro)(?![a-z0-9+]))?(?![a-z0-9+])/,
+  (m) =>
+    make(
+      m,
+      "AMD",
+      "Ryzen Threadripper",
+      withPro([], m[1] !== undefined || m[3] !== undefined, upper(m[2])),
+    ),
 );
 
 const ryzen = regexExtractor(
-  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+(?:(ai)\s+)?(?:([3579])\s+)?((?:(?:pro|hx|h|max\+?)\s+)*)(\d{3,5}(?:[a-z]{1,2}(?:3d)?)?)(?![a-z0-9+])/,
+  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+(?:(ai)\s+)?(?:([3579])\s+)?((?:(?:pro|hx|h|max\+?)\s+)*)(\d{3,5}(?:[a-z]{1,2}(?:3d)?)?)(?:\s+(pro)(?![a-z0-9+]))?(?![a-z0-9+])/,
   (m) => {
     const number = upper(m[4]);
     if (UNIT_SUFFIX.test(number) || (m[1] === undefined && m[2] === undefined)) return null;
     const family = ["Ryzen", m[1] === undefined ? "" : "AI", m[2] ?? ""].filter(Boolean).join(" ");
-    const model = [upper(m[3]).trim(), number].filter(Boolean).join(" ");
-    return make(m, "AMD", family, model);
+    const words = upper(m[3]).split(/\s+/).filter(Boolean);
+    return make(
+      m,
+      "AMD",
+      family,
+      withPro(words, words.includes("PRO") || m[5] !== undefined, number),
+    );
   },
 );
 
@@ -153,6 +171,12 @@ const snapdragonX = regexExtractor(
   },
 );
 
+/** PassMark appends the SoC code to the marketing name ("Mediatek Kompanio 838 MT8188"); listings omit it. */
+const mediatekKompanio = regexExtractor(
+  /(?<![a-z0-9])(?:mediatek\s+)?kompanio\s+(ultra\s+)?(\d{3,4})(?![a-z0-9+])/,
+  (m) => make(m, "MediaTek", m[1] === undefined ? "Kompanio" : "Kompanio Ultra", m[2] ?? ""),
+);
+
 const EXTRACTORS: readonly Extractor[] = [
   intelCoreUltra,
   intelCoreI,
@@ -167,11 +191,12 @@ const EXTRACTORS: readonly Extractor[] = [
   athlon,
   apple,
   snapdragonX,
+  mediatekKompanio,
 ];
 
 type Scope = "anywhere" | "prefix" | "whole";
 
-function findIdentity(text: string, scope: Scope): CpuIdentity | null {
+function findFound(text: string, scope: Scope): Found | null {
   let best: Found | null = null;
   for (const extract of EXTRACTORS) {
     const found = extract(text);
@@ -186,8 +211,11 @@ function findIdentity(text: string, scope: Scope): CpuIdentity | null {
       best = found;
     }
   }
-  return best?.identity ?? null;
+  return best;
 }
+
+const findIdentity = (text: string, scope: Scope): CpuIdentity | null =>
+  findFound(text, scope)?.identity ?? null;
 
 /**
  * Finds the CPU model inside an idealo title/spec string.
@@ -200,6 +228,37 @@ export function extractCpuIdentity(text: string): CpuIdentity | null {
 /** Generic key for any name: marks, "@ x GHz", case and separators removed. */
 export function normalizeCpuName(text: string): string {
   return slugify(stripNameDecoration(cleanText(text)).text);
+}
+
+/** Vendors PassMark sometimes leaves off a name ("Snapdragon 7c @ 2.40 GHz") that listings prefix ("Qualcomm Snapdragon 7c"). */
+const LEADING_VENDOR = /^(?:qualcomm|mediatek|intel|amd|nvidia|apple)\s+/;
+
+/** `normalizeCpuName` without a leading vendor word; the fallback key for names that carry no identity. */
+export function normalizeCpuNameWithoutVendor(text: string): string {
+  return slugify(stripNameDecoration(cleanText(text)).text.replace(LEADING_VENDOR, ""));
+}
+
+/** Sub-brand words that follow the family in PassMark names ("Pentium Silver N6000") but that listings often drop. */
+const OPTIONAL_SUB_BRAND = /^(Pentium|Athlon) (?:Silver|Gold)$/;
+
+/**
+ * "MediaTek Kompanio 520-528 (MT8186-MT8186T)": PassMark folds the models sold under both numbers into one record and
+ * writes the range with a hyphen. Both listed numbers are covered, nothing in between: the key of the last number.
+ * Only for purely numeric models of equal length, so suffix letters never join a range.
+ */
+function rangeEnd(rest: string, identity: CpuIdentity): string | null {
+  const m = /^-(\d+)(?![a-z0-9+])/.exec(rest);
+  const last = m?.[1];
+  if (
+    last === undefined ||
+    !/^\d+$/.test(identity.model) ||
+    last.length !== identity.model.length
+  ) {
+    return null;
+  }
+  return Number(last) > Number(identity.model) && identity.key.endsWith(identity.model)
+    ? identity.key.slice(0, -identity.model.length) + last
+    : null;
 }
 
 export interface CpuNameKey {
@@ -230,9 +289,17 @@ export function cpuNameKeys(name: string): readonly CpuNameKey[] {
     if (/^Core [357]$/.test(whole.family) && /^N\d{3}$/.test(whole.model)) {
       add(slugify(`Intel Core ${whole.model}`), base);
     }
+    // "Pentium Silver N6000" is also "Pentium N6000"; losing against a record that is named so, and ambiguous if two sub-brands share the number.
+    const brand = OPTIONAL_SUB_BRAND.exec(whole.family);
+    if (brand?.[1] !== undefined)
+      add(slugify(`${whole.vendor} ${brand[1]} ${whole.model}`), base + 1);
   } else {
-    const prefix = findIdentity(stripped.text, "prefix");
-    if (prefix !== null) add(prefix.key, base + 2);
+    const prefix = findFound(stripped.text, "prefix");
+    if (prefix !== null) {
+      add(prefix.identity.key, base + 2);
+      const last = rangeEnd(stripped.text.slice(prefix.end), prefix.identity);
+      if (last !== null) add(last, base + 2);
+    }
   }
   return [...keys].map(([key, penalty]) => ({ key, penalty }));
 }
