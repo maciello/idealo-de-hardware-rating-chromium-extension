@@ -1,8 +1,9 @@
-import { loadOpenRouterCredentials } from "../platform/storage/openrouter-key";
+import { loadOpenRouterCredentials } from "../../../platform/storage/openrouter-key";
 
 /**
  * Port for whoever needs the OpenRouter key (the future Jev decider adapter). BACKGROUND ONLY:
- * never import this from a content script or an options page.
+ * never import this from a content script, the popup or an options page, and never re-export it
+ * from a barrel.
  */
 export interface KeyProvider {
   getOpenRouterKey(): Promise<string | null>;

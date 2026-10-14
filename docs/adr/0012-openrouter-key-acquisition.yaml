@@ -12,7 +12,7 @@ adr.0012:
     extension:
       flow: browser.identity.launchWebAuthFlow with callback browser.identity.getRedirectURL() (https://<extension-id>.chromiumapp.org/), run in background service worker, triggered from options page
       storage: local:openrouterKey {key, userId, obtainedAt}; options page sees connection status only, never the key
-      port: KeyProvider (apps/extension/src/ai/key-provider.ts), background-only
+      port: KeyProvider (apps/extension/src/features/ai-matching/background/key-provider.ts), background-only
       revoke: disconnect deletes the local key; server-side revocation at openrouter.ai/settings/keys
     dev_and_ci: same PKCE flow with a localhost callback; key kept outside the repo (OPENROUTER_API_KEY env); live tests skip without it
   consequences:

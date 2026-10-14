@@ -22,6 +22,9 @@ export function formatImportDate(iso: string | null): string | null {
   return time === null ? null : DATE.format(new Date(time));
 }
 
+/** Date and time in the browser's own locale (not pinned to de-DE). */
+export const formatLocalDateTime = (iso: string): string => new Date(iso).toLocaleString();
+
 /** `14.10.` without the year; null for a missing or unparsable timestamp. */
 export function formatShortDate(iso: string | null | undefined): string | null {
   const time = parse(iso);

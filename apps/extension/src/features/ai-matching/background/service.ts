@@ -1,9 +1,10 @@
-import type { ConnectResult } from "../contracts";
+import type { ConnectResult } from "../../../contracts";
 import {
   clearOpenRouterCredentials,
   saveOpenRouterCredentials,
-} from "../platform/storage/openrouter-key";
-import { type ConnectDeps, connectOpenRouter } from "./openrouter-connect";
+} from "../../../platform/storage/openrouter-key";
+import { AI_COPY } from "../copy";
+import { type ConnectDeps, connectOpenRouter } from "./connect";
 
 export interface ServiceEnv {
   redirectUrl: string;
@@ -20,7 +21,7 @@ export function isExtensionPage(senderUrl: string | undefined, extensionBaseUrl:
 
 const REFUSED: ConnectResult = {
   ok: false,
-  error: { kind: "launch_failed", message: "Only the extension's own pages may do this." },
+  error: { kind: "launch_failed", message: AI_COPY.extensionOnly },
 };
 
 export function createOpenRouterService(env: ServiceEnv) {

@@ -4,9 +4,11 @@ import {
   type Decider,
   type DecisionCandidate,
 } from "@idealo-hw/decide";
-import { type AiTestResult, AiTestResultSchema } from "../contracts";
+import { type AiTestResult, AiTestResultSchema } from "../../../contracts";
+import { PROBE_MAX_ERROR_CHARS, PROBE_REQUEST_TIMEOUT_MS } from "../config";
+import { AI_COPY } from "../copy";
 import type { KeyProvider } from "./key-provider";
-import { isExtensionPage } from "./openrouter-service";
+import { isExtensionPage } from "./service";
 
 const CANDIDATES: readonly DecisionCandidate[] = [
   { id: "i5-13400", label: "Intel Core i5-13400" },
@@ -25,15 +27,12 @@ const PROBE: ChooseRecordInput = {
   candidates: CANDIDATES,
 };
 
-const REQUEST_TIMEOUT_MS = 30_000;
-const MAX_ERROR_CHARS = 300;
-
 /** One attempt, no cache: the probe has to reach the model every time. */
 export const probeDecider = (apiKey: string): Decider =>
   createJevDecider({
     apiKey,
     dangerouslyAllowBrowser: true,
-    requestOptions: { timeout: REQUEST_TIMEOUT_MS, retry: { maxRetries: 0 } },
+    requestOptions: { timeout: PROBE_REQUEST_TIMEOUT_MS, retry: { maxRetries: 0 } },
   });
 
 export interface AiTestEnv {
@@ -47,7 +46,7 @@ export interface AiTestEnv {
 
 const describeError = (error: unknown, key: string): string => {
   const message = error instanceof Error ? error.message : "Unknown error";
-  return message.replaceAll(key, "[key]").slice(0, MAX_ERROR_CHARS);
+  return message.replaceAll(key, "[key]").slice(0, PROBE_MAX_ERROR_CHARS);
 };
 
 type Outcome = Partial<Omit<AiTestResult, "at" | "expected" | "latencyMs">>;
@@ -79,8 +78,8 @@ export function createAiTestService(env: AiTestEnv) {
         ...base,
         error:
           picked === null
-            ? `No confident pick (confidence ${choice.confidence.toFixed(2)}).`
-            : `Picked ${picked}, expected ${EXPECTED.label}.`,
+            ? AI_COPY.noConfidentPick(choice.confidence.toFixed(2))
+            : AI_COPY.pickedWrong(picked, EXPECTED.label),
       };
     } catch (error) {
       return { error: describeError(error, key) };
@@ -90,7 +89,7 @@ export function createAiTestService(env: AiTestEnv) {
   const probe = async (): Promise<AiTestResult> => {
     const started = env.now();
     const key = await env.keys.getOpenRouterKey();
-    const outcome = key === null ? { error: "OpenRouter is not connected." } : await decide(key);
+    const outcome = key === null ? { error: AI_COPY.probeNotConnected } : await decide(key);
     const result = resultOf(started, env.now(), outcome);
     await env.save(result);
     return result;
@@ -101,9 +100,7 @@ export function createAiTestService(env: AiTestEnv) {
     run(senderUrl: string | undefined): Promise<AiTestResult> {
       if (!isExtensionPage(senderUrl, env.extensionBaseUrl)) {
         const now = env.now();
-        return Promise.resolve(
-          resultOf(now, now, { error: "Only the extension's own pages may do this." }),
-        );
+        return Promise.resolve(resultOf(now, now, { error: AI_COPY.extensionOnly }));
       }
       inFlight ??= probe().finally(() => {
         inFlight = undefined;

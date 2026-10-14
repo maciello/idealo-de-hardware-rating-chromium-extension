@@ -7,7 +7,7 @@ import {
   OPENROUTER_KEYS_URL,
   parseCallbackUrl,
   parseKeyExchangeResponse,
-} from "../src/ai/openrouter-oauth";
+} from "../../../../../src/features/ai-matching/background/oauth";
 
 const REDIRECT = "https://abcdefghijklmnopabcdefghijklmnop.chromiumapp.org/";
 

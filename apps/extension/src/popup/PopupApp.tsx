@@ -9,18 +9,19 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { captureRing } from "../capture/ring";
 import type { PageStats } from "../contracts";
-import { NOT_CONNECTED, OpenRouterStatusSchema, SettingsSchema } from "../contracts";
+import { SettingsSchema } from "../contracts";
 import { exportDebugReport } from "../diagnostics/export";
+import { OpenRouterConnectedRow } from "../features/ai-matching";
 import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
 import { downloadJson } from "../platform/download";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
-import { captureModeItem, openrouterStatusItem, settingsItem } from "../platform/storage";
+import { captureModeItem, settingsItem } from "../platform/storage";
 import { useStorageItem } from "../platform/storage/use-storage-item";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
-import { formatInteger, formatMegabytes, LabeledRow, MutedText, StatusNote } from "../ui";
+import { formatInteger, formatMegabytes, LabeledRow, StatusNote } from "../ui";
 
 function BenchmarkRow() {
   return <BenchmarkSummary {...useBenchmarkSummary()} />;
@@ -59,73 +60,6 @@ function PrimaryNumber() {
         }
         data-testid="popup-primary"
       />
-    </LabeledRow>
-  );
-}
-
-function AiMatching() {
-  const [stored] = useStorageItem(openrouterStatusItem);
-  const parsed = OpenRouterStatusSchema.safeParse(stored);
-  const status = parsed.success ? parsed.data : NOT_CONNECTED;
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const run = async (action: "connect" | "disconnect"): Promise<void> => {
-    setBusy(true);
-    setError(null);
-    try {
-      if (action === "connect") {
-        const result = await sendMessage("connectOpenRouter", undefined);
-        if (!result.ok) setError(result.error.message);
-      } else {
-        await sendMessage("disconnectOpenRouter", undefined);
-      }
-    } catch (cause) {
-      void recordError("popup", cause);
-      setError("The extension background did not respond. Reload the extension and try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <LabeledRow label="AI matching" stacked>
-      <Group justify="space-between" wrap="nowrap" gap="xs">
-        {status.connected ? (
-          <>
-            <Text fz="sm" data-testid="popup-ai">
-              Connected
-            </Text>
-            <Button
-              size="compact-sm"
-              variant="default"
-              loading={busy}
-              onClick={() => void run("disconnect")}
-            >
-              Disconnect
-            </Button>
-          </>
-        ) : (
-          <>
-            <MutedText fz="sm" data-testid="popup-ai">
-              Not connected
-            </MutedText>
-            <Button
-              size="compact-sm"
-              loading={busy}
-              onClick={() => void run("connect")}
-              data-testid="popup-connect"
-            >
-              Connect OpenRouter
-            </Button>
-          </>
-        )}
-      </Group>
-      {error && (
-        <StatusNote tone="error" mt={4}>
-          {error}
-        </StatusNote>
-      )}
     </LabeledRow>
   );
 }
@@ -297,7 +231,7 @@ export function PopupApp() {
       >
         Open filter builder
       </Button>
-      <AiMatching />
+      <OpenRouterConnectedRow />
       <Capture tab={tab} />
       <Diagnostics tab={tab} />
       <Anchor

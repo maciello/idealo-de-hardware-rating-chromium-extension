@@ -6,8 +6,7 @@ const EXT = "^apps/extension/";
 const SRC = `${EXT}src/`;
 const FEATURES = `${SRC}features/`;
 const UI_RUNTIME = "node_modules/(wxt|@wxt-dev|@webext-core|react|react-dom|@mantine)/";
-// Current location first, target location (features/) second.
-const SECRET_MODULES = `${SRC}(platform/storage/openrouter-key|ai/key-provider|features/ai-matching/background/key-provider)\\.ts$`;
+const SECRET_MODULES = `${SRC}(platform/storage/openrouter-key|features/ai-matching/background/key-provider)\\.ts$`;
 const EXTENSION_RUNTIME = "node_modules/(wxt|@wxt-dev|@webext-core)/";
 
 /** @type {import('dependency-cruiser').IConfiguration} */

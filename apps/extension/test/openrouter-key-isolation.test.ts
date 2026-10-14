@@ -3,9 +3,10 @@ import { dirname, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = resolve(import.meta.dirname, "..");
-const SECRET_MODULES = ["src/platform/storage/openrouter-key", "src/ai/key-provider"].map((m) =>
-  resolve(root, m),
-);
+const SECRET_MODULES = [
+  "src/platform/storage/openrouter-key",
+  "src/features/ai-matching/background/key-provider",
+].map((m) => resolve(root, m));
 
 const resolveModule = (from: string, spec: string): string | undefined => {
   const base = resolve(dirname(from), spec);
@@ -37,6 +38,10 @@ describe("OpenRouter key isolation", () => {
 
   it("finds the content scripts it is meant to guard", () => {
     expect(contentScripts.length).toBeGreaterThan(0);
+  });
+
+  it.each(SECRET_MODULES)("the guarded module %s exists", (secret) => {
+    expect(existsSync(`${secret}.ts`)).toBe(true);
   });
 
   it.each(contentScripts)("%s cannot reach the key module or the key provider", (name) => {

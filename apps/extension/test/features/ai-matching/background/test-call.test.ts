@@ -1,7 +1,10 @@
 import type { ChooseRecordInput, Decider, RecordChoice } from "@idealo-hw/decide";
 import { describe, expect, it } from "vitest";
-import { type AiTestEnv, createAiTestService } from "../src/ai/ai-test-service";
-import type { AiTestResult } from "../src/contracts";
+import type { AiTestResult } from "../../../../src/contracts";
+import {
+  type AiTestEnv,
+  createAiTestService,
+} from "../../../../src/features/ai-matching/background/test-call";
 
 const BASE = "chrome-extension://abc/";
 const KEY = "sk-or-secret-key";

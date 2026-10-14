@@ -1,13 +1,13 @@
-import { calculatePKCECodeChallenge, generateRandomCodeVerifier } from "oauth4webapi";
 import { z } from "zod";
-import type { OAuthError, OAuthErrorKind } from "../contracts";
+import type { OAuthError, OAuthErrorKind } from "../../../../contracts";
 
 /**
- * OpenRouter OAuth PKCE primitives (https://openrouter.ai/docs/guides/overview/auth/oauth).
- * Pure functions plus one fetch; no extension APIs, so everything here is unit-testable.
+ * OpenRouter OAuth authorization URL, callback parsing and code-for-key exchange
+ * (https://openrouter.ai/docs/guides/overview/auth/oauth). Pure functions plus one fetch; no
+ * extension APIs, so everything here is unit-testable.
  *
- * OpenRouter's docs define no `state` parameter, so none is sent: the PKCE verifier (kept in memory
- * for the duration of one flow) already binds the returned `code` to this client.
+ * OpenRouter's docs define no `state` parameter, so none is sent: the PKCE verifier (pkce.ts, kept in
+ * memory for the duration of one flow) already binds the returned `code` to this client.
  */
 
 export const OPENROUTER_AUTH_URL = "https://openrouter.ai/auth";
@@ -19,16 +19,6 @@ const fail = (kind: OAuthErrorKind, message: string): { ok: false; error: OAuthE
   ok: false,
   error: { kind, message },
 });
-
-export interface Pkce {
-  codeVerifier: string;
-  codeChallenge: string;
-}
-
-export async function createPkce(): Promise<Pkce> {
-  const codeVerifier = generateRandomCodeVerifier();
-  return { codeVerifier, codeChallenge: await calculatePKCECodeChallenge(codeVerifier) };
-}
 
 export function buildAuthorizationUrl(callbackUrl: string, codeChallenge: string): string {
   const url = new URL(OPENROUTER_AUTH_URL);

@@ -1,10 +1,6 @@
-import type { ConnectResult, OpenRouterStatus } from "../contracts";
-import {
-  buildAuthorizationUrl,
-  createPkce,
-  exchangeCodeForKey,
-  parseCallbackUrl,
-} from "./openrouter-oauth";
+import type { ConnectResult, OpenRouterStatus } from "../../../contracts";
+import { AI_COPY } from "../copy";
+import { buildAuthorizationUrl, createPkce, exchangeCodeForKey, parseCallbackUrl } from "./oauth";
 
 export interface ConnectDeps {
   /** `browser.identity.getRedirectURL()`, i.e. https://<extension-id>.chromiumapp.org/ */
@@ -30,23 +26,17 @@ export async function connectOpenRouter(deps: ConnectDeps): Promise<ConnectResul
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     return USER_CANCELLED.test(message)
-      ? {
-          ok: false,
-          error: { kind: "cancelled", message: "Authorization was cancelled. Nothing changed." },
-        }
+      ? { ok: false, error: { kind: "cancelled", message: AI_COPY.cancelled } }
       : {
           ok: false,
           error: {
             kind: "launch_failed",
-            message: "The OpenRouter sign-in window could not open.",
+            message: AI_COPY.launchFailed,
           },
         };
   }
   if (responseUrl === undefined) {
-    return {
-      ok: false,
-      error: { kind: "cancelled", message: "Authorization was cancelled. Nothing changed." },
-    };
+    return { ok: false, error: { kind: "cancelled", message: AI_COPY.cancelled } };
   }
 
   const callback = parseCallbackUrl(responseUrl, deps.redirectUrl);

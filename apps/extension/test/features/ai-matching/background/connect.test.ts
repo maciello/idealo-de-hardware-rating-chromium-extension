@@ -1,16 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { storageKeyProvider } from "../src/ai/key-provider";
-import { type ConnectDeps, connectOpenRouter } from "../src/ai/openrouter-connect";
-import { createOpenRouterService, isExtensionPage } from "../src/ai/openrouter-service";
-import { NOT_CONNECTED } from "../src/contracts";
-import { loadOpenRouterStatus, openrouterStatusItem } from "../src/platform/storage";
+import { NOT_CONNECTED } from "../../../../src/contracts";
+import {
+  type ConnectDeps,
+  connectOpenRouter,
+} from "../../../../src/features/ai-matching/background/connect";
+import { storageKeyProvider } from "../../../../src/features/ai-matching/background/key-provider";
+import {
+  createOpenRouterService,
+  isExtensionPage,
+} from "../../../../src/features/ai-matching/background/service";
+import { loadOpenRouterStatus, openrouterStatusItem } from "../../../../src/platform/storage";
 import {
   clearOpenRouterCredentials,
   loadOpenRouterCredentials,
   openrouterKeyItem,
   saveOpenRouterCredentials,
-} from "../src/platform/storage/openrouter-key";
+} from "../../../../src/platform/storage/openrouter-key";
 
 const REDIRECT = "https://abcdefghijklmnopabcdefghijklmnop.chromiumapp.org/";
 const EXTENSION_BASE = "chrome-extension://abcdefghijklmnopabcdefghijklmnop/";
