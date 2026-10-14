@@ -1,5 +1,5 @@
 import { OVERLAY_HOST_Z_INDEX } from "./layers";
-import { tokenCss } from "./tokens";
+import { POPUP_WIDTH, tokenCss } from "./tokens";
 
 /** Typographic baseline for our shadow content: the page's font, our sizes. */
 const BASE = `
@@ -36,3 +36,7 @@ export const overlayHostStyles = (featureCss = ""): string => `${tokenCss(":host
   .mantine-Popover-dropdown, .mantine-Drawer-root, [data-hw-interactive] { pointer-events: auto; }
   .mantine-Popover-dropdown.hw-popover { padding: 0; border: 1px solid var(--hw-line); border-radius: var(--hw-radius-m); background: var(--hw-surface); box-shadow: var(--hw-shadow-card); }
 `;
+
+/** Page-level styles of the popup document: the tokens plus a fixed-width, token-colored body. */
+export const popupPageStyles = (): string =>
+  `${tokenCss(":root")} body{width:${POPUP_WIDTH};margin:0;background:var(--hw-surface);color:var(--hw-ink);}`;

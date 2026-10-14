@@ -29,3 +29,9 @@ export const tokenCss = (selector: string): string =>
   `${selector}{${[...Object.entries(TOKENS), ...Object.entries(DERIVED)]
     .map(([name, value]) => `--hw-${name}:${value};`)
     .join("")}}`;
+
+/** Font stack of the extension's own pages (popup, options); overlays inherit the host page's font. */
+export const PAGE_FONT_FAMILY = "Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif";
+
+/** Browsers size the popup to its content; this is the fixed width of that content. */
+export const POPUP_WIDTH = "360px";

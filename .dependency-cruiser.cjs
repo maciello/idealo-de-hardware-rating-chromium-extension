@@ -1,6 +1,5 @@
 // Module-boundary rules, see docs/adr/0014-module-boundaries-and-idealo-page.yaml.
-// Severity "warn" marks rules for the target layout (features/, platform/, ui/, contracts/) and
-// barrel rules the current tree still violates; later refactor steps flip them to "error".
+// Every rule runs at "error": a violation fails `just boundaries` and therefore `just check`.
 
 const EXT = "^apps/extension/";
 const SRC = `${EXT}src/`;
@@ -15,8 +14,7 @@ module.exports = {
     // R1
     {
       name: "no-circular",
-      comment:
-        "Import cycles hide a missing abstraction. Known cycles are listed in the refactor plan and fixed by later steps.",
+      comment: "Import cycles hide a missing abstraction.",
       severity: "error",
       from: {},
       to: { circular: true },
@@ -115,7 +113,7 @@ module.exports = {
     {
       name: "cross-feature-via-index",
       comment: "A feature reaches another feature only through features/<x>/index.ts.",
-      severity: "warn",
+      severity: "error",
       from: { path: `${FEATURES}([^/]+)/` },
       to: {
         path: `${FEATURES}([^/]+)/.+`,
@@ -126,7 +124,7 @@ module.exports = {
     {
       name: "app-screens-via-feature-index",
       comment: "Screens and entrypoints compose features through their public index only.",
-      severity: "warn",
+      severity: "error",
       from: { path: `^apps/extension/(src/app|entrypoints)/` },
       to: {
         path: `${FEATURES}[^/]+/.+`,
@@ -139,7 +137,7 @@ module.exports = {
       name: "view-is-pure",
       comment:
         "Views take props and emit callbacks: no controllers, adapters, platform or IO runtimes.",
-      severity: "warn",
+      severity: "error",
       from: { path: "/features/[^/]+/view/" },
       to: {
         path: [
@@ -153,7 +151,7 @@ module.exports = {
       name: "model-is-pure",
       comment:
         "Model and view-model are pure: no UI components, IO, platform or framework runtimes. ui/format and ui/theme are pure functions and allowed.",
-      severity: "warn",
+      severity: "error",
       from: { path: "/features/[^/]+/(model|view-model)/" },
       to: {
         path: [
@@ -201,7 +199,7 @@ module.exports = {
     {
       name: "main-world-tap-is-lean",
       comment: "The MAIN-world network tap must not pull in storage, React, Mantine or shared UI.",
-      severity: "warn",
+      severity: "error",
       from: { path: `${EXT}entrypoints/network-tap\\.content\\.ts$` },
       to: {
         reachable: true,
