@@ -4,13 +4,22 @@ adr.0008:
   date: 2026-10-14
   decision:
     extension:
-      sources_ranked: [MAIN-world fetch/XHR tap (JSON the page already loads), SSR JSON/ld+json, DOM]
-      capture_mode: records idealo JSON responses (url, status, body) to local storage; exportable as file -> ground truth for FilterCatalog/spec adapters
+      sources_ranked: [SSR JSON/ld+json, DOM, MAIN-world fetch/XHR tap (debug only)]
+      capture_mode: records idealo JSON responses (url, status, body) to local storage; exportable as file
+      network_tap: registered at runtime only while capture_mode is on (page fetch/XHR stay native otherwise)
+      page_snapshot: popup exports document HTML of the active tab -> ground truth for listing/product/FilterCatalog adapters
       no_extra_requests_to_idealo: true (MVP)
     future_backend_or_mcp:
       preferred: adapter over official idealo MCP (mcp.idealo.com; search_products filters, get_product_details specs)
       constraint: trial AGB forbid productive/end-customer use and data storage; production needs Partner tier
       rejected: server-side scraping (bot protection, ToS)
+  findings:
+    - id: capture-2026-10-14
+      source: user capture export, search "laptop 32GB" in Notebooks
+      observed:
+        - "GET /suggest?q=<text>&max=10 -> JSON product and query suggestions with OffersOfProduct URLs"
+        - "4x POST to obfuscated path /VlzSZFrXQ-8-_VLmYKNKlQwtVKs/... -> 202, empty body"
+      conclusion: listing grid and filter sidebar are server-rendered; no product/filter JSON over fetch/XHR on this flow; obfuscated POSTs are likely a bot-manager sensor, so patching fetch/XHR on every page is a detection risk
   unknowns:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
     - location of spec table (Prozessor/Grafikkarte) on product pages
