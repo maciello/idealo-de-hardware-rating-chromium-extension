@@ -1,21 +1,40 @@
 import { formatDecimal, formatInteger } from "./format";
-import { percentileRank } from "./percentile";
-import type { Rating, RatingStrategy } from "./strategy";
+import { percentileDisplay, percentileRank } from "./percentile";
+import type { Rating, RatingInput, RatingStrategy } from "./strategy";
+
+export interface ScoreStrategySpec<I> {
+  readonly id: string;
+  readonly label: string;
+  /** Names the score in the explanation: "PassMark <what> of <subject>: <score>.". */
+  readonly what: string;
+  readonly subject: (input: I) => string;
+  readonly score: (input: I) => number;
+}
+
+/** The raw benchmark value as a rating; one definition for every metric (CPU Mark, G3D Mark). */
+export const scoreStrategy = <I>(spec: ScoreStrategySpec<I>): RatingStrategy<I> => ({
+  id: spec.id,
+  label: spec.label,
+  rate(input): Rating {
+    const value = spec.score(input);
+    return {
+      strategyId: spec.id,
+      value,
+      display: formatInteger(value),
+      explanation: `PassMark ${spec.what} of ${spec.subject(input)}: ${formatInteger(value)}.`,
+    };
+  },
+});
 
 const MULTITHREADSCORE_ID = "raw_multithread_score";
 
-export const multiThreadScore: RatingStrategy = {
+export const multiThreadScore: RatingStrategy = scoreStrategy<RatingInput>({
   id: MULTITHREADSCORE_ID,
   label: "Multi-thread score",
-  rate({ cpu }): Rating {
-    return {
-      strategyId: MULTITHREADSCORE_ID,
-      value: cpu.cpuMark,
-      display: formatInteger(cpu.cpuMark),
-      explanation: `PassMark CPU Mark (multi-thread) of ${cpu.name}: ${formatInteger(cpu.cpuMark)}.`,
-    };
-  },
-};
+  what: "CPU Mark (multi-thread)",
+  subject: ({ cpu }) => cpu.name,
+  score: ({ cpu }) => cpu.cpuMark,
+});
 
 const SINGLETHREADSCORE_ID = "single_thread_score";
 
@@ -33,22 +52,40 @@ export const singleThreadScore: RatingStrategy = {
   },
 };
 
-const VALUEPEREURO_ID = "value_per_euro";
+export interface ValuePerEuroSpec<I> {
+  readonly id: string;
+  /** Name of the score, e.g. "CPU Mark"; the strategy's label is "<metric> per euro". */
+  readonly metric: string;
+  readonly score: (input: I) => number;
+}
 
-export const valuePerEuro: RatingStrategy = {
-  id: VALUEPEREURO_ID,
-  label: "CPU Mark per euro",
-  rate({ cpu, priceEur }): Rating | null {
+/** Benchmark points per euro of the listing price; null without a usable price. One definition for every metric. */
+export const valuePerEuroStrategy = <I extends { readonly priceEur?: number }>(
+  spec: ValuePerEuroSpec<I>,
+): RatingStrategy<I> => ({
+  id: spec.id,
+  label: `${spec.metric} per euro`,
+  rate(input): Rating | null {
+    const { priceEur } = input;
     if (priceEur === undefined || !Number.isFinite(priceEur) || priceEur <= 0) return null;
-    const value = cpu.cpuMark / priceEur;
+    const score = spec.score(input);
+    const value = score / priceEur;
     return {
-      strategyId: VALUEPEREURO_ID,
+      strategyId: spec.id,
       value,
       display: `${formatDecimal(value)}/€`,
-      explanation: `${formatInteger(cpu.cpuMark)} CPU Mark for ${formatDecimal(priceEur)} EUR = ${formatDecimal(value)} points per euro.`,
+      explanation: `${formatInteger(score)} ${spec.metric} for ${formatDecimal(priceEur)} EUR = ${formatDecimal(value)} points per euro.`,
     };
   },
-};
+});
+
+const VALUEPEREURO_ID = "value_per_euro";
+
+export const valuePerEuro: RatingStrategy = valuePerEuroStrategy<RatingInput>({
+  id: VALUEPEREURO_ID,
+  metric: "CPU Mark",
+  score: ({ cpu }) => cpu.cpuMark,
+});
 
 const MIN_PEERS = 2;
 
@@ -66,7 +103,7 @@ export const peerPercentile: RatingStrategy = {
     return {
       strategyId: PEERPERCENTILE_ID,
       value,
-      display: `P${Math.round(value)}`,
+      display: percentileDisplay(value),
       explanation: `CPU Mark ${formatInteger(cpu.cpuMark)} ranks at the ${formatInteger(value)}th percentile of ${marks.length} products in this listing.`,
     };
   },

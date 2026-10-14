@@ -65,15 +65,47 @@ export {
   describeCohort,
 } from "./rating/cohort";
 export { createStrategies, defaultStrategies } from "./rating/defaults";
-export { percentileRank } from "./rating/percentile";
+export {
+  classifyCpu,
+  classifyGpu,
+  type DeviceClass,
+  type DeviceMembership,
+} from "./rating/device-class";
+export {
+  createGpuStrategies,
+  type GpuMatchRating,
+  type GpuRateOptions,
+  g3dScore,
+  gpuDefaultStrategies,
+  gpuValuePerEuro,
+  rateGpuMatch,
+} from "./rating/gpu";
+export { GPU_PERCENTILE_ID, gpuPercentile } from "./rating/gpu-percentile";
+export {
+  type CohortPercentileInput,
+  cohortPercentileRating,
+  percentileDisplay,
+  percentileRank,
+} from "./rating/percentile";
 export { segmentPercentile } from "./rating/segment-percentile";
 export {
   multiThreadScore,
   peerPercentile,
+  type ScoreStrategySpec,
+  scoreStrategy,
   singleThreadScore,
+  type ValuePerEuroSpec,
   valuePerEuro,
+  valuePerEuroStrategy,
 } from "./rating/strategies";
-export type { PeerSample, Rating, RatingInput, RatingStrategy } from "./rating/strategy";
+export type {
+  GpuRatingInput,
+  GpuRatingStrategy,
+  PeerSample,
+  Rating,
+  RatingInput,
+  RatingStrategy,
+} from "./rating/strategy";
 export {
   DESKTOP_TITLE_WORDS,
   LAPTOP_TITLE_WORDS,

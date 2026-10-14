@@ -1,4 +1,4 @@
-import type { CpuBenchmarkRecord } from "../benchmark/records";
+import type { CpuBenchmarkRecord, GpuBenchmarkRecord } from "../benchmark/records";
 import type { FormFactor } from "../identity/form-factor";
 
 /** Another listing's CPU, supplied by the caller as comparison context. */
@@ -15,6 +15,15 @@ export interface RatingInput {
   readonly formFactor?: FormFactor;
 }
 
+/** GPU counterpart of `RatingInput`. For an ambiguous match the caller passes the weakest candidate (see `rateGpuMatch`). */
+export interface GpuRatingInput {
+  readonly gpu: GpuBenchmarkRecord;
+  /** Price of the whole listing, not of the GPU. */
+  readonly priceEur?: number;
+  /** Device class of the listing; absent or "unknown" leaves the percentile strategy without a cohort. */
+  readonly formFactor?: FormFactor;
+}
+
 export interface Rating {
   readonly strategyId: string;
   readonly value: number;
@@ -24,8 +33,10 @@ export interface Rating {
 }
 
 /** Port: a pure function from typed inputs to a Rating, or null when the inputs cannot support one. */
-export interface RatingStrategy {
+export interface RatingStrategy<I = RatingInput> {
   readonly id: string;
   readonly label: string;
-  rate(input: RatingInput): Rating | null;
+  rate(input: I): Rating | null;
 }
+
+export type GpuRatingStrategy = RatingStrategy<GpuRatingInput>;

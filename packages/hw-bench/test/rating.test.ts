@@ -160,35 +160,77 @@ describe("peerPercentile", () => {
   });
 });
 
+/** Real chip names with invented marks: pool membership comes from the name (see device-class.ts), not from PassMark's `cat`. */
+const named = (name: string, cpumark: string, extra: Record<string, unknown> = {}) =>
+  cpuRow({ name, cpumark, ...extra });
+
 describe("segmentPercentile", () => {
   const snapshot = cpuSnapshotOf(
-    cpuRow({ name: "D1", cpumark: "1,000", cat: "Desktop" }),
-    cpuRow({ name: "D2", cpumark: "2,000", cat: "Desktop" }),
-    cpuRow({ name: "D3", cpumark: "3,000", cat: "Desktop, Laptop" }),
-    cpuRow({ name: "D4", cpumark: "4,000", cat: "Desktop" }),
-    cpuRow({ name: "D-dual", cpumark: "99,000", cat: "Desktop", cpuCount: "2" }),
-    cpuRow({ name: "L1", cpumark: "500", cat: "Laptop" }),
-    cpuRow({ name: "L2", cpumark: "1,500", cat: "Laptop" }),
-    cpuRow({ name: "U1", cpumark: "700", cat: "Unknown" }),
+    named("Intel Core i5-13400", "1,000"),
+    named("Intel Core i7-13700K", "2,000"),
+    named("AMD Ryzen 7 7800X3D", "3,000"),
+    named("Intel Core i9-13900KF", "4,000"),
+    // Ships in notebooks and mini PCs: in both sets.
+    named("Intel Core i7-1255U", "500"),
+    named("AMD Ryzen 7 7840HS", "1,500"),
+    // Notebook-only.
+    named("Qualcomm Snapdragon X Elite - X1E-80-100", "2,500"),
+    // Out of both sets: server, phone, and a multi-socket result of a desktop chip.
+    named("AMD EPYC 7763", "90,000"),
+    named("Mediatek Dimensity 9300 (MT6989)", "95,000"),
+    named("Intel Core i9-13900K", "99,000", { cpuCount: "2" }),
   );
   const strategy = segmentPercentile(snapshot);
+  // desktop set [500, 1000, 1500, 2000, 3000, 4000], laptop set [500, 1500, 2500]
 
-  it("ranks within the CPU's own segment and excludes multi-socket results from the pool", () => {
-    // pools: desktop [1000, 2000, 3000, 4000] (99,000 dual-socket excluded), laptop [500, 1500, 3000]
-    const rate = (cpuMark: number, segments: readonly ("desktop" | "laptop" | "unknown")[]) =>
-      strategy.rate({ cpu: cpuRecord({ cpuMark, segments }) });
-    expect(rate(2_500, ["desktop"])).toMatchObject({ strategyId: "segment_percentile", value: 50 });
-    expect(rate(2_500, ["laptop"])?.value).toBeCloseTo(200 / 3, 9);
-    expect(rate(1_000, ["laptop"])?.value).toBeCloseTo(100 / 3, 9);
-    expect(rate(100_000, ["desktop"])?.value).toBe(100);
+  const rateNamed = (
+    name: string,
+    cpuMark: number,
+    formFactor?: "laptop" | "desktop" | "unknown",
+  ) =>
+    strategy.rate({
+      cpu: cpuRecord({ name, cpuMark }),
+      ...(formFactor === undefined ? {} : { formFactor }),
+    });
+
+  it("ranks a chip of exactly one class within that class, without a page form factor", () => {
+    expect(rateNamed("Intel Core i5-12400", 2_500)).toMatchObject({
+      strategyId: "segment_percentile",
+      value: (4 / 6) * 100,
+    });
+    expect(rateNamed("Qualcomm Snapdragon X Elite - X1E-78-100", 2_000)?.value).toBeCloseTo(
+      (2 / 3) * 100,
+      9,
+    );
+    expect(rateNamed("Intel Core i5-12400", 100_000)?.value).toBe(100);
   });
 
-  it("uses the first non-unknown segment and returns null for unknown-only CPUs", () => {
-    expect(
-      strategy.rate({ cpu: cpuRecord({ cpuMark: 500, segments: ["unknown", "laptop"] }) })?.value,
-    ).toBeCloseTo(100 / 3, 9);
-    expect(strategy.rate({ cpu: cpuRecord({ segments: ["unknown"] }) })).toBeNull();
-    expect(strategy.rate({ cpu: cpuRecord({ segments: ["server"] }) })).toBeNull();
+  it("gives no rating to a chip in both classes, in neither, or unparsable without a page form factor", () => {
+    expect(rateNamed("AMD Ryzen 7 7735HS", 2_000)).toBeNull();
+    expect(rateNamed("AMD EPYC 9654", 2_000)).toBeNull();
+    expect(rateNamed("Testcorp Core X1-1000", 2_000)).toBeNull();
+  });
+
+  it("lets the page decide the class, whatever the rated chip is", () => {
+    const laptop = rateNamed("AMD EPYC 9654", 2_000, "laptop");
+    const desktop = rateNamed("AMD EPYC 9654", 2_000, "desktop");
+    expect(laptop?.value).toBeCloseTo((2 / 3) * 100, 9);
+    expect(laptop?.explanation).toContain("of 3 laptop CPUs");
+    expect(desktop?.value).toBeCloseTo((4 / 6) * 100, 9);
+    expect(desktop?.explanation).toContain("of 6 desktop CPUs");
+    expect(rateNamed("AMD EPYC 9654", 2_000, "unknown")).toBeNull();
+  });
+
+  it("keeps server, phone and multi-socket results out of both pools", () => {
+    expect(rateNamed("Intel Core i5-12400", 100_000, "laptop")?.value).toBe(100);
+    expect(rateNamed("Intel Core i5-12400", 100_000, "desktop")?.value).toBe(100);
+    expect(rateNamed("Intel Core i5-12400", 5_000, "desktop")?.explanation).toContain("of 6 ");
+  });
+
+  it("returns null when the snapshot has no member of the page's class", () => {
+    const serverOnly = segmentPercentile(cpuSnapshotOf(named("AMD EPYC 7763", "90,000")));
+    expect(serverOnly.rate({ cpu: cpuRecord(), formFactor: "laptop" })).toBeNull();
+    expect(serverOnly.rate({ cpu: cpuRecord(), formFactor: "desktop" })).toBeNull();
   });
 
   it("is monotonic and bounded for any CPU Mark", () => {
@@ -196,102 +238,17 @@ describe("segmentPercentile", () => {
       fc.property(
         fc.integer({ min: 0, max: 150_000 }),
         fc.integer({ min: 0, max: 150_000 }),
-        (a, b) => {
+        fc.constantFrom<"laptop" | "desktop">("laptop", "desktop"),
+        (a, b, formFactor) => {
           const [low, high] = a <= b ? [a, b] : [b, a];
-          const p1 = strategy.rate({ cpu: cpuRecord({ cpuMark: low }) })?.value as number;
-          const p2 = strategy.rate({ cpu: cpuRecord({ cpuMark: high }) })?.value as number;
+          const p1 = rateNamed("Intel Core i5-12400", low, formFactor)?.value as number;
+          const p2 = rateNamed("Intel Core i5-12400", high, formFactor)?.value as number;
           expect(p1).toBeGreaterThanOrEqual(0);
           expect(p2).toBeLessThanOrEqual(100);
           expect(p1).toBeLessThanOrEqual(p2);
         },
       ),
     );
-  });
-});
-
-describe("segmentPercentile with a page form factor", () => {
-  const snapshot = cpuSnapshotOf(
-    cpuRow({ name: "D1", cpumark: "1,000", cat: "Desktop" }),
-    cpuRow({ name: "D2", cpumark: "2,000", cat: "Desktop" }),
-    cpuRow({ name: "D3", cpumark: "9,000", cat: "Desktop" }),
-    cpuRow({ name: "D4", cpumark: "10,000", cat: "Desktop, Laptop" }),
-    cpuRow({ name: "L1", cpumark: "500", cat: "Laptop" }),
-    cpuRow({ name: "M1", cpumark: "1,500", cat: "Mobile/Embedded" }),
-    cpuRow({ name: "LM", cpumark: "3,000", cat: "Laptop, Mobile/Embedded" }),
-    cpuRow({ name: "S1", cpumark: "50,000", cat: "Server" }),
-    cpuRow({ name: "M-dual", cpumark: "99,000", cat: "Mobile/Embedded", cpuCount: "2" }),
-  );
-  const strategy = segmentPercentile(snapshot);
-  // laptop pool: L1 500, M1 1500, LM 3000 (listed under both segments, counted once), D4 10000
-  // desktop pool: D1 1000, D2 2000, D3 9000, D4 10000
-
-  it("ranks a CPU filed under desktop against the laptop pool on a laptop page", () => {
-    const rating = strategy.rate({
-      cpu: cpuRecord({ cpuMark: 2_000, segments: ["desktop"] }),
-      formFactor: "laptop",
-    });
-    expect(rating?.value).toBe(50);
-    expect(rating?.explanation).toContain("of 4 laptop CPUs");
-  });
-
-  it("ranks a CPU filed under mobile/embedded or laptop+desktop against the laptop pool", () => {
-    expect(
-      strategy.rate({
-        cpu: cpuRecord({ cpuMark: 9_000, segments: ["mobile_embedded"] }),
-        formFactor: "laptop",
-      })?.value,
-    ).toBe(75);
-    expect(
-      strategy.rate({
-        cpu: cpuRecord({ cpuMark: 9_000, segments: ["desktop", "laptop"] }),
-        formFactor: "laptop",
-      })?.value,
-    ).toBe(75);
-  });
-
-  it("ranks against the desktop pool on a desktop page, whatever segment the CPU is filed under", () => {
-    const rating = strategy.rate({
-      cpu: cpuRecord({ cpuMark: 2_000, segments: ["laptop"] }),
-      formFactor: "desktop",
-    });
-    expect(rating?.value).toBe(50);
-    expect(rating?.explanation).toContain("of 4 desktop CPUs");
-  });
-
-  it("rates CPUs without any usable PassMark segment when the page names the device class", () => {
-    expect(
-      strategy.rate({
-        cpu: cpuRecord({ cpuMark: 2_000, segments: ["unknown"] }),
-        formFactor: "laptop",
-      }),
-    ).not.toBeNull();
-    expect(
-      strategy.rate({
-        cpu: cpuRecord({ cpuMark: 2_000, segments: ["server"] }),
-        formFactor: "desktop",
-      }),
-    ).not.toBeNull();
-  });
-
-  it("falls back to the CPU's own first segment for an unknown or absent form factor", () => {
-    const cpu = cpuRecord({ cpuMark: 2_000, segments: ["desktop", "laptop"] });
-    const own = strategy.rate({ cpu });
-    expect(own?.explanation).toContain("desktop CPUs");
-    expect(strategy.rate({ cpu, formFactor: "unknown" })).toEqual(own);
-    expect(
-      strategy.rate({ cpu: cpuRecord({ segments: ["unknown"] }), formFactor: "unknown" }),
-    ).toBeNull();
-  });
-
-  it("excludes multi-socket records from the laptop pool", () => {
-    expect(
-      strategy.rate({ cpu: cpuRecord({ cpuMark: 100_000 }), formFactor: "laptop" })?.value,
-    ).toBe(100);
-  });
-
-  it("returns null for a laptop page when the snapshot has no laptop-class records", () => {
-    const desktopOnly = segmentPercentile(cpuSnapshotOf(cpuRow({ cat: "Desktop" })));
-    expect(desktopOnly.rate({ cpu: cpuRecord(), formFactor: "laptop" })).toBeNull();
   });
 });
 

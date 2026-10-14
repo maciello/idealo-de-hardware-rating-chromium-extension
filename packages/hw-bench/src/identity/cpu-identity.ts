@@ -78,12 +78,12 @@ const intelBareI = regexExtractor(
 );
 
 const intelCoreUltra = regexExtractor(
-  /(?<![a-z0-9])(?:intel\s+)?core\s+ultra\s+([3579])\s+(\d{3}[a-z]{0,2}(?:\s+plus)?)(?![a-z0-9+])/,
-  (m) => make(m, "Intel", `Core Ultra ${m[1]}`, upper(m[2])),
+  /(?<![a-z0-9])(?:intel\s+)?core\s+ultra\s+(x?[3579])\s+(\d{3}[a-z]{0,2}(?:\s+plus)?)(?![a-z0-9+])/,
+  (m) => make(m, "Intel", `Core Ultra ${upper(m[1])}`, upper(m[2])),
 );
 
 const intelCoreNumbered = regexExtractor(
-  /(?<![a-z0-9])(?:intel\s+)?core\s+([357])\s+(n?\d{3}[a-z]{0,2})(?![a-z0-9+])/,
+  /(?<![a-z0-9])(?:intel\s+)?core\s+([3579])\s+(n?\d{3}[a-z]{0,2})(?![a-z0-9+])/,
   (m) => make(m, "Intel", `Core ${m[1]}`, upper(m[2])),
 );
 
@@ -129,7 +129,7 @@ const ryzenThreadripper = regexExtractor(
 );
 
 const ryzen = regexExtractor(
-  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+(?:(ai)\s+)?(?:([3579])\s+)?((?:(?:pro|hx|h|max\+?)\s+)*)(\d{3,5}(?:[a-z]{1,2}(?:3d)?)?)(?:\s+(pro)(?![a-z0-9+]))?(?![a-z0-9+])/,
+  /(?<![a-z0-9])(?:amd\s+)?ryzen\s+(?:(ai)\s+)?(?:([3579])\s+)?((?:(?:pro|hx|h|max\+?)\s+)*)(\d{3,5}(?:[a-z]{1,2}(?:3d\d?)?)?)(?:\s+(pro)(?![a-z0-9+]))?(?![a-z0-9+])/,
   (m) => {
     const number = upper(m[4]);
     if (UNIT_SUFFIX.test(number) || (m[1] === undefined && m[2] === undefined)) return null;

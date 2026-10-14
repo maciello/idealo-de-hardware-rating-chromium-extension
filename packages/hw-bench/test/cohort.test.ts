@@ -77,12 +77,12 @@ describe("CohortPolicySchema", () => {
 
 describe("segmentPercentile with a cohort", () => {
   const snapshot = cpuSnapshotOf(
-    cpuRow({ name: "Old1", cpumark: "500", date: "Feb 2009" }),
-    cpuRow({ name: "Old2", cpumark: "800", date: "Feb 2010" }),
-    cpuRow({ name: "New1", cpumark: "10,000", date: "Mar 2024" }),
-    cpuRow({ name: "New2", cpumark: "20,000", date: "Mar 2025" }),
+    cpuRow({ name: "Intel Core i5-3470", cpumark: "500", date: "Feb 2009" }),
+    cpuRow({ name: "Intel Core i5-4570", cpumark: "800", date: "Feb 2010" }),
+    cpuRow({ name: "Intel Core i5-13400", cpumark: "10,000", date: "Mar 2024" }),
+    cpuRow({ name: "Intel Core i7-14700K", cpumark: "20,000", date: "Mar 2025" }),
   );
-  const cpu = cpuRecord({ cpuMark: 15_000, segments: ["desktop"] });
+  const cpu = cpuRecord({ name: "Intel Core i5-12400", cpuMark: 15_000, segments: ["desktop"] });
 
   it("ranks against recent CPUs by default and names the cutoff", () => {
     const rating = segmentPercentile(snapshot).rate({ cpu });
@@ -113,12 +113,12 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
       };
       const midAll = rate("Intel Core i5-13400", NO_CUTOFF);
       const midRecent = rate("Intel Core i5-13400", DEFAULT_COHORT_POLICY);
-      expect(midAll).toBeGreaterThan(80);
+      expect(midAll).toBeGreaterThan(midRecent + 15);
       expect(midRecent).toBeLessThan(65);
       expect(rate("AMD Ryzen 9 9950X", DEFAULT_COHORT_POLICY)).toBeGreaterThan(90);
     });
 
-    it("ranks CPUs against the pool of the page's device class, not PassMark's first segment", () => {
+    it("ranks CPUs against the set of the page's device class, not PassMark's first segment", () => {
       const snapshot = passmarkCpuSource.parse(readFileSync(cpuPath, "utf8"));
       const strategy = segmentPercentile(snapshot, DEFAULT_COHORT_POLICY);
       const cpuNamed = (name: string) => {
@@ -128,11 +128,13 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
       };
       const ryzen = cpuNamed("AMD Ryzen AI 7 445");
       expect(ryzen.segments[0]).toBe("desktop");
-      const own = strategy.rate({ cpu: ryzen });
       const laptop = strategy.rate({ cpu: ryzen, formFactor: "laptop" });
-      expect(own?.explanation).toContain("desktop CPUs");
+      const desktop = strategy.rate({ cpu: ryzen, formFactor: "desktop" });
       expect(laptop?.explanation).toContain("laptop CPUs");
-      expect(laptop?.value).toBeGreaterThan(own?.value ?? Number.NaN);
+      expect(desktop?.explanation).toContain("desktop CPUs");
+      expect(laptop?.value).toBeGreaterThan(desktop?.value ?? Number.NaN);
+      // A chip that ships in both classes has no class of its own: no rating without a page form factor.
+      expect(strategy.rate({ cpu: ryzen })).toBeNull();
 
       const celeron = cpuNamed("Intel Celeron N5095 @ 2.00GHz");
       expect(strategy.rate({ cpu: celeron, formFactor: "laptop" })?.explanation).toContain(
