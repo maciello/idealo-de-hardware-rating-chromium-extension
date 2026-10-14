@@ -12,3 +12,4 @@ docs:
   - adr/0007-cpu-matching.yaml
   - adr/0008-idealo-data-acquisition.yaml
   - adr/0009-query-model.yaml
+  - adr/0010-dependency-policy.yaml

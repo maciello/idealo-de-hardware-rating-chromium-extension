@@ -1,0 +1,21 @@
+adr.0010:
+  title: Adopt maintained packages over hand-rolled code
+  status: accepted
+  date: 2026-10-14
+  decision:
+    rule: before writing infrastructure code, pick a maintained package; hand-roll only domain logic (idealo grammar, CPU name normalization).
+    package_manager: pnpm
+    picks:
+      ui: {lib: "@mantine/core + @mantine/hooks", why: complete component set (MultiSelect, RangeSlider, Checkbox, Table, Popover) usable inside shadow DOM}
+      file_import: "@mantine/dropzone"
+      icons: "@tabler/icons-react"
+      extension_framework: wxt (+ @wxt-dev/module-react)
+      storage: "@wxt-dev/storage (typed items, versioned migrations)"
+      messaging: "@webext-core/messaging (typed extension messaging)"
+      network_tap: {lib: "@mswjs/interceptors (FetchInterceptor, XMLHttpRequestInterceptor)", rejected: [xhook (unmaintained since 2023), hand-rolled fetch/XHR patching]}
+      csv: papaparse
+      parsing: zod
+      statistics: simple-statistics (quantile rank)
+      property_tests: fast-check
+  consequences:
+    - New infra need -> search npm/Context7 for "<need> alternatives" first (OD§2.3).
