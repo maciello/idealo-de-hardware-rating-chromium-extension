@@ -7,10 +7,8 @@ import {
 } from "@idealo-hw/idealo-page";
 import type { IdealoQuery } from "@idealo-hw/idealo-query";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
+import { loadRequirements, loadScorerSource, saveRequirements } from "../features/requirements";
 import { sendMessage } from "../platform/messaging";
-import { loadCpuSnapshot, loadGpuSnapshot } from "../platform/storage";
-import { createModelScorer } from "../requirements/scorer";
-import { loadRequirements, saveRequirements } from "../requirements/storage";
 import type { Overlay } from "../ui/host";
 import { FilterPanel, type RequirementsContext, type RequirementsStore } from "./FilterPanel";
 
@@ -45,10 +43,10 @@ export function startFilterBuilder(
   const loadCatalog = (query: IdealoQuery) =>
     catalogSource.load({ document, url: location.href, query });
   const loadContext = async (query: IdealoQuery): Promise<RequirementsContext> => {
-    const [cpu, gpu] = await Promise.all([loadCpuSnapshot(), loadGpuSnapshot()]);
+    const { scorer, hasData } = await loadScorerSource(formFactorOfCategory(query.categoryId));
     return {
-      scorer: createModelScorer(cpu, gpu, formFactorOfCategory(query.categoryId)),
-      hasData: { cpu: cpu !== null, gpu: gpu !== null },
+      scorer,
+      hasData,
       priceBounds: embeddedPriceBounds(document, query.categoryId),
     };
   };

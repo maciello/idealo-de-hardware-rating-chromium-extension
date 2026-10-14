@@ -8,8 +8,8 @@ import {
 import { MantineProvider } from "@mantine/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { RequirementsSection } from "../src/requirements/RequirementsSection";
-import { emptyRequirements, setNumeric } from "../src/requirements/state";
+import { RequirementsSection } from "../../../src/features/requirements/connected";
+import { emptyRequirements, setNumeric } from "../../../src/features/requirements/model";
 
 window.matchMedia = (query: string) =>
   ({

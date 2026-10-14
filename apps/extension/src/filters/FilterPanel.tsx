@@ -38,8 +38,7 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RequirementsSection } from "../requirements/RequirementsSection";
-import { emptyRequirements, isEmpty } from "../requirements/state";
+import { emptyRequirements, isEmpty, RequirementsSection } from "../features/requirements";
 import { formatInteger, Z_INDEX } from "../ui";
 import { useDraftText } from "./draft-text";
 

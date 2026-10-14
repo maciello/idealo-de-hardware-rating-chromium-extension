@@ -1,7 +1,7 @@
 import { type Requirements, RequirementsSchema } from "@idealo-hw/idealo-query";
 import { storage } from "@wxt-dev/storage";
 import { z } from "zod";
-import { emptyRequirements, isEmpty } from "./state";
+import { emptyRequirements, isEmpty } from "../model";
 
 const StoredSchema = z.record(z.string(), z.unknown());
 
