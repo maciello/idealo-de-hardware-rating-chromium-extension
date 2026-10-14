@@ -4,6 +4,7 @@ import { type IdealoQuery, normalizeQuery } from "../../query";
 import type { ModelScorer } from "../port";
 import { type RequirementsInput, RequirementsSchema } from "../schema";
 import type { FacetPlan, RequirementsPlan } from "../types";
+import { type Candidate, chooseAlternative } from "./alternatives";
 import { entriesOf } from "./entries";
 import { hitsOf } from "./hits";
 import { planLabel } from "./label";
@@ -37,9 +38,15 @@ export function planRequirements(
     const found = groupsOf(facet).filter(pick);
     const results = found.map((g) => run(g, found.length === 1));
     // Groups AND, so a facet split over groups (PC storage in GB and TB groups) is expressible
-    // only when a single group holds every option that meets the requirement.
-    const meeting = results.filter((r) => r.status !== "unsatisfiable");
-    const chosen = meeting.length <= 1 ? (meeting[0] ?? results[0]) : undefined;
+    // only when a single group holds every option that meets the requirement; groups of one name
+    // are alternatives and chooseAlternative picks one.
+    const meeting = found.flatMap((group, i): Candidate[] => {
+      const result = results[i];
+      return result === undefined || result.status === "unsatisfiable"
+        ? []
+        : [{ group, plan: result }];
+    });
+    const chosen = meeting.length === 0 ? results[0] : chooseAlternative(meeting);
     facets.push(
       chosen ?? {
         facet,
