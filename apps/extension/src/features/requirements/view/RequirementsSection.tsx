@@ -1,11 +1,11 @@
 import { Stack, Text } from "@mantine/core";
 import { REQUIREMENTS_COPY } from "../copy";
 import type { RequirementEdits, RequirementsViewModel } from "../view-model";
-import { CpuBlock } from "./CpuBlock";
-import { GpuBlock } from "./GpuBlock";
-import { NumericSlider } from "./NumericSlider";
-import { PriceSlider } from "./PriceSlider";
+import { CpuBlock } from "./blocks/CpuBlock";
+import { GpuBlock } from "./blocks/GpuBlock";
 import { RamTypeChips } from "./RamTypeChips";
+import { NumericSlider } from "./sliders/NumericSlider";
+import { PriceSlider } from "./sliders/PriceSlider";
 
 export interface RequirementsSectionViewProps {
   model: RequirementsViewModel;

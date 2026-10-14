@@ -1,7 +1,7 @@
 import type { PriceRange } from "@idealo-hw/idealo-query";
-import { formatInteger } from "../../../ui/format";
-import { PRICE_STEPS } from "../config";
-import { REQUIREMENTS_COPY } from "../copy";
+import { formatInteger } from "../../../../ui/format";
+import { PRICE_STEPS } from "../../config";
+import { REQUIREMENTS_COPY } from "../../copy";
 
 const PRICE = REQUIREMENTS_COPY.price;
 

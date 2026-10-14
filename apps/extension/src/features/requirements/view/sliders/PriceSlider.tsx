@@ -1,7 +1,7 @@
 import type { PriceRange } from "@idealo-hw/idealo-query";
 import { RangeSlider } from "@mantine/core";
-import { REQUIREMENTS_COPY } from "../copy";
-import type { PriceSliderModel } from "../view-model";
+import { REQUIREMENTS_COPY } from "../../copy";
+import type { PriceSliderModel } from "../../view-model";
 import { SliderField } from "./SliderField";
 
 export interface PriceSliderProps {

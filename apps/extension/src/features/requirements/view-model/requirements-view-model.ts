@@ -13,9 +13,13 @@ import {
   type GpuBlockModel,
   gpuBlockModel,
 } from "./model-blocks";
-import { type NumericSliderModel, numericSliderModel } from "./numeric-slider";
-import { type PriceSliderModel, priceSliderModel } from "./price-slider";
 import { type RamTypeModel, ramTypeModel } from "./ram-type";
+import {
+  type NumericSliderModel,
+  numericSliderModel,
+  type PriceSliderModel,
+  priceSliderModel,
+} from "./sliders";
 
 export interface RequirementsViewInput {
   requirements: Requirements;

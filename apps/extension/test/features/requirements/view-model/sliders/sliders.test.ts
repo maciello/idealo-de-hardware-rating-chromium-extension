@@ -1,11 +1,11 @@
 import { type FacetOption, facetsOf } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { NUMERIC_CONTROLS } from "../../../../src/features/requirements/config";
-import { numericSliderModel } from "../../../../src/features/requirements/view-model/numeric-slider";
-import { priceSliderModel } from "../../../../src/features/requirements/view-model/price-slider";
-import { ramTypeModel } from "../../../../src/features/requirements/view-model/ram-type";
-import { scoreSliderModel } from "../../../../src/features/requirements/view-model/score-slider";
-import { catalog, group } from "../catalog-fixtures";
+import { NUMERIC_CONTROLS } from "../../../../../src/features/requirements/config";
+import { ramTypeModel } from "../../../../../src/features/requirements/view-model/ram-type";
+import { numericSliderModel } from "../../../../../src/features/requirements/view-model/sliders/numeric-slider";
+import { priceSliderModel } from "../../../../../src/features/requirements/view-model/sliders/price-slider";
+import { scoreSliderModel } from "../../../../../src/features/requirements/view-model/sliders/score-slider";
+import { catalog, group } from "../../catalog-fixtures";
 
 const control = (facet: string) => {
   const found = NUMERIC_CONTROLS.find((c) => c.facet === facet);

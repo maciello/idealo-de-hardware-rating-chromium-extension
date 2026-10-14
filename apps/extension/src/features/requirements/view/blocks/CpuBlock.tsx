@@ -1,10 +1,10 @@
 import type { Combine, Metric } from "@idealo-hw/idealo-query";
 import { SegmentedControl, Stack, Text } from "@mantine/core";
-import { GAP } from "../../../ui";
-import { REQUIREMENTS_COPY } from "../copy";
-import type { CpuBlockModel } from "../view-model";
+import { GAP } from "../../../../ui";
+import { REQUIREMENTS_COPY } from "../../copy";
+import type { CpuBlockModel } from "../../view-model";
+import { ScoreSlider } from "../sliders/ScoreSlider";
 import { ImportHint } from "./ImportHint";
-import { ScoreSlider } from "./ScoreSlider";
 
 const COPY = REQUIREMENTS_COPY;
 

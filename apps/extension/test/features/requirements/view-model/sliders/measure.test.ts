@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatMeasure,
   labelledMarks,
-} from "../../../../src/features/requirements/view-model/measure";
+} from "../../../../../src/features/requirements/view-model/sliders/measure";
 
 describe("measure text and marks", () => {
   it("formats measures the way idealo writes them", () => {

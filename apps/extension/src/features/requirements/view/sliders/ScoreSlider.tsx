@@ -1,5 +1,5 @@
 import { Slider } from "@mantine/core";
-import type { ScoreSliderModel } from "../view-model";
+import type { ScoreSliderModel } from "../../view-model";
 import { SliderField } from "./SliderField";
 
 export interface ScoreSliderProps {

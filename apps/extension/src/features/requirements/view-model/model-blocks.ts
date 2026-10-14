@@ -11,7 +11,7 @@ import {
 import { MIN_STEPS } from "../config";
 import { REQUIREMENTS_COPY } from "../copy";
 import { scoreSpan } from "../model";
-import { type ScoreSliderModel, scoreSliderModel } from "./score-slider";
+import { type ScoreSliderModel, scoreSliderModel } from "./sliders";
 import { statusLine } from "./status";
 
 const COPY = REQUIREMENTS_COPY;

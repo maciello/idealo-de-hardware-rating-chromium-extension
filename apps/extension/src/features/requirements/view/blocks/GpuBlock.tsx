@@ -1,7 +1,7 @@
-import { REQUIREMENTS_COPY } from "../copy";
-import type { GpuBlockModel } from "../view-model";
+import { REQUIREMENTS_COPY } from "../../copy";
+import type { GpuBlockModel } from "../../view-model";
+import { ScoreSlider } from "../sliders/ScoreSlider";
 import { ImportHint } from "./ImportHint";
-import { ScoreSlider } from "./ScoreSlider";
 
 export interface GpuBlockProps {
   model: GpuBlockModel;

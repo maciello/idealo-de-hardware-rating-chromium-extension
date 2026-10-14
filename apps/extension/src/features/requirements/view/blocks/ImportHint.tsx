@@ -1,7 +1,7 @@
 import { Alert, Button, Stack, Text } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { GAP, ICON_SIZE } from "../../../ui";
-import { REQUIREMENTS_COPY } from "../copy";
+import { GAP, ICON_SIZE } from "../../../../ui";
+import { REQUIREMENTS_COPY } from "../../copy";
 
 export interface ImportHintProps {
   text: string;

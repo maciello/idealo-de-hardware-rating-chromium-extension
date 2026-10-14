@@ -1,6 +1,6 @@
-import { formatTrimmed } from "../../../ui/format";
-import { MARK_LABEL_GAP } from "../config";
-import type { Unit } from "../model";
+import { formatTrimmed } from "../../../../ui/format";
+import { MARK_LABEL_GAP } from "../../config";
+import type { Unit } from "../../model";
 
 /** "16 GB", "1 TB", "1,4 kg", "2025": value text in the units idealo labels use. */
 export function formatMeasure(value: number, unit: Unit): string {

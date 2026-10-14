@@ -1,7 +1,7 @@
 import type { Metric } from "@idealo-hw/idealo-query";
-import { formatInteger } from "../../../ui/format";
-import { REQUIREMENTS_COPY } from "../copy";
-import type { ScoreSpan } from "../model";
+import { formatInteger } from "../../../../ui/format";
+import { REQUIREMENTS_COPY } from "../../copy";
+import type { ScoreSpan } from "../../model";
 
 export interface ScoreSliderInput {
   id: string;
