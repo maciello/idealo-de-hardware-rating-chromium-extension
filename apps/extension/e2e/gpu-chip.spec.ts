@@ -11,9 +11,11 @@ import {
   SSR_LISTING_URL,
   shot,
 } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 const ARC_TILE = "205984319";
 const NO_GPU_TILE = "212702771";
@@ -31,7 +33,10 @@ test.beforeAll(async () => {
   await installSite(context);
   extensionId = await extensionIdOf(context);
   await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "6");
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();
@@ -52,6 +57,7 @@ test("gpu line: absent without a GPU snapshot, appears live once one is imported
 });
 
 test("gpu line: beneath the CPU line on tiles whose GPU the snapshot knows", async () => {
+  await importGpuFixture(context, extensionId, SSR_GPU_FIXTURE, "6");
   const page = await context.newPage();
   await page.goto(SSR_LISTING_URL);
   await expect(page.locator("idealo-hw-badge")).toHaveCount(4);
@@ -107,6 +113,7 @@ test("gpu line: beneath the CPU line on tiles whose GPU the snapshot knows", asy
 });
 
 test("gpu line: the page's device class picks the card and the comparison group", async () => {
+  await importGpuFixture(context, extensionId, SSR_GPU_FIXTURE, "6");
   const page = await context.newPage();
   await page.goto(SSR_DESKTOP_URL);
   await expect(page.locator("idealo-hw-badge")).toHaveCount(4);
@@ -123,6 +130,7 @@ test("gpu line: the page's device class picks the card and the comparison group"
 });
 
 test("gpu line: shown alone when the tile's CPU is not in the CPU snapshot", async () => {
+  await importGpuFixture(context, extensionId, SSR_GPU_FIXTURE, "6");
   await importCpuFixture(context, extensionId, CPU_FIXTURE, "3");
   const page = await context.newPage();
   await page.goto(SSR_LISTING_URL);

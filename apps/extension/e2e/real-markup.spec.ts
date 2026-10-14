@@ -12,9 +12,11 @@ import {
   shot,
   ssrProductUrl,
 } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline } from "./state";
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 const PRODUCT_IDS = ["205984319", "212702771", "207096746"];
 
@@ -31,7 +33,10 @@ test.beforeAll(async () => {
   await installSite(context);
   extensionId = await extensionIdOf(context);
   await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "6");
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();

@@ -10,9 +10,11 @@ import {
   SSR_LISTING_URL,
   shot,
 } from "./site";
+import { captureBaseline, resetToBaseline, type StorageBaseline, storedValue } from "./state";
 
 let context: BrowserContext;
 let extensionId: string;
+let baseline: StorageBaseline;
 
 test.describe.configure({ mode: "serial" });
 
@@ -22,7 +24,10 @@ test.beforeAll(async () => {
   extensionId = await extensionIdOf(context);
   await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "6");
   await importGpuFixture(context, extensionId, SSR_GPU_FIXTURE, "6");
+  baseline = await captureBaseline(context, extensionId);
 });
+
+test.beforeEach(() => resetToBaseline(context, extensionId, baseline));
 
 test.afterAll(async () => {
   await context.close();
@@ -91,6 +96,21 @@ test("requirements: sliders become filter ids and an upper bound on the hits", a
 });
 
 test("requirements: the last settings come back on the next visit", async () => {
+  const first = await context.newPage();
+  await openPanel(first, SSR_LISTING_URL);
+  await expect(first.getByTestId("req-value-cpu_mark")).toHaveText("any");
+  await press(first, "cpu_mark", "End");
+  await press(first, "cpu_mark", "ArrowLeft", 18);
+  await press(first, "ram_gb", "End");
+  await press(first, "ram_gb", "ArrowLeft");
+  await expect(first.getByTestId("req-value-cpu_mark")).toHaveText("21.000");
+  await expect(first.getByTestId("req-value-ram_gb")).toHaveText("32 GB");
+  // Saved once the edits settle; a tab closed sooner would lose them.
+  await expect
+    .poll(async () => JSON.stringify(await storedValue(context, extensionId, "requirements")))
+    .toContain("21000");
+  await first.close();
+
   const page = await context.newPage();
   await openPanel(page, SSR_LISTING_URL);
   await expect(page.getByTestId("req-value-cpu_mark")).toHaveText("21.000");
