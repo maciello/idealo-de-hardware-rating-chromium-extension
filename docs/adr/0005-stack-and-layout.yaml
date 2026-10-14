@@ -1,0 +1,15 @@
+adr.0005:
+  title: pnpm monorepo; core logic in IO-free packages
+  status: accepted
+  date: 2026-10-14
+  decision:
+    layout:
+      packages/idealo-query: query model + serializers; no DOM, no chrome.*, no fetch
+      packages/hw-bench: benchmark sources, matcher, rating strategies; no DOM, no chrome.*
+      apps/extension: WXT MV3 extension; only place touching DOM/chrome APIs
+    stack: {pm: pnpm, lang: TypeScript, parse: zod, test: vitest, lint_fmt: Biome, cmd_surface: justfile, ext_framework: WXT}
+  rationale:
+    - Library must be reusable from a future backend/MCP server (adr.0003).
+    - WXT is the most active MV3 framework (2026); supports MAIN-world content scripts (adr.0008).
+  consequences:
+    - Packages are consumed as TS source via workspace protocol; no publish step until a second consumer exists.

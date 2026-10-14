@@ -1,0 +1,14 @@
+adr.0009:
+  title: IdealoQuery mirrors official idealo MCP filter concepts
+  status: accepted
+  date: 2026-10-14
+  decision:
+    model: 'categoryId; filterIds[]; manufacturerIds[]; price{min?,max?}; sort?; offset?; text?'
+    serializers:
+      web_url: /preisvergleich/ProductCategory/<cat>F<id>-<id>.html?p=<min>-<max>&sortKey=<k>
+      mcp_search_products: {query, filters: {minPrice, maxPrice, includeCategories, includeManufacturers, includeSearchFilters}}
+    parser: web_url -> IdealoQuery (round-trip property-tested)
+  rationale: Same id space likely shared by web F-ids and MCP filterIds (unverified hypothesis H1); one model serves extension + AI/MCP consumers.
+  hypotheses:
+    H1: web F-ids == MCP filterIds. falsify by comparing a captured category URL with MCP availableFilters.
+  evidence_sources: [github.com/idealo/mcp-server-guide docs/tools.md, github.com/0-don/pAlarm, github.com/scrapfly/scrapfly-scrapers idealo-scraper]

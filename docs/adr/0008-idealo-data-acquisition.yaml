@@ -1,0 +1,19 @@
+adr.0008:
+  title: Read idealo data only from the user's own browser session
+  status: accepted-default
+  date: 2026-10-14
+  decision:
+    extension:
+      sources_ranked: [MAIN-world fetch/XHR tap (JSON the page already loads), SSR JSON/ld+json, DOM]
+      capture_mode: records idealo JSON responses (url, status, body) to local storage; exportable as file -> ground truth for FilterCatalog/spec adapters
+      no_extra_requests_to_idealo: true (MVP)
+    future_backend_or_mcp:
+      preferred: adapter over official idealo MCP (mcp.idealo.com; search_products filters, get_product_details specs)
+      constraint: trial AGB forbid productive/end-customer use and data storage; production needs Partner tier
+      rejected: server-side scraping (bot protection, ToS)
+  unknowns:
+    - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
+    - location of spec table (Prozessor/Grafikkarte) on product pages
+    - meaning of opaque URL suffix like "oE0oJ1"
+  consequences:
+    - FilterCatalog and spec extraction are ports; first real adapters written from capture-mode exports.

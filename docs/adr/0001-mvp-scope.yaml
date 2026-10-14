@@ -4,7 +4,8 @@ adr.0001:
   date: 2026-10-14
   decision:
     in_scope: [CPU listings, laptops, desktop PCs (rated via contained CPU)]
-    deferred: [GPUs, GPU share of system rating]
-  rationale: One benchmark source covers the dominant case; GPU adds a second source and matcher.
+    included_early: GPU benchmark parsing (user supplied GPU data; adapter cost ~0)
+    deferred: [GPU listing badges, GPU share of system rating]
+  rationale: CPU covers the dominant case; GPU matcher (laptop vs desktop variants) is the costly part, not parsing.
   consequences:
     - BenchmarkSource and Matcher are keyed by component kind so GPU plugs in without core change.

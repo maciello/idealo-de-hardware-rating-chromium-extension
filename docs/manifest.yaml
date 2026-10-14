@@ -1,10 +1,14 @@
-# Docs entry point. Progressive disclosure: read only the node you need.
 docs:
   reference:
     glossary: reference/glossary.yaml
     passmark_cpu_json: reference/passmark-cpu-json.yaml
   adr:
-    - adr/0001-mvp-scope.yaml
-    - adr/0002-rating-strategy-port.yaml
-    - adr/0003-batch-filter-builder.yaml
-    - adr/0004-benchmark-data-import.yaml
+  - adr/0001-mvp-scope.yaml
+  - adr/0002-rating-strategy-port.yaml
+  - adr/0003-batch-filter-builder.yaml
+  - adr/0004-benchmark-data-import.yaml
+  - adr/0005-stack-and-layout.yaml
+  - adr/0006-benchmark-data-licensing.yaml
+  - adr/0007-cpu-matching.yaml
+  - adr/0008-idealo-data-acquisition.yaml
+  - adr/0009-query-model.yaml

@@ -1,0 +1,12 @@
+adr.0007:
+  title: Rules-based Matcher behind a port; no-match over guessing
+  status: accepted-default   # user did not answer; recommended option applied
+  date: 2026-10-14
+  decision:
+    port: Matcher (CpuIdentity|GpuIdentity -> {record, confidence} | no_match)
+    default_adapter: canonical-key exact match after normalization (vendor words, (R)/(TM), "@ x GHz", case, separators); suffix letters (U/H/HX/HS/K/F) are part of key
+    fallback: none in MVP; unmatched names surfaced in a report
+    deferred_adapter: LLM via OpenRouter for unmatched residue (needs user API key)
+  rationale:
+    - Prior art (hzfind) shows exact-after-normalization covers most cases; wrong match (13700H vs 13700HX) is worse than none.
+  yardstick: scripts/match-report over captured idealo CPU strings -> hit rate + unmatched list

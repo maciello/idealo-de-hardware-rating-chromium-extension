@@ -1,0 +1,14 @@
+adr.0006:
+  title: PassMark data never enters git
+  status: accepted
+  date: 2026-10-14
+  context:
+    repo_visibility: public
+    passmark_terms: reproduction in whole or part for general publication restricted without permission
+  decision:
+    data_dir: data/ (gitignored) holds fetched/imported PassMark files
+    unit_tests: hand-written rows in PassMark format (not copied)
+    integration_tests: skip unless data/passmark_*.json present
+    extension: never bundles PassMark data; user imports file
+  consequences:
+    - Publishing the extension stays clean; each user supplies their own data.
