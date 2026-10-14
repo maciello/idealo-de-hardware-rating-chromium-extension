@@ -1,6 +1,7 @@
 import {
   categoryId,
   emptyQuery,
+  emptyRequirements,
   type FilterCatalog,
   filterId,
   type IdealoQuery,
@@ -15,7 +16,6 @@ import {
   type FilterViewInput,
   panelNote,
 } from "../../../../src/features/filters/view-model";
-import { emptyRequirements } from "../../../../src/features/requirements";
 import { catalog, group } from "../../requirements/catalog-fixtures";
 
 const start = emptyQuery(categoryId("3751"));

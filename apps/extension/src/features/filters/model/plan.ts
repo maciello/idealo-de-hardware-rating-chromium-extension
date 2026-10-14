@@ -1,12 +1,12 @@
 import {
   type FilterCatalog,
   type IdealoQuery,
+  isEmpty,
   type ModelScorer,
   planRequirements,
   type Requirements,
   type RequirementsPlan,
 } from "@idealo-hw/idealo-query";
-import { isEmpty } from "../../requirements";
 
 /** Url that applies a query on this page type; "" when it cannot be expressed. */
 export const safeUrl = (toUrl: (query: IdealoQuery) => string, query: IdealoQuery): string => {

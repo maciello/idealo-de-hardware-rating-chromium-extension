@@ -1,5 +1,12 @@
 // @vitest-environment jsdom
-import { categoryId, emptyQuery, filterId, type Requirements } from "@idealo-hw/idealo-query";
+import {
+  categoryId,
+  emptyQuery,
+  emptyRequirements,
+  filterId,
+  type Requirements,
+  setNumeric,
+} from "@idealo-hw/idealo-query";
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SAVE_DELAY_MS } from "../../../../src/features/filters/config";
@@ -8,7 +15,6 @@ import {
   useFilterBuilder,
 } from "../../../../src/features/filters/controller";
 import { NO_CONTEXT } from "../../../../src/features/filters/model";
-import { emptyRequirements, setNumeric } from "../../../../src/features/requirements/model";
 import { catalog, group } from "../../requirements/catalog-fixtures";
 
 const query = emptyQuery(categoryId("3751"));

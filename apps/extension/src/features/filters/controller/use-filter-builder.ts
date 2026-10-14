@@ -1,4 +1,5 @@
 import {
+  emptyRequirements,
   type FilterCatalog,
   type IdealoQuery,
   type PriceRange,
@@ -10,7 +11,6 @@ import {
 } from "@idealo-hw/idealo-query";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { emptyRequirements } from "../../requirements";
 import { SAVE_DELAY_MS } from "../config";
 import { NO_CONTEXT, planOf, type RequirementsContext, safeUrl } from "../model";
 import { buildFilterViewModel, type FilterActions, type FilterViewModel } from "../view-model";

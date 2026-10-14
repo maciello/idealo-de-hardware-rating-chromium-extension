@@ -1,7 +1,6 @@
-import { categoryId, emptyQuery } from "@idealo-hw/idealo-query";
+import { categoryId, emptyQuery, emptyRequirements, setNumeric } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import { planOf, safeUrl } from "../../../../src/features/filters/model";
-import { emptyRequirements, setNumeric } from "../../../../src/features/requirements/model";
 import { catalog, group } from "../../requirements/catalog-fixtures";
 
 const query = emptyQuery(categoryId("3751"));
