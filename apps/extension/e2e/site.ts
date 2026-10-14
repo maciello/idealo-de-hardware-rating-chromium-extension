@@ -11,8 +11,12 @@ export const SSR_LISTING_HTML = readFileSync(
   resolve(here, "../test/fixtures/listing.idealo-ssr.html"),
   "utf8",
 );
+export const SSR_PRODUCT_HTML = readFileSync(
+  resolve(here, "../test/fixtures/product.idealo-ssr.html"),
+  "utf8",
+);
 export const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json");
-/** The four CPUs named by the real-markup listing. */
+/** The CPUs named by the real-markup listing (four) and product page (one). */
 export const SSR_CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.ssr.synthetic.json");
 export const GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.synthetic.csv");
 export const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
@@ -20,6 +24,8 @@ export const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel"
 export const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
 /** Real idealo tile markup and embedded payload (category 3751). */
 export const SSR_LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
+export const SSR_PRODUCT_URL =
+  "https://www.idealo.de/preisvergleich/OffersOfProduct/209657188_-magicbook-pro-14-honor.html";
 export const SEARCH_URL =
   "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=laptop+32GB";
 /** Listing without filter links: category link only (no toggles), so the catalog is null. */
@@ -57,6 +63,9 @@ export async function installSite(context: BrowserContext): Promise<void> {
     }
     if (pathname.includes("/ProductCategory/") || pathname.includes("/MainSearchProductCategory")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: LISTING_HTML });
+    }
+    if (pathname.includes("/OffersOfProduct/209657188")) {
+      return route.fulfill({ contentType: "text/html; charset=utf-8", body: SSR_PRODUCT_HTML });
     }
     if (pathname.includes("/OffersOfProduct/")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: PRODUCT_HTML });

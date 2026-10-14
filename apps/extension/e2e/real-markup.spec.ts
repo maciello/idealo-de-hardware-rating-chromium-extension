@@ -1,6 +1,13 @@
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { extensionIdOf, launchWithExtension } from "./launch";
-import { importCpuFixture, installSite, SSR_CPU_FIXTURE, SSR_LISTING_URL, shot } from "./site";
+import {
+  importCpuFixture,
+  installSite,
+  SSR_CPU_FIXTURE,
+  SSR_LISTING_URL,
+  SSR_PRODUCT_URL,
+  shot,
+} from "./site";
 
 let context: BrowserContext;
 let extensionId: string;
@@ -19,7 +26,7 @@ test.beforeAll(async () => {
   context = await launchWithExtension();
   await installSite(context);
   extensionId = await extensionIdOf(context);
-  await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "4");
+  await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "5");
 });
 
 test.afterAll(async () => {
@@ -60,5 +67,20 @@ test("real markup: the filter builder offers the embedded payload's filters", as
   await expect(page.getByTestId("target-url")).toHaveText(
     "https://www.idealo.de/preisvergleich/ProductCategory/3751F107301240-471878.html",
   );
+  await page.close();
+});
+
+test("real markup: the product page gets a chip next to the title and a card", async () => {
+  const page = await context.newPage();
+  await page.goto(SSR_PRODUCT_URL);
+  const chip = page.locator("h1#oopStage-title idealo-hw-badge");
+  await expect(chip).toHaveCount(1);
+  await expect(chip.getByTestId("chip-value")).toHaveText("30.000");
+  await chip.getByTestId("rating-badge").click();
+  const card = page.locator('[role="dialog"]').filter({ hasText: "PassMark" });
+  await expect(card).toBeVisible();
+  await expect(card).toContainText("Intel Core Ultra 9 285H");
+  await page.waitForTimeout(400);
+  await shot(page, "chip-product-page");
   await page.close();
 });

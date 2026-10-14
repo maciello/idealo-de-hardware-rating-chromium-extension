@@ -71,6 +71,24 @@
       "secondaryLogicals": "0",
       "rank": 100,
       "samples": "500"
+    },
+    {
+      "id": "9205",
+      "name": "Intel Core Ultra 9 285H",
+      "cpumark": "30,000",
+      "thread": "4,300",
+      "tdp": "45",
+      "price": "NA",
+      "date": "Jan 2025",
+      "socket": "FCBGA",
+      "cat": "Laptop",
+      "cpuCount": 1,
+      "cores": "8",
+      "logicals": "1",
+      "secondaryCores": "8",
+      "secondaryLogicals": "1",
+      "rank": 60,
+      "samples": "300"
     }
   ]
 }

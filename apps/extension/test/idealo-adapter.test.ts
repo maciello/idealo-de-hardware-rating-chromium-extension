@@ -1,11 +1,17 @@
 // @vitest-environment jsdom
-import { passmarkCpuSource } from "@idealo-hw/hw-bench";
+import {
+  extractCpuIdentity,
+  parseSpecBlock,
+  passmarkCpuSource,
+  productContextFromSpecs,
+} from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
 import { embeddedListing } from "../src/page/embedded-listing";
 import { idealoAdapter } from "../src/page/idealo-adapter";
 import { createRatingEngine, STRATEGY_CATALOG } from "../src/ratings/engine";
 import listingHtml from "./fixtures/listing.html?raw";
 import ssrHtml from "./fixtures/listing.idealo-ssr.html?raw";
+import productHtml from "./fixtures/product.idealo-ssr.html?raw";
 
 const load = (html: string): Document => new DOMParser().parseFromString(html, "text/html");
 
@@ -133,5 +139,41 @@ describe("fixture listing through the rating engine", () => {
   it("rates the offer tile from the CPU in its title", () => {
     expect(items[2]?.productId).toBeUndefined();
     expect(cpuOf(2)).toBe("Intel Core i7-1165G7");
+  });
+});
+
+describe("idealoAdapter.productInfo (real product page)", () => {
+  const info = idealoAdapter.productInfo(load(productHtml));
+
+  it("anchors on the h1 and reads the title from its span", () => {
+    expect(info?.title).toBe("Honor MagicBook Pro 14");
+    expect(info?.element?.id).toBe("oopStage-title");
+  });
+
+  it("turns datasheet rows into label/value lines and skips section headers", () => {
+    const lines = info?.specText.split("\n") ?? [];
+    expect(lines).toContain("Notebook-Typ\tMultimedia Notebook");
+    expect(lines).toContain("Prozessor\tIntel Core Ultra 9 285H");
+    expect(lines).toContain("Grafikkarte\tIntel Arc Graphics");
+    expect(lines).toContain("RAM\t32 GB");
+    expect(lines.some((line) => !line.includes("\t"))).toBe(false);
+    expect(lines).not.toContain("Display");
+  });
+
+  it("gives hw-bench the CPU text and a laptop form factor", () => {
+    const context = productContextFromSpecs(parseSpecBlock(info?.specText ?? ""), {
+      title: info?.title ?? "",
+    });
+    expect(context).toMatchObject({
+      cpuText: "Intel Core Ultra 9 285H",
+      gpuText: "Intel Arc Graphics",
+      formFactor: "laptop",
+    });
+    expect(extractCpuIdentity(info?.specText ?? "")).not.toBeNull();
+  });
+
+  it("falls back to the heuristic reading on markup without the datasheet", () => {
+    const fallback = idealoAdapter.productInfo(load("<h1>Fallback Titel</h1>"));
+    expect(fallback?.title).toBe("Fallback Titel");
   });
 });
