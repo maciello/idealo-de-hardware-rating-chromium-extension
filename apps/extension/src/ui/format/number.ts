@@ -12,3 +12,8 @@ const TRIMMED = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 });
 
 /** de-DE with up to two decimals and no trailing zeros: 16, 1,4, 0,35. */
 export const formatTrimmed = (value: number): string => TRIMMED.format(value);
+
+const TENTHS = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
+
+/** de-DE with at most one decimal and no trailing zeros: 8, 9,5, 1.080. */
+export const formatTenths = (value: number): string => TENTHS.format(value);
