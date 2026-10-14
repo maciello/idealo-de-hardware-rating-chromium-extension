@@ -3,8 +3,17 @@ import { z } from "zod";
 /** Fixed tag on every window.postMessage from the MAIN-world tap (ADR 0008). */
 export const TAP_SOURCE = "idealo-hw-extension/network-tap";
 
-export const MAX_BODY_CHARS = 1_000_000;
-export const RING_CAPACITY = 300;
+/** True for text that starts like a JSON object or array and parses; the content-type is not trusted. */
+export const isJsonText = (text: string): boolean => {
+  const first = text.trimStart()[0];
+  if (first !== "{" && first !== "[") return false;
+  try {
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 export const CapturedResponseSchema = z.object({
   url: z.string(),

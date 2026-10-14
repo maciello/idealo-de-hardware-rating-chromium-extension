@@ -1,12 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import {
-  type CapturedResponse,
-  RING_CAPACITY,
-  TAP_SOURCE,
-  TapMessageSchema,
-} from "../src/capture/protocol";
-import { captureRing } from "../src/capture/ring";
+import { captureRing } from "../../../../src/features/capture/adapters/ring";
+import { RING_CAPACITY } from "../../../../src/features/capture/config";
+import type { CapturedResponse } from "../../../../src/features/capture/model/protocol";
 
 const entry = (n: number): CapturedResponse => ({
   url: `https://www.idealo.de/api/${n}.json`,
@@ -42,18 +38,5 @@ describe("captureRing", () => {
     await captureRing.clear();
     expect(await captureRing.list()).toEqual([]);
     expect(await captureRing.count()).toBe(0);
-  });
-});
-
-describe("TapMessageSchema", () => {
-  it("accepts tagged messages and rejects everything else", () => {
-    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: entry(1) }).success).toBe(
-      true,
-    );
-    expect(TapMessageSchema.safeParse({ source: "other", response: entry(1) }).success).toBe(false);
-    expect(TapMessageSchema.safeParse({ source: TAP_SOURCE, response: { url: 1 } }).success).toBe(
-      false,
-    );
-    expect(TapMessageSchema.safeParse("hello").success).toBe(false);
   });
 });

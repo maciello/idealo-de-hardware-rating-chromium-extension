@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { MAX_BODY_CHARS } from "../src/capture/protocol";
-import { isIdealoHost, type ObservedResponse, toCapturedResponse } from "../src/capture/tap";
+import {
+  isIdealoHost,
+  type ObservedResponse,
+  toCapturedResponse,
+} from "../../../../src/features/capture/adapters/tap";
+import { MAX_BODY_CHARS } from "../../../../src/features/capture/config";
 
 const BASE = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 const NOW = () => new Date("2026-10-14T10:00:00.000Z");

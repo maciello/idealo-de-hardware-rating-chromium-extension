@@ -1,6 +1,7 @@
 import { storage } from "@wxt-dev/storage";
-import { withLock } from "../platform/locks";
-import { type CapturedResponse, CapturedResponseSchema, RING_CAPACITY } from "./protocol";
+import { withLock } from "../../../platform/locks";
+import { RING_CAPACITY } from "../config";
+import { type CapturedResponse, CapturedResponseSchema } from "../model/protocol";
 
 type SlotKey = `local:capture:${number}`;
 

@@ -4,7 +4,7 @@ import {
   type ScriptingPort,
   TAP_SCRIPT_FILE,
   TAP_SCRIPT_ID,
-} from "../src/capture/tap-registration";
+} from "../../../../src/features/capture/adapters/registration";
 
 function fakeScripting() {
   const registered = new Set<string>();

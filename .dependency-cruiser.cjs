@@ -117,7 +117,9 @@ module.exports = {
       from: { path: `^apps/extension/(src/app|entrypoints)/` },
       to: {
         path: `${FEATURES}[^/]+/.+`,
-        pathNot: `${FEATURES}[^/]+/(index|background/index)\\.ts$`,
+        // The two capture content scripts import their adapter directly: the MAIN-world tap must not
+        // reach the feature index (React, storage), and each world needs its own entry module.
+        pathNot: `${FEATURES}[^/]+/(index|background/index|adapters/(tap|relay))\\.ts$`,
       },
     },
     {

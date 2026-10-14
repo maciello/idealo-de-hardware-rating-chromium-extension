@@ -1,7 +1,8 @@
 import { BatchInterceptor } from "@mswjs/interceptors";
 import { FetchInterceptor } from "@mswjs/interceptors/fetch/web";
 import { XMLHttpRequestInterceptor } from "@mswjs/interceptors/XMLHttpRequest/web";
-import { type CapturedResponse, MAX_BODY_CHARS } from "./protocol";
+import { MAX_BODY_CHARS } from "../config";
+import { type CapturedResponse, isJsonText, TAP_SOURCE, type TapMessage } from "../model/protocol";
 
 /** idealo.de / idealo.com and any of their subdomains (api.idealo.de, www.idealo.com, ...). */
 export const isIdealoHost = (hostname: string): boolean =>
@@ -12,17 +13,6 @@ const hostOf = (url: string, base: string): string | null => {
     return new URL(url, base).hostname;
   } catch {
     return null;
-  }
-};
-
-const isJsonText = (text: string): boolean => {
-  const first = text.trimStart()[0];
-  if (first !== "{" && first !== "[") return false;
-  try {
-    JSON.parse(text);
-    return true;
-  } catch {
-    return false;
   }
 };
 
@@ -88,4 +78,12 @@ export function startNetworkTap(emit: (response: CapturedResponse) => void): () 
 
   interceptor.apply();
   return () => interceptor.dispose();
+}
+
+/** Entry of the MAIN-world content script: posts every captured response to the relay in the isolated world. */
+export function startMainWorldTap(): () => void {
+  return startNetworkTap((response) => {
+    const message: TapMessage = { source: TAP_SOURCE, response };
+    window.postMessage(message, location.origin);
+  });
 }

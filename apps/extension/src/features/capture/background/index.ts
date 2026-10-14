@@ -1,0 +1,1 @@
+export { startCaptureBackground } from "./start";

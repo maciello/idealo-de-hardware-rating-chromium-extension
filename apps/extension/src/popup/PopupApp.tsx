@@ -1,27 +1,21 @@
 import { parseIdealoUrl } from "@idealo-hw/idealo-query";
-import { Anchor, Button, Group, SegmentedControl, Stack, Switch, Text } from "@mantine/core";
-import {
-  IconAdjustmentsHorizontal,
-  IconBug,
-  IconDownload,
-  IconFileExport,
-} from "@tabler/icons-react";
+import { Anchor, Button, Group, SegmentedControl, Stack, Text } from "@mantine/core";
+import { IconAdjustmentsHorizontal, IconBug } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
-import { captureRing } from "../capture/ring";
 import type { PageStats } from "../contracts";
 import { SettingsSchema } from "../contracts";
 import { exportDebugReport } from "../diagnostics/export";
 import { OpenRouterConnectedRow } from "../features/ai-matching";
 import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
-import { downloadJson } from "../platform/download";
+import { CaptureConnectedRow } from "../features/capture";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
-import { captureModeItem, settingsItem } from "../platform/storage";
+import { settingsItem } from "../platform/storage";
 import { useStorageItem } from "../platform/storage/use-storage-item";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
-import { formatInteger, formatMegabytes, LabeledRow, StatusNote } from "../ui";
+import { LabeledRow, StatusNote } from "../ui";
 
 function BenchmarkRow() {
   return <BenchmarkSummary {...useBenchmarkSummary()} />;
@@ -60,80 +54,6 @@ function PrimaryNumber() {
         }
         data-testid="popup-primary"
       />
-    </LabeledRow>
-  );
-}
-
-function Capture({ tab }: { tab: TargetTab | null }) {
-  const [stored, setCaptureMode] = useStorageItem(captureModeItem);
-  const [count, setCount] = useState(0);
-  const [note, setNote] = useState<string | null>(null);
-
-  useEffect(() => {
-    const refresh = (): void => void captureRing.count().then(setCount);
-    refresh();
-    return captureRing.watch(refresh);
-  }, []);
-
-  const exportCaptures = async (): Promise<void> => {
-    const captures = await captureRing.list();
-    downloadJson("captures", { captures });
-  };
-
-  const saveSnapshot = async (): Promise<void> => {
-    if (tab === null) return;
-    setNote(null);
-    try {
-      const snapshot = await sendMessage("getPageSnapshot", undefined, tab.id);
-      downloadJson("page-snapshot", { ...snapshot });
-      const mb = formatMegabytes(snapshot.html.length);
-      setNote(`Snapshot saved (${mb} MB${snapshot.truncated ? ", cut at 5 MB" : ""})`);
-    } catch (cause) {
-      void recordError("popup", cause);
-      setNote("Could not read this page. Reload it and try again.");
-    }
-  };
-
-  return (
-    <LabeledRow label="Capture" stacked>
-      <Stack gap={8}>
-        <Group justify="space-between" wrap="nowrap">
-          <Switch
-            size="sm"
-            label={count > 0 ? `Record requests (${formatInteger(count)})` : "Record requests"}
-            checked={stored ?? false}
-            onChange={(event) => setCaptureMode(event.currentTarget.checked)}
-            data-testid="popup-capture"
-          />
-        </Group>
-        <Group gap="xs">
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconFileExport size={14} />}
-            disabled={count === 0}
-            onClick={() => void exportCaptures()}
-            data-testid="popup-export"
-          >
-            Export
-          </Button>
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconDownload size={14} />}
-            disabled={tab === null}
-            onClick={() => void saveSnapshot()}
-            data-testid="popup-snapshot"
-          >
-            Save page snapshot
-          </Button>
-        </Group>
-        {note && (
-          <StatusNote tone="muted" testId="popup-note">
-            {note}
-          </StatusNote>
-        )}
-      </Stack>
     </LabeledRow>
   );
 }
@@ -232,7 +152,7 @@ export function PopupApp() {
         Open filter builder
       </Button>
       <OpenRouterConnectedRow />
-      <Capture tab={tab} />
+      <CaptureConnectedRow tab={tab} />
       <Diagnostics tab={tab} />
       <Anchor
         component="button"
