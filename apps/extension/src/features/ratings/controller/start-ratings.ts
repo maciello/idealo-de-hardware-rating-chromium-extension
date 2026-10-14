@@ -5,8 +5,9 @@ import type { PageInspection, PageStats } from "../../../contracts";
 import type { Overlay } from "../../../ui/host";
 import { collectTargets, isOwnMutation, loadRatingView, watchRatingInputs } from "../adapters";
 import { DEBOUNCE_MS } from "../config";
-import { hasChip, isRated, type RatingView, rateQueries } from "../model";
+import { hasChip, type RatingView, rateQueries } from "../model";
 import { createChipReconciler } from "./chips";
+import { pageReportOf } from "./page-report";
 import { createScanLoop } from "./scan-loop";
 import type { ChipRenderer, TileRating } from "./types";
 
@@ -50,12 +51,7 @@ export function startRatingsController(
         return found === undefined ? [] : [{ target, ...found }];
       });
     }
-    const kind = adapter.detect(location.href);
-    stats = { kind, total: targets.length, rated: results.filter(isRated).length };
-    inspection = {
-      kind,
-      items: results.map((result) => ({ ...result.target.seen, rated: isRated(result) })),
-    };
+    ({ stats, inspection } = pageReportOf(adapter.detect(location.href), targets.length, results));
     if (results.some(hasChip) && current) {
       reconciler.sync(await getOverlay(), current, results);
     } else if (reconciler.size > 0) {
