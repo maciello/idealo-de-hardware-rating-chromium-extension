@@ -1,6 +1,5 @@
-import type { CpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
-import type { FormFactor } from "../identity/form-factor";
+import type { BenchmarkSnapshot, CpuBenchmarkRecord } from "../benchmark";
+import type { FormFactor } from "../identity";
 import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY, describeCohort } from "./cohort";
 import { classifyCpu } from "./device-class";
 import { formatInteger } from "./format";

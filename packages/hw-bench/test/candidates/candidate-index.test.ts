@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { createCandidateIndex, isModelNumberLike, tokenize } from "../src";
+import { createCandidateIndex, isModelNumberLike, tokenize } from "../../src/candidates";
 
 interface Named {
   readonly name: string;

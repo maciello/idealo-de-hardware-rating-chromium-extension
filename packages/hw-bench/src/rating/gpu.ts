@@ -1,8 +1,7 @@
-import type { GpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
-import type { FormFactor } from "../identity/form-factor";
-import { gpuScoreBounds } from "../matcher/bounds";
-import type { MatchResult } from "../matcher/matcher";
+import type { BenchmarkSnapshot, GpuBenchmarkRecord } from "../benchmark";
+import type { FormFactor } from "../identity";
+import type { MatchResult } from "../matcher";
+import { gpuScoreBounds } from "../matcher";
 import type { CohortPolicy } from "./cohort";
 import { gpuPercentile } from "./gpu-percentile";
 import { scoreStrategy, valuePerEuroStrategy } from "./strategies";

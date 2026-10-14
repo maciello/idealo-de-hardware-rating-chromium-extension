@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  cpuScoreBounds,
-  createCanonicalKeyMatcher,
-  createGpuMatcher,
-  gpuScoreBounds,
-  passmarkGpuSource,
-} from "../src";
-import { asJson, cpuRow, cpuSnapshotOf, gpuRow } from "./fixtures";
+import { createGpuMatcher } from "../../src";
+import { passmarkGpuSource } from "../../src/benchmark";
+import { cpuScoreBounds, createCanonicalKeyMatcher, gpuScoreBounds } from "../../src/matcher";
+import { asJson, cpuRow, cpuSnapshotOf, gpuRow } from "../fixtures";
 
 describe("cpuScoreBounds", () => {
   const matcher = createCanonicalKeyMatcher(

@@ -1,6 +1,5 @@
 import { extractGpuIdentity, type GpuIdentity } from "../gpu/identity";
-import { type CpuIdentity, extractCpuIdentity } from "../identity/cpu-identity";
-import { cleanText, stripNameDecoration } from "../identity/text";
+import { type CpuIdentity, cleanText, extractCpuIdentity, stripNameDecoration } from "../identity";
 
 /**
  * Comparison groups for percentile ratings, defined by what a buyer on idealo can choose: PC client devices.

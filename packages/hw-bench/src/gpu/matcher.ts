@@ -1,7 +1,6 @@
-import type { GpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
-import type { FormFactor } from "../identity/form-factor";
-import type { MatchResult } from "../matcher/matcher";
+import type { BenchmarkSnapshot, GpuBenchmarkRecord } from "../benchmark";
+import type { FormFactor } from "../identity";
+import type { MatchResult } from "../matcher";
 import {
   extractGpuIdentity,
   type GpuIdentity,

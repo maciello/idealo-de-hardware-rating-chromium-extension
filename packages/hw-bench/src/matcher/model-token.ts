@@ -1,4 +1,4 @@
-import { cleanText, stripNameDecoration } from "../identity/text";
+import { cleanText, stripNameDecoration } from "../identity";
 
 /** Resolutions ("2560x1440") and number-plus-unit specs that mix letters and digits but name no CPU. */
 const NOT_A_MODEL =

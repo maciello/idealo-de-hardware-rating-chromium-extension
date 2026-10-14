@@ -105,8 +105,9 @@ module.exports = {
     },
     {
       name: "hw-bench-agent-dirs-barrel",
-      comment: "hw-bench rating/ and gpu/ are warn-only until their owners land.",
-      severity: "warn",
+      comment:
+        "hw-bench rating/ and gpu/ reach the benchmark, identity, matcher, candidates and specs sub-domains through their index.ts.",
+      severity: "error",
       from: { path: "^packages/hw-bench/src/(rating|gpu)/" },
       to: {
         path: "^packages/hw-bench/src/(benchmark|identity|matcher|candidates|specs)/.+",

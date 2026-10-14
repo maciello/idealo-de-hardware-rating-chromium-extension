@@ -11,7 +11,7 @@ import {
   passmarkGpuSource,
   readRows,
 } from "../src";
-import { cpuNameKeys } from "../src/identity/cpu-identity";
+import { cpuNameKeys } from "../src/identity";
 
 /** Real PassMark exports live in the gitignored data/ dir (docs/adr/0006); these tests skip without them. */
 const dataDir = resolve(import.meta.dirname, "../../../data");

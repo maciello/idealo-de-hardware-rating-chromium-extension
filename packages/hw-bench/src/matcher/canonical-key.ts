@@ -1,12 +1,11 @@
-import type { CpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
+import type { BenchmarkSnapshot, CpuBenchmarkRecord } from "../benchmark";
 import {
   type CpuIdentity,
   cpuNameKeys,
   extractCpuIdentity,
   normalizeCpuName,
   normalizeCpuNameWithoutVendor,
-} from "../identity/cpu-identity";
+} from "../identity";
 import type { FreeTextMatcher, FreeTextMatchResult, MatchResult } from "./matcher";
 import { bareModelTokens } from "./model-token";
 

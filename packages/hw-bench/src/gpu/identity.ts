@@ -1,4 +1,4 @@
-import { cleanText, slugify } from "../identity/text";
+import { cleanText, slugify } from "../identity";
 
 /** GPU model extracted from free text, e.g. vendor=NVIDIA family="GeForce RTX" model="4060 Ti". */
 export interface GpuIdentity {

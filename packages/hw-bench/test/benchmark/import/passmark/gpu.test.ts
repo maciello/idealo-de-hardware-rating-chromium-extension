@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BenchmarkFormatError, passmarkGpuSource } from "../src";
-import { asCsv, asJson, gpuRow } from "./fixtures";
+import { BenchmarkFormatError, passmarkGpuSource } from "../../../../src/benchmark";
+import { asCsv, asJson, gpuRow } from "../../../fixtures";
 
 describe("passmarkGpuSource", () => {
   it("parses a PassMark-shaped row into a typed record", () => {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ReleaseDate } from "../benchmark/records";
+import type { ReleaseDate } from "../benchmark";
 
 /**
  * Which benchmark records form the reference distribution for percentile ratings.

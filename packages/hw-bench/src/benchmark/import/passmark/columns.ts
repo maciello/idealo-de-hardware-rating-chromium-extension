@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { CpuSegment, GpuSegment, ReleaseDate } from "./records";
+import type { CpuSegment, GpuSegment, ReleaseDate } from "../../records";
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
