@@ -31,9 +31,9 @@ docs-check:
 boundaries:
     pnpm exec depcruise --config .dependency-cruiser.cjs apps packages
 
-# Report source files over 150 lines (report only, exits 0; the refactor's last step makes it fail).
+# Report source files over 150 lines via Biome noExcessiveLinesPerFile (warn until the refactor's last step sets it to error).
 godfiles:
-    @find apps/*/src apps/*/entrypoints packages/*/src \( -name '*.ts' -o -name '*.tsx' \) -not -name '*.d.ts' | xargs wc -l | awk '$2 != "total" && $1 > 150 {print; n++} END {print n+0 " file(s) over 150 lines"; exit 0}' | sort -rn
+    pnpm exec biome lint --only=style/noExcessiveLinesPerFile --max-diagnostics=none apps packages
 
 # Rebuild the extension and diff its manifest against docs/baselines/manifest.chrome-mv3.json.
 manifest-check: build
