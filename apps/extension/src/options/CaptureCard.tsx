@@ -3,18 +3,8 @@ import { IconDownload, IconTrash } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { captureRing } from "../capture/ring";
 import { captureModeItem } from "../storage/items";
+import { downloadJson } from "../ui/download";
 import { useStorageItem } from "./use-storage-item";
-
-function download(filename: string, json: unknown): void {
-  const url = URL.createObjectURL(
-    new Blob([JSON.stringify(json, null, 2)], { type: "application/json" }),
-  );
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
-}
 
 export function CaptureCard() {
   const [stored, setCaptureMode] = useStorageItem(captureModeItem);
@@ -29,10 +19,7 @@ export function CaptureCard() {
 
   const exportAll = async (): Promise<void> => {
     const captures = await captureRing.list();
-    download(`idealo-captures-${new Date().toISOString().slice(0, 10)}.json`, {
-      exportedAt: new Date().toISOString(),
-      captures,
-    });
+    downloadJson("captures", { captures });
   };
 
   return (
@@ -40,8 +27,9 @@ export function CaptureCard() {
       <Stack gap="sm">
         <Title order={4}>Network capture</Title>
         <Text size="sm" c="dimmed">
-          Records same-origin JSON responses idealo.de already loads in your browser (newest 300),
-          so filter and spec adapters can be written from real data. Nothing is sent anywhere.
+          Records the url, method and status of every request the page makes (newest 300), plus the
+          body of JSON responses from idealo hosts, so filter and spec adapters can be written from
+          real data. Nothing is sent anywhere.
         </Text>
         <Switch
           label="Capture mode"

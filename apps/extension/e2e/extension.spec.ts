@@ -13,6 +13,11 @@ const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });
 const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
 const PRODUCT_URL = "https://www.idealo.de/preisvergleich/OffersOfProduct/1001_alpha-book-15.html";
 
+/** The slice of the extension API used inside `page.evaluate` on extension pages. */
+declare const chrome: {
+  scripting: { getRegisteredContentScripts: () => Promise<{ id: string }[]> };
+};
+
 let context: BrowserContext;
 let extensionId: string;
 
@@ -56,6 +61,14 @@ test("options: import synthetic PassMark data, enable capture mode", async () =>
 
   await page.getByTestId("capture-mode").check({ force: true });
   await expect(page.getByTestId("capture-mode")).toBeChecked();
+  // The background registers the network tap only now; later tests rely on it being there.
+  await expect
+    .poll(() =>
+      page.evaluate(async () =>
+        (await chrome.scripting.getRegisteredContentScripts()).map((script) => script.id),
+      ),
+    )
+    .toContain("idealo-hw-network-tap");
 
   await page.locator('[data-testid="dropzone-cpu"] input[type="file"]').setInputFiles({
     name: "broken.json",
@@ -82,10 +95,10 @@ test("listing: badges for known CPUs only, idempotent for new items", async () =
   await expect(badgeOf(page, "1003")).toHaveCount(1);
   await expect(badgeOf(page, "1004")).toHaveCount(0);
   await expect(badgeOf(page, "1005")).toHaveCount(0);
-  await expect(badgeOf(page, "1001")).toContainText("28,000");
+  await expect(badgeOf(page, "1001")).toContainText("28.000");
 
   await badgeOf(page, "1001").getByTestId("rating-badge").hover();
-  await expect(page.getByText("PassMark match via normalized model key")).toBeVisible();
+  await expect(page.getByText("Matched to PassMark entry")).toBeVisible();
   await expect(page.getByText("Intel Core i7-13700H").first()).toBeVisible();
   await page.waitForTimeout(400);
   await shot(page, "listing-badges");
@@ -122,9 +135,12 @@ test("listing: tap leaves the page's own fetch untouched and capture mode record
   const download = options.waitForEvent("download");
   await options.getByTestId("capture-export").click();
   const path = await (await download).path();
+  expect((await download).suggestedFilename()).toMatch(/^idealo-hw_captures_\d{8}T\d{6}Z\.json$/);
   const exported = JSON.parse(readFileSync(path, "utf8")) as {
+    exportedAt: string;
     captures: { url: string; body: string; status: number; method: string }[];
   };
+  expect(exported.exportedAt).toMatch(/Z$/);
   const hit = exported.captures.find((c) => c.url.endsWith("/api/filters.json"));
   expect(hit).toMatchObject({ status: 200, method: "GET", body: FILTERS_JSON });
 
@@ -133,20 +149,33 @@ test("listing: tap leaves the page's own fetch untouched and capture mode record
   await options.close();
 });
 
-test("settings: disabling strategies updates open badges live", async () => {
+test("settings: disabling strategies updates open listings live", async () => {
   const listing = await context.newPage();
   await listing.goto(LISTING_URL);
-  await expect(badgeOf(listing, "1001")).toContainText("3,900");
+  const chip = badgeOf(listing, "1001").getByTestId("rating-badge");
+  const rows = listing.locator('[data-testid^="card-row-"]');
+  await chip.hover();
+  await expect(listing.getByTestId("card-row-single_thread_score")).toContainText("3.900");
+  await expect(listing.getByTestId("card-row-value_per_euro")).toContainText("21,6 /€");
+  await expect(rows).toHaveCount(4);
 
   const options = await context.newPage();
   await options.goto(`chrome-extension://${extensionId}/options.html`);
   for (const id of ["single_thread_score", "value_per_euro", "peer_percentile_on_listing"]) {
     await options.getByTestId(`strategy-${id}`).uncheck({ force: true });
   }
-  await expect(badgeOf(listing, "1001")).not.toContainText("3,900");
-  await expect(badgeOf(listing, "1001")).toContainText("28,000");
-  await expect(badgeOf(listing, "1001")).toContainText("P67");
   await options.close();
+
+  await listing.bringToFront();
+  await listing.mouse.move(0, 0);
+  await expect(listing.getByTestId("rating-card")).toHaveCount(0);
+  await chip.hover();
+  await expect(rows).toHaveCount(1);
+  await expect(listing.getByTestId("card-row-raw_multithread_score")).toContainText("28.000");
+  await expect(listing.getByTestId("card-row-raw_multithread_score")).toContainText(
+    "top 33% of laptop CPUs",
+  );
+  await expect(badgeOf(listing, "1001").locator('[data-filled="4"]')).toHaveCount(1);
   await listing.close();
 });
 
@@ -154,7 +183,7 @@ test("product page: badge next to the title, CPU read from the spec table", asyn
   const page = await context.newPage();
   await page.goto(PRODUCT_URL);
   await expect(page.locator("h1 > idealo-hw-badge")).toHaveCount(1);
-  await expect(page.locator("h1 > idealo-hw-badge")).toContainText("28,000");
+  await expect(page.locator("h1 > idealo-hw-badge")).toContainText("28.000");
   await page.close();
 });
 
@@ -170,7 +199,7 @@ test("filter builder: batch toggles, one navigation", async () => {
   expect((await settingsTab).url()).toBe(`chrome-extension://${extensionId}/options.html`);
   await (await settingsTab).close();
   await page.bringToFront();
-  await expect(page.locator("idealo-hw-filter").getByText("Prozessor-Hersteller")).toBeVisible();
+  await expect(page.locator("idealo-hw-overlay").getByText("Prozessor-Hersteller")).toBeVisible();
 
   await page.getByTestId("filter-1234").check();
   await page.getByTestId("filter-2222").check();

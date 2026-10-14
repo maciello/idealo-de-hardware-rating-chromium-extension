@@ -8,11 +8,12 @@ import {
   removeFilters,
   setPrice,
   setSort,
+  setText,
   toggleFilter,
-  toWebUrl,
 } from "@idealo-hw/idealo-query";
 import {
   ActionIcon,
+  Alert,
   Button,
   Checkbox,
   Code,
@@ -28,12 +29,22 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconAdjustmentsHorizontal, IconSearch, IconSettings } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  IconAdjustmentsHorizontal,
+  IconInfoCircle,
+  IconSearch,
+  IconSettings,
+} from "@tabler/icons-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export interface FilterPanelProps {
+  opened: boolean;
+  onOpenedChange: (opened: boolean) => void;
   initialQuery: () => IdealoQuery;
+  /** Url that applies a query on this page type; "" when it cannot be expressed. */
+  toUrl: (query: IdealoQuery) => string;
+  /** False on a search page that names no category: only text, price and sort can be applied. */
+  canFilter: boolean;
   loadCatalog: (query: IdealoQuery) => Promise<FilterCatalog | null>;
   onApply: (url: string) => void;
   onOpenSettings: () => void;
@@ -42,13 +53,7 @@ export interface FilterPanelProps {
 const DIGITS = /^\d+$/;
 const Z_INDEX = 2_147_483_000;
 
-const targetUrl = (query: IdealoQuery): string => {
-  try {
-    return toWebUrl(query);
-  } catch {
-    return "";
-  }
-};
+const SORT_LABELS: Readonly<Record<string, string>> = { minPrice: "Lowest price first" };
 
 const parseBound = (raw: string | number): number | undefined =>
   raw === "" || Number.isNaN(Number(raw)) ? undefined : Number(raw);
@@ -106,15 +111,31 @@ function PriceRange({
 }
 
 export function FilterPanel({
+  opened,
+  onOpenedChange,
   initialQuery,
+  toUrl,
+  canFilter,
   loadCatalog,
   onApply,
   onOpenSettings,
 }: FilterPanelProps) {
-  const [opened, { open, close }] = useDisclosure(false);
+  const targetUrl = useCallback(
+    (query: IdealoQuery): string => {
+      try {
+        return toUrl(query);
+      } catch {
+        return "";
+      }
+    },
+    [toUrl],
+  );
+  const open = () => onOpenedChange(true);
+  const close = () => onOpenedChange(false);
   const [startQuery, setStartQuery] = useState(initialQuery);
   const [query, setQuery] = useState(startQuery);
   const [catalog, setCatalog] = useState<FilterCatalog | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -125,13 +146,15 @@ export function FilterPanel({
       setQuery(fresh);
     }
     let cancelled = false;
-    void loadCatalog(fresh).then((loaded) => {
-      if (!cancelled) setCatalog(loaded);
+    void loadCatalog(fresh).then((result) => {
+      if (cancelled) return;
+      setCatalog(result);
+      setLoaded(true);
     });
     return () => {
       cancelled = true;
     };
-  }, [opened, initialQuery, loadCatalog, startQuery]);
+  }, [opened, initialQuery, loadCatalog, startQuery, targetUrl]);
 
   const effectiveCatalog = useMemo<FilterCatalog>(
     () => catalog ?? { categoryId: query.categoryId, groups: [], manufacturers: [] },
@@ -156,11 +179,11 @@ export function FilterPanel({
   const url = targetUrl(query);
   const unchanged = url === targetUrl(startQuery);
   const sortOptions = [
-    { value: "", label: "Default" },
+    { value: "", label: "Default order" },
     ...[
       ...KNOWN_SORT_KEYS,
       ...(query.sort && !KNOWN_SORT_KEYS.some((k) => k === query.sort) ? [query.sort] : []),
-    ].map((key) => ({ value: key, label: key })),
+    ].map((key) => ({ value: key, label: SORT_LABELS[key] ?? key })),
   ];
 
   const changeRawIds = (next: string[]) => {
@@ -172,13 +195,14 @@ export function FilterPanel({
 
   return (
     <>
-      <Tooltip label="Batch filter builder" position="left">
+      <Tooltip label="Filter builder" position="left">
         <ActionIcon
           size={48}
           radius="xl"
           variant="filled"
           aria-label="Open filter builder"
           data-testid="filter-fab"
+          data-hw-interactive=""
           onClick={open}
           style={{ position: "fixed", right: 20, bottom: 20, zIndex: Z_INDEX - 1 }}
         >
@@ -196,6 +220,41 @@ export function FilterPanel({
       >
         <Stack gap="md">
           <TextInput
+            label="Search text"
+            placeholder="For example: laptop 32GB"
+            value={query.text ?? ""}
+            onChange={(event) => {
+              const text = event.currentTarget.value;
+              setQuery((q) => setText(q, text === "" ? undefined : text));
+            }}
+            data-testid="query-text"
+          />
+
+          {!canFilter && (
+            <Alert
+              variant="light"
+              color="gray"
+              icon={<IconInfoCircle size={16} />}
+              data-testid="no-category-note"
+            >
+              This search page does not name a category, so filter ids cannot be applied here. Text,
+              price and sort still work.
+            </Alert>
+          )}
+          {canFilter && loaded && catalog === null && (
+            <Alert
+              variant="light"
+              color="gray"
+              icon={<IconInfoCircle size={16} />}
+              data-testid="no-catalog-note"
+            >
+              Filters could not be read from this page. You can still type filter ids below and
+              search by text. A page snapshot would help to read them: save one from the extension
+              popup and share it.
+            </Alert>
+          )}
+
+          <TextInput
             placeholder="Search filters"
             leftSection={<IconSearch size={16} />}
             value={search}
@@ -205,14 +264,9 @@ export function FilterPanel({
 
           <ScrollArea.Autosize mah={320} type="auto">
             <Stack gap="sm">
-              {catalog === null && (
-                <Text size="sm" c="dimmed">
-                  No filter links found on this page. Enter filter ids below.
-                </Text>
-              )}
               {visibleGroups.map((group) => (
                 <Stack key={group.attributeId} gap={4}>
-                  <Text size="xs" fw={700} tt="uppercase" c="dimmed">
+                  <Text size="xs" fw={600} c="dimmed">
                     {group.name}
                   </Text>
                   {group.filters.map((option) => (
@@ -245,6 +299,7 @@ export function FilterPanel({
           <TagsInput
             label="Other filter ids"
             description="Ids that are not listed above"
+            disabled={!canFilter}
             placeholder="Type an id, press Enter"
             splitChars={[",", " "]}
             acceptValueOnBlur
@@ -254,13 +309,13 @@ export function FilterPanel({
           />
 
           <Stack gap={4}>
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed">
+            <Text size="xs" fw={600} c="dimmed">
               Selection
             </Text>
             <Code block data-testid="summary">
               {summary}
             </Code>
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed">
+            <Text size="xs" fw={600} c="dimmed">
               Target
             </Text>
             <Code

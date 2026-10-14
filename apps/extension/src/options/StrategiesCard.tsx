@@ -12,6 +12,7 @@ export function StrategiesCard() {
     if (on) next.add(id);
     else next.delete(id);
     saveSettings({
+      ...settings,
       enabledStrategyIds: STRATEGY_CATALOG.map((s) => s.id).filter((known) => next.has(known)),
     });
   };

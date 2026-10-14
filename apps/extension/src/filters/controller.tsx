@@ -1,33 +1,67 @@
-import { type IdealoQuery, parseIdealoUrl } from "@idealo-hw/idealo-query";
+import type { IdealoQuery } from "@idealo-hw/idealo-query";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { sendMessage } from "../messaging";
-import { mountReact } from "../ui/mount";
+import type { Overlay } from "../ui/overlay";
 import type { FilterCatalogSource } from "./catalog-source";
 import { FilterPanel } from "./FilterPanel";
+import { type FilterPage, filterPageOf } from "./page";
 
-const currentQuery = (): IdealoQuery | null => {
-  const parsed = parseIdealoUrl(location.href);
-  return parsed.kind === "category" ? parsed.query : null;
-};
+export interface FilterBuilderHandle {
+  open(): void;
+}
 
-/** Mounts the floating filter builder on category pages. */
-export async function startFilterBuilder(
+/**
+ * Mounts the filter builder (floating button plus drawer) into the overlay on category and search
+ * pages. Returns null elsewhere. `open` lets the popup open it through a message.
+ */
+export function startFilterBuilder(
   ctx: ContentScriptContext,
   catalogSource: FilterCatalogSource,
-): Promise<void> {
-  const query = currentQuery();
-  if (query === null) return;
-  await mountReact(ctx, {
-    name: "idealo-hw-filter",
-    anchor: document.body,
-    isolateEvents: true,
-    node: (
+  getOverlay: () => Promise<Overlay>,
+): FilterBuilderHandle | null {
+  const found = filterPageOf(location.href, document);
+  if (found === null) return null;
+  const first: FilterPage = found;
+  const page = (): FilterPage => filterPageOf(location.href, document) ?? first;
+
+  let opened = false;
+  let overlay: Overlay | undefined;
+  const render = (): void => overlay?.render("filter-builder", <Panel />);
+  const setOpened = (next: boolean): void => {
+    opened = next;
+    render();
+  };
+
+  // Stable identities: FilterPanel re-loads the catalog whenever these change.
+  const initialQuery = () => page().query;
+  const loadCatalog = (query: IdealoQuery) =>
+    catalogSource.load({ document, url: location.href, query });
+  const onApply = (url: string) => location.assign(url);
+  const onOpenSettings = () => void sendMessage("openOptions", undefined);
+
+  function Panel() {
+    return (
       <FilterPanel
-        initialQuery={() => currentQuery() ?? query}
-        loadCatalog={(q) => catalogSource.load({ document, url: location.href, query: q })}
-        onApply={(url) => location.assign(url)}
-        onOpenSettings={() => void sendMessage("openOptions", undefined)}
+        opened={opened}
+        onOpenedChange={setOpened}
+        initialQuery={initialQuery}
+        toUrl={first.toUrl}
+        canFilter={first.canFilter}
+        loadCatalog={loadCatalog}
+        onApply={onApply}
+        onOpenSettings={onOpenSettings}
       />
-    ),
+    );
+  }
+
+  const ready = getOverlay().then((o) => {
+    overlay = o;
+    render();
   });
+  ctx.onInvalidated(() => overlay?.clear("filter-builder"));
+  return {
+    open() {
+      void ready.then(() => setOpened(true));
+    },
+  };
 }

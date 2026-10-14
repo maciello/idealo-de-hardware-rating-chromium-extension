@@ -20,9 +20,16 @@ export type ItemRating =
       record: CpuBenchmarkRecord;
       via: "exact" | "normalized";
       ratings: readonly Rating[];
+      /** Position among the matched products of the same page (1 = fastest); null below two peers. */
+      pageRank: PageRank | null;
     }
   | { status: "ambiguous"; candidates: readonly CpuBenchmarkRecord[] }
   | { status: "no_match" };
+
+export interface PageRank {
+  rank: number;
+  total: number;
+}
 
 export interface StrategyInfo {
   id: string;
@@ -47,6 +54,14 @@ export const resolveEnabledStrategyIds = (stored: readonly string[] | undefined)
   const known = new Set(STRATEGY_CATALOG.map((s) => s.id));
   return stored === undefined ? [...known] : stored.filter((id) => known.has(id));
 };
+
+const MIN_PEERS = 2;
+
+/** Ties share the better rank. */
+const pageRankOf = (cpuMark: number, peers: readonly { cpuMark: number }[]): PageRank | null =>
+  peers.length < MIN_PEERS
+    ? null
+    : { rank: 1 + peers.filter((p) => p.cpuMark > cpuMark).length, total: peers.length };
 
 const priceOf = (query: RatingQuery | undefined): { priceEur?: number } =>
   query?.priceEur === undefined ? {} : { priceEur: query.priceEur };
@@ -86,7 +101,13 @@ export function createRatingEngine(
           const rating = strategy.rate({ cpu: match.record, ...priceOf(queries[i]), peers });
           return rating === null ? [] : [rating];
         });
-        return { status: "matched", record: match.record, via: match.via, ratings };
+        return {
+          status: "matched",
+          record: match.record,
+          via: match.via,
+          ratings,
+          pageRank: pageRankOf(match.record.cpuMark, peers),
+        };
       });
     },
   };
