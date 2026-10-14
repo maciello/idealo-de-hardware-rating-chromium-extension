@@ -1,4 +1,5 @@
 import { POWER_SENSOR_ID, POWER_SIGNAL_IDS, type Signal } from "@idealo-hw/sensors";
+import { describeSignal } from "../signals";
 
 export interface PowerBadge {
   level: "low" | "high";
@@ -12,6 +13,9 @@ export const powerSignalOf = (signals: readonly Signal[]): Signal | undefined =>
 export const powerBadgeOf = (signals: readonly Signal[]): PowerBadge | null => {
   const signal = powerSignalOf(signals);
   return signal
-    ? { level: signal.id === POWER_SIGNAL_IDS.veryLow ? "low" : "high", label: signal.label }
+    ? {
+        level: signal.id === POWER_SIGNAL_IDS.veryLow ? "low" : "high",
+        label: describeSignal(signal).label,
+      }
     : null;
 };

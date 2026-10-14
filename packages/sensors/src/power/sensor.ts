@@ -1,4 +1,4 @@
-import type { Sensor, SensorInput, Signal } from "../signal";
+import { quantity, type Sensor, type SensorInput, type Signal } from "../signal";
 import { POWER_THRESHOLDS } from "./thresholds";
 
 export const POWER_SENSOR_ID = "power";
@@ -20,14 +20,8 @@ const tdpOf = (input: SensorInput): { watts: number; source: Source } | null => 
   return usable(benchmark) ? { watts: benchmark, source: "benchmark" } : null;
 };
 
-const INTEGER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
-
-const detailOf = (watts: number, cpuMark: number | undefined): string => {
-  const tdp = `${INTEGER.format(watts)} W TDP`;
-  return cpuMark !== undefined && Number.isFinite(cpuMark) && cpuMark > 0
-    ? `${tdp} · ${INTEGER.format(cpuMark / watts)} CPU Mark per W`
-    : tdp;
-};
+const cpuMarkPerWatt = (watts: number, cpuMark: number | undefined): number | null =>
+  cpuMark !== undefined && Number.isFinite(cpuMark) && cpuMark > 0 ? cpuMark / watts : null;
 
 /** Badges only the extremes of CPU TDP for the device class; the middle emits nothing. */
 export const powerSensor: Sensor = {
@@ -45,11 +39,13 @@ export const powerSensor: Sensor = {
         id: veryLow ? POWER_SIGNAL_IDS.veryLow : POWER_SIGNAL_IDS.veryHigh,
         kind: "badge",
         severity: "info",
-        label: veryLow ? "Very low power" : "Very high power",
-        detail: detailOf(tdp.watts, input.cpu?.cpuMark),
+        params: {
+          tdpWatts: tdp.watts,
+          cpuMarkPerWatt: cpuMarkPerWatt(tdp.watts, input.cpu?.cpuMark),
+        },
         evidence: [
-          { field: "TDP", value: `${INTEGER.format(tdp.watts)} W` },
-          { field: "TDP source", value: tdp.source },
+          { field: "tdp", value: quantity(tdp.watts, "W") },
+          { field: "tdpSource", value: { kind: "tdp_source", source: tdp.source } },
         ],
       },
     ];

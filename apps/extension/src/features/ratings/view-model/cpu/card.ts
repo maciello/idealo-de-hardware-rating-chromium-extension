@@ -2,6 +2,7 @@ import type { Signal } from "@idealo-hw/sensors";
 import { RATINGS_COPY } from "../../copy";
 import { type MatchedRating, MULTI, PAGE_RANK, ROW_ORDER, SEGMENT } from "../../model";
 import type { CardRow } from "../card-row";
+import { describeSignal, evidenceTitle } from "../signals";
 import { findRating } from "./find-rating";
 import { pageMeter, segmentMeter, segmentNoun } from "./meter";
 import { powerSignalOf } from "./power";
@@ -41,13 +42,8 @@ export function cardRows(rating: MatchedRating, signals: readonly Signal[]): Car
   }
   const power = powerSignalOf(signals);
   if (power) {
-    rows.push({
-      id: "power",
-      label: power.label,
-      value: power.detail,
-      title: power.evidence.map((e) => `${e.field}: ${e.value}`).join(" · "),
-      meter: null,
-    });
+    const { label, detail } = describeSignal(power);
+    rows.push({ id: "power", label, value: detail, title: evidenceTitle(power), meter: null });
   }
   return rows;
 }

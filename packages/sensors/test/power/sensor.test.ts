@@ -60,8 +60,8 @@ describe("powerSensor TDP source", () => {
     });
     expect(signal?.id).toBe(POWER_SIGNAL_IDS.veryLow);
     expect(signal?.evidence).toEqual([
-      { field: "TDP", value: "9 W" },
-      { field: "TDP source", value: "datasheet" },
+      { field: "tdp", value: { kind: "quantity", amount: 9, unit: "W" } },
+      { field: "tdpSource", value: { kind: "tdp_source", source: "datasheet" } },
     ]);
   });
 
@@ -79,8 +79,8 @@ describe("powerSensor TDP source", () => {
   it("falls back to the benchmark TDP and says so", () => {
     const [signal] = powerSensor.sense(input("desktop", 170));
     expect(signal?.evidence).toEqual([
-      { field: "TDP", value: "170 W" },
-      { field: "TDP source", value: "benchmark" },
+      { field: "tdp", value: { kind: "quantity", amount: 170, unit: "W" } },
+      { field: "tdpSource", value: { kind: "tdp_source", source: "benchmark" } },
     ]);
   });
 
@@ -108,25 +108,24 @@ describe("powerSensor signal content", () => {
         id: "power.very_low",
         kind: "badge",
         severity: "info",
-        label: "Very low power",
-        detail: "9 W TDP · 1.020 CPU Mark per W",
+        params: { tdpWatts: 9, cpuMarkPerWatt: 1020 },
         evidence: [
-          { field: "TDP", value: "9 W" },
-          { field: "TDP source", value: "benchmark" },
+          { field: "tdp", value: { kind: "quantity", amount: 9, unit: "W" } },
+          { field: "tdpSource", value: { kind: "tdp_source", source: "benchmark" } },
         ],
       },
     ]);
   });
 
-  it("describes a very high TDP with its efficiency rounded to an integer", () => {
+  it("describes a very high TDP with its exact efficiency", () => {
     const [signal] = powerSensor.sense({
       facts: {},
       cpu: cpu({ cpuMark: 45000, tdpWatts: 55 }),
       deviceClass: "laptop",
       now: NOW,
     });
-    expect(signal?.label).toBe("Very high power");
-    expect(signal?.detail).toBe("55 W TDP · 818 CPU Mark per W");
+    expect(signal?.id).toBe(POWER_SIGNAL_IDS.veryHigh);
+    expect(signal?.params).toEqual({ tdpWatts: 55, cpuMarkPerWatt: 45000 / 55 });
   });
 
   it("leaves the efficiency out when the CPU Mark is unknown", () => {
@@ -136,6 +135,6 @@ describe("powerSensor signal content", () => {
       deviceClass: "laptop",
       now: NOW,
     });
-    expect(signal?.detail).toBe("9 W TDP");
+    expect(signal?.params).toEqual({ tdpWatts: 9, cpuMarkPerWatt: null });
   });
 });

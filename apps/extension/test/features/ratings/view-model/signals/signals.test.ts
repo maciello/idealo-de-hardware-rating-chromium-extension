@@ -27,8 +27,7 @@ const POWER_BADGE: Signal = {
   id: "power.very_low",
   kind: "badge",
   severity: "info",
-  label: "Very low power",
-  detail: "9 W TDP",
+  params: { tdpWatts: 9, cpuMarkPerWatt: null },
   evidence: [],
 };
 

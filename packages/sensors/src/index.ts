@@ -6,10 +6,15 @@ export { SENSORS, senseAll } from "./registry";
 export type {
   DeviceClass,
   Evidence,
+  EvidenceField,
+  EvidenceUnit,
+  EvidenceValue,
   Sensor,
   SensorClock,
   SensorCpu,
   SensorInput,
   Signal,
+  SignalId,
+  SignalParamsById,
 } from "./signal";
 export { WEBCAM_SENSOR_ID, WEBCAM_SIGNAL_IDS } from "./webcam/sensor";

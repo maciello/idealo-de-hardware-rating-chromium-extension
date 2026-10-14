@@ -1,4 +1,6 @@
-import type { ProductFacts } from "./facts";
+import type { ProductFacts } from "../facts";
+import type { Evidence } from "./evidence";
+import type { SignalId, SignalParamsById } from "./params";
 
 export type DeviceClass = "laptop" | "desktop" | "unknown";
 
@@ -22,18 +24,15 @@ export interface SensorInput {
   now: SensorClock;
 }
 
-export interface Evidence {
-  field: string;
-  value: string;
-}
-
-export interface Signal {
+/** What a sensor found, as data only: wording and number formats belong to the consumer. */
+export interface Signal<K extends SignalId = SignalId> {
   sensorId: string;
-  id: string;
+  id: K;
   kind: "badge" | "flag";
   severity: "red" | "amber" | "info";
-  label: string;
-  detail: string;
+  /** The figures the id's wording needs. */
+  params: SignalParamsById[K];
+  /** The product facts the signal rests on, when stated. */
   evidence: Evidence[];
 }
 

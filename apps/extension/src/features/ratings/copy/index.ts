@@ -1,6 +1,6 @@
-import { MULTI, PAGE_RANK, PER_EURO, SEGMENT, SINGLE } from "./model/cpu/strategy-ids";
-import type { GpuKind, GpuMemory } from "./model/gpu";
-import { GPU_G3D, GPU_PER_EURO, GPU_PERCENTILE } from "./model/gpu/strategy-ids";
+import { MULTI, PAGE_RANK, PER_EURO, SEGMENT, SINGLE } from "../model/cpu/strategy-ids";
+import type { GpuKind, GpuMemory } from "../model/gpu";
+import { GPU_G3D, GPU_PER_EURO, GPU_PERCENTILE } from "../model/gpu/strategy-ids";
 
 /** Names looked up by an id the engine reports as a plain string; a miss falls back to the id. */
 interface LabelTable {
@@ -104,3 +104,6 @@ export const RATINGS_COPY = {
     shared: "Uses system memory",
   } satisfies Readonly<Record<GpuMemory["source"], string>>,
 } as const;
+
+export { EVIDENCE_COPY } from "./evidence";
+export { SIGNAL_DETAILS, SIGNAL_LABELS } from "./signals";

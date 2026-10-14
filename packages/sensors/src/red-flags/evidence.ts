@@ -1,56 +1,36 @@
-import type { OsKind, ProductFacts, StorageKind, VideoOutput } from "../facts";
-import type { Evidence } from "../signal";
+import type { ProductFacts } from "../facts";
+import { type Evidence, type EvidenceValue, quantity } from "../signal";
 import type { FlagField } from "./catalog";
 
-const STORAGE_NAMES: Readonly<Record<StorageKind, string>> = {
-  ssd: "SSD",
-  hdd: "HDD",
-  hybrid: "Hybrid (SSHD)",
-  emmc: "eMMC",
-};
-
-const OS_NAMES: Readonly<Record<OsKind, string>> = {
-  windows: "Windows",
-  macos: "macOS",
-  chromeos: "Chrome OS",
-  linux: "Linux",
-  none: "None",
-};
-
-const outputName = (output: VideoOutput): string => {
-  switch (output.kind) {
-    case "hdmi":
-      return output.version === null ? "HDMI" : `HDMI ${output.version}`;
-    case "usb_c":
-      return "USB-C";
-    case "displayport":
-      return "DisplayPort";
-    case "thunderbolt":
-      return "Thunderbolt";
-    case "vga":
-      return "VGA";
-    case "dvi":
-      return "DVI";
-  }
-};
-
-const shown = (value: number | undefined, before: string, after: string): string | undefined =>
-  value === undefined ? undefined : `${before}${value}${after}`;
+const quantityOf = (
+  value: number | undefined,
+  unit: Parameters<typeof quantity>[1],
+): EvidenceValue | undefined => (value === undefined ? undefined : quantity(value, unit));
 
 /** How each fact reads as evidence; undefined when the product does not state it. */
-const SHOWN: Readonly<Record<FlagField, (facts: ProductFacts) => string | undefined>> = {
-  ramGb: (f) => shown(f.ramGb, "", " GB"),
-  ramType: (f) => f.ramType?.label,
-  storageGb: (f) => shown(f.storageGb, "", " GB"),
-  storageKind: (f) => (f.storageKind === undefined ? undefined : STORAGE_NAMES[f.storageKind]),
-  displayHeightPx: (f) => shown(f.displayHeightPx, "", " px"),
-  brightnessNits: (f) => shown(f.brightnessNits, "", " nits"),
-  batteryWh: (f) => shown(f.batteryWh, "", " Wh"),
-  wifiGeneration: (f) => shown(f.wifiGeneration, "Wi-Fi ", ""),
-  releaseYear: (f) => shown(f.releaseYear, "", ""),
-  usbMaxGen: (f) => shown(f.usbMaxGen, "USB ", ""),
-  videoOutputs: (f) => f.videoOutputs?.map(outputName).join(", "),
-  osKind: (f) => (f.osKind === undefined ? undefined : OS_NAMES[f.osKind]),
+const SHOWN: Readonly<Record<FlagField, (facts: ProductFacts) => EvidenceValue | undefined>> = {
+  ramGb: (f) => quantityOf(f.ramGb, "GB"),
+  ramType: (f) =>
+    f.ramType === undefined ? undefined : { kind: "ram_type", label: f.ramType.label },
+  storageGb: (f) => quantityOf(f.storageGb, "GB"),
+  storageKind: (f) =>
+    f.storageKind === undefined ? undefined : { kind: "storage", storage: f.storageKind },
+  displayHeightPx: (f) => quantityOf(f.displayHeightPx, "px"),
+  brightnessNits: (f) => quantityOf(f.brightnessNits, "nits"),
+  batteryWh: (f) => quantityOf(f.batteryWh, "Wh"),
+  wifiGeneration: (f) =>
+    f.wifiGeneration === undefined
+      ? undefined
+      : { kind: "generation", family: "wifi", generation: f.wifiGeneration },
+  releaseYear: (f) =>
+    f.releaseYear === undefined ? undefined : { kind: "year", year: f.releaseYear },
+  usbMaxGen: (f) =>
+    f.usbMaxGen === undefined
+      ? undefined
+      : { kind: "generation", family: "usb", generation: f.usbMaxGen },
+  videoOutputs: (f) =>
+    f.videoOutputs === undefined ? undefined : { kind: "video_outputs", outputs: f.videoOutputs },
+  osKind: (f) => (f.osKind === undefined ? undefined : { kind: "os", os: f.osKind }),
 };
 
 export const evidenceOf = (fields: readonly FlagField[], facts: ProductFacts): Evidence[] =>

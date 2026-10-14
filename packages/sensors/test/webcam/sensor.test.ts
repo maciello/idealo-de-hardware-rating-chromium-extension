@@ -38,7 +38,9 @@ describe("webcamSensor", () => {
       sensorId: WEBCAM_SENSOR_ID,
       kind: "badge",
       severity: "info",
-      label: "IR camera",
+      id: ID.ir,
+      params: null,
+      evidence: [{ field: "webcam.irCamera", value: { kind: "answer", yes: true } }],
     });
   });
 
@@ -55,9 +57,10 @@ describe("webcamSensor", () => {
         id: ID.fullHd,
         kind: "badge",
         severity: "info",
-        label: "1080p+ webcam",
-        detail: "Sharp video calls.",
-        evidence: [{ field: "webcam.heightPx", value: "1080 px" }],
+        params: null,
+        evidence: [
+          { field: "webcam.heightPx", value: { kind: "quantity", amount: 1080, unit: "px" } },
+        ],
       },
     ]);
   });
@@ -73,7 +76,8 @@ describe("webcamSensor", () => {
       id: ID.none,
       kind: "flag",
       severity: "amber",
-      label: "No webcam",
+      params: null,
+      evidence: [{ field: "webcam.present", value: { kind: "answer", yes: false } }],
     });
   });
 

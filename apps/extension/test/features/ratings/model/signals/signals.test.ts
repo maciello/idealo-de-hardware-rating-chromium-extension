@@ -110,7 +110,7 @@ describe("the older-memory flag", () => {
   it("is raised for DDR4 with the type as evidence, and for nothing newer", () => {
     expect(flag("Intel Core i7-13700H, DDR4")).toMatchObject({
       severity: "amber",
-      evidence: [{ field: "ramType", value: "DDR4" }],
+      evidence: [{ field: "ramType", value: { kind: "ram_type", label: "DDR4" } }],
     });
     expect(flag("Intel Core i7-13700H, DDR5")).toBeUndefined();
     expect(flag("Intel Core i7-13700H, LPDDR5X")).toBeUndefined();

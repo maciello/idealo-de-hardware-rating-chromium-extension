@@ -1,6 +1,7 @@
 import { RED_FLAG_IDS, type Signal } from "@idealo-hw/sensors";
 import { RATINGS_COPY } from "../../copy";
 import { warningsOf } from "../../model";
+import { describeSignal } from "./describe";
 
 interface FlagsIndicator {
   count: number;
@@ -25,8 +26,8 @@ export interface SignalsChipModel {
 
 const memoryTagOf = (signals: readonly Signal[]): MemoryTag | null => {
   const outdated = signals.find((s) => s.id === RED_FLAG_IDS.ramTypeOutdated);
-  const text = outdated?.evidence.find((e) => e.field === "ramType")?.value;
-  return text === undefined ? null : { text, title: RATINGS_COPY.oldMemoryHint };
+  const type = outdated?.evidence.find((e) => e.field === "ramType")?.value;
+  return type?.kind === "ram_type" ? { text: type.label, title: RATINGS_COPY.oldMemoryHint } : null;
 };
 
 /** The memory tag stands for its flag on the chip, so the indicator counts the other warnings only. */
@@ -37,7 +38,7 @@ const flagsIndicatorOf = (signals: readonly Signal[]): FlagsIndicator | null => 
   const label = RATINGS_COPY.flagsAria(
     counted.length,
     severity,
-    counted.map((s) => s.label),
+    counted.map((s) => describeSignal(s).label),
   );
   return { count: counted.length, severity, label };
 };

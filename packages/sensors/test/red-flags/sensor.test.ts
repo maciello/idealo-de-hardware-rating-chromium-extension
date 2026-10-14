@@ -38,10 +38,50 @@ describe("redFlagsSensor golden datasheets", () => {
         id: ID.ramTiny,
         kind: "flag",
         severity: "red",
-        label: "Very little RAM",
-        detail: "4 GB is too little for current Windows and browsers.",
-        evidence: [{ field: "ramGb", value: "4 GB" }],
+        params: { ramGb: 4 },
+        evidence: [{ field: "ramGb", value: { kind: "quantity", amount: 4, unit: "GB" } }],
       },
+    ]);
+  });
+
+  it("carries the figures each flag's wording needs", () => {
+    const params = (overrides: Overrides, ramType: RamType = LPDDR5X) =>
+      Object.fromEntries(sense(overrides, ramType).map((s) => [s.id, s.params]));
+    expect(params({ Displayauflösung: "1.366 x 768 Pixel" })).toEqual({
+      [ID.displayLowRes]: { heightPx: 768, minHeightPx: 1080 },
+    });
+    expect(params({ "WLAN-Standard": "IEEE 802.11ac" })).toEqual({
+      [ID.wifiOld]: { generation: 5, currentGeneration: 6 },
+    });
+    expect(params({ Markteinführung: "2020" })).toEqual({
+      [ID.modelOld]: { releaseYear: 2020, yearsAgo: 6 },
+    });
+    expect(params({}, ddr(4))).toEqual({
+      [ID.ramTypeOutdated]: { label: "DDR4", currentGeneration: 5 },
+    });
+    expect(params({ Betriebssystem: "Free DOS" })).toEqual({ [ID.noOs]: null });
+  });
+
+  it("states each fact as typed evidence", () => {
+    const evidence = (overrides: Overrides) => sense(overrides).flatMap((s) => s.evidence);
+    expect(evidence({ "WLAN-Standard": "IEEE 802.11ac" })).toEqual([
+      { field: "wifiGeneration", value: { kind: "generation", family: "wifi", generation: 5 } },
+    ]);
+    expect(evidence({ Markteinführung: "2020" })).toEqual([
+      { field: "releaseYear", value: { kind: "year", year: 2020 } },
+    ]);
+    expect(evidence({ Festplattentyp: "Flash-Speicher" })).toEqual([
+      { field: "storageKind", value: { kind: "storage", storage: "emmc" } },
+      { field: "storageGb", value: { kind: "quantity", amount: 512, unit: "GB" } },
+    ]);
+    expect(evidence({ Videoausgang: "HDMI 1.4" })).toEqual([
+      {
+        field: "videoOutputs",
+        value: { kind: "video_outputs", outputs: [{ kind: "hdmi", version: 1.4 }] },
+      },
+    ]);
+    expect(evidence({ Betriebssystem: "Free DOS" })).toEqual([
+      { field: "osKind", value: { kind: "os", os: "none" } },
     ]);
   });
 

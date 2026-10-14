@@ -1,6 +1,5 @@
 import type { WebcamFact } from "../facts";
-import type { Evidence, Sensor, SensorInput, Signal } from "../signal";
-import { WEBCAM_COPY } from "./copy";
+import { type Evidence, quantity, type Sensor, type SensorInput, type Signal } from "../signal";
 import { WEBCAM_THRESHOLDS as T } from "./thresholds";
 
 export const WEBCAM_SENSOR_ID = "webcam";
@@ -14,22 +13,23 @@ export const WEBCAM_SIGNAL_IDS = {
 
 type Camera = Extract<WebcamFact, { present: true }>;
 
+type WebcamId = (typeof WEBCAM_SIGNAL_IDS)[keyof typeof WEBCAM_SIGNAL_IDS];
+
 const signal = (
-  id: string,
+  id: WebcamId,
   kind: Signal["kind"],
   severity: Signal["severity"],
-  copy: { label: string; detail: string },
   evidence: Evidence[],
-): Signal => ({ sensorId: WEBCAM_SENSOR_ID, id, kind, severity, ...copy, evidence });
+): Signal => ({ sensorId: WEBCAM_SENSOR_ID, id, kind, severity, params: null, evidence });
 
-const evidenceOf = (camera: Camera): Evidence[] => [
-  ...(camera.heightPx === undefined
-    ? []
-    : [{ field: "webcam.heightPx", value: `${camera.heightPx} px` }]),
-  ...(camera.megapixels === undefined
-    ? []
-    : [{ field: "webcam.megapixels", value: `${camera.megapixels} MP` }]),
-];
+const evidenceOf = (camera: Camera): Evidence[] => {
+  const evidence: Evidence[] = [];
+  if (camera.heightPx !== undefined)
+    evidence.push({ field: "webcam.heightPx", value: quantity(camera.heightPx, "px") });
+  if (camera.megapixels !== undefined)
+    evidence.push({ field: "webcam.megapixels", value: quantity(camera.megapixels, "MP") });
+  return evidence;
+};
 
 const isFullHd = (camera: Camera): boolean =>
   (camera.heightPx ?? 0) >= T.fullHdMinHeightPx ||
@@ -50,21 +50,20 @@ export const webcamSensor: Sensor = {
     if (!webcam.present) {
       return deviceClass === "laptop"
         ? [
-            signal(WEBCAM_SIGNAL_IDS.none, "flag", "amber", WEBCAM_COPY.none, [
-              { field: "webcam.present", value: "no" },
+            signal(WEBCAM_SIGNAL_IDS.none, "flag", "amber", [
+              { field: "webcam.present", value: { kind: "answer", yes: false } },
             ]),
           ]
         : [];
     }
     const evidence = evidenceOf(webcam);
     const signals: Signal[] = [];
-    if (isFullHd(webcam))
-      signals.push(signal(WEBCAM_SIGNAL_IDS.fullHd, "badge", "info", WEBCAM_COPY.fullHd, evidence));
+    if (isFullHd(webcam)) signals.push(signal(WEBCAM_SIGNAL_IDS.fullHd, "badge", "info", evidence));
     else if (deviceClass === "laptop" && isLow(webcam))
-      signals.push(signal(WEBCAM_SIGNAL_IDS.low, "flag", "info", WEBCAM_COPY.low, evidence));
+      signals.push(signal(WEBCAM_SIGNAL_IDS.low, "flag", "info", evidence));
     if (webcam.irCamera === true) {
-      const ir = [{ field: "webcam.irCamera", value: "yes" }];
-      signals.push(signal(WEBCAM_SIGNAL_IDS.ir, "badge", "info", WEBCAM_COPY.ir, ir));
+      const ir: Evidence[] = [{ field: "webcam.irCamera", value: { kind: "answer", yes: true } }];
+      signals.push(signal(WEBCAM_SIGNAL_IDS.ir, "badge", "info", ir));
     }
     return signals;
   },

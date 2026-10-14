@@ -13,11 +13,10 @@ const input: SensorInput = {
 
 const signal = (sensorId: string): Signal => ({
   sensorId,
-  id: `${sensorId}.x`,
+  id: "webcam.none",
   kind: "flag",
   severity: "amber",
-  label: sensorId,
-  detail: "",
+  params: null,
   evidence: [],
 });
 
