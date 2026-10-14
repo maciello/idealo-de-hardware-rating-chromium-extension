@@ -31,6 +31,10 @@ docs-check:
 boundaries:
     pnpm exec depcruise --config .dependency-cruiser.cjs apps packages
 
+# Dead code (knip, see knip.jsonc): unused files, exports, types and dependencies; exits non-zero on a finding.
+deadcode:
+    pnpm exec knip
+
 # Source files over 150 lines (Biome style/noExcessiveLinesPerFile, level error in biome.json); exits non-zero on a violation.
 godfiles:
     pnpm exec biome lint --only=style/noExcessiveLinesPerFile --max-diagnostics=none apps packages

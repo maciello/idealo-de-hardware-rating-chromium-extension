@@ -1,0 +1,22 @@
+{
+  // Dead-code check, run by `just deadcode`. Plugins are auto-enabled from each workspace's
+  // dependencies: wxt (entrypoints/**), vitest (**/*.test.*), playwright (e2e specs),
+  // biome and dependency-cruiser (config files).
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {},
+    "apps/extension": {
+      // wxt discovers entrypoints/** by convention and only the manifest names them; e2e/** holds
+      // helpers (launch.ts, site.ts) beyond the *.spec.ts files the playwright plugin adds.
+      "entry": ["entrypoints/**/*.{ts,tsx}", "e2e/**/*.ts", "test/**/*.{ts,tsx}"],
+      "project": ["{entrypoints,src,test,e2e}/**/*.{ts,tsx}", "*.{ts,cjs}"]
+    },
+    // Each package.json `exports` entry (the public barrel src/index.ts, subpath exports, test
+    // fixtures) is an entry file, so its exports are public API for a later backend/MCP consumer
+    // and are never reported. Everything below a barrel must be reachable from it or from a test.
+    "packages/*": {
+      "entry": ["test/**/*.ts"],
+      "project": ["{src,test}/**/*.ts", "*.ts"]
+    }
+  }
+}
