@@ -145,6 +145,21 @@ test("requirements: price slider sets the price range from the page's bounds", a
   await page.close();
 });
 
+test("requirements: a price limit alone is sent with a zero minimum", async () => {
+  const page = await context.newPage();
+  await openPanel(page, SSR_LISTING_URL);
+  const upper = slider(page, "price").nth(1);
+  await upper.focus();
+  await upper.press("ArrowLeft");
+  await upper.press("ArrowLeft");
+  await expect(page.getByTestId("req-value-price")).toHaveText("up to 3.400 €");
+  await page.getByTestId("details-toggle").click();
+  await expect(target(page)).toHaveText(
+    "https://www.idealo.de/preisvergleich/ProductCategory/3751.html?p=0.0-3400.0",
+  );
+  await page.close();
+});
+
 test("requirements: RAM type chips are disabled where idealo has no such filter", async () => {
   const page = await context.newPage();
   await openPanel(page, SSR_LISTING_URL);
