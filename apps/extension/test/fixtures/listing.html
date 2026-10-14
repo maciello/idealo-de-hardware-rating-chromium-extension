@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>SYNTHETIC listing fixture</title>
+  </head>
+  <body>
+    <!--
+      SYNTHETIC FIXTURE. Hand-written to exercise the heuristic adapters; it is NOT a copy of
+      idealo.de markup. Product ids, names, prices and CPU choices are invented.
+    -->
+    <aside id="filters">
+      <section>
+        <h3>Prozessor-Hersteller</h3>
+        <ul>
+          <li><a href="/preisvergleich/ProductCategory/19116F1234.html">Intel (120)</a></li>
+          <li><a href="/preisvergleich/ProductCategory/19116F5678.html">AMD (88)</a></li>
+        </ul>
+      </section>
+      <fieldset>
+        <legend>Arbeitsspeicher</legend>
+        <a href="/preisvergleich/ProductCategory/19116F2222.html">16 GB (64)</a>
+        <a href="/preisvergleich/ProductCategory/19116F3333.html">32 GB (12)</a>
+      </fieldset>
+      <div class="loose">
+        <a href="/preisvergleich/ProductCategory/19116F4444.html">Touchscreen</a>
+      </div>
+      <a href="/preisvergleich/ProductCategory/19116F1234-2222.html">Two ids at once (ignored)</a>
+      <a href="/preisvergleich/ProductCategory/99999F1234.html">Other category (ignored)</a>
+      <a href="/preisvergleich/ProductCategory/19116.html?sortKey=minPrice">Sort link (ignored)</a>
+    </aside>
+    <main>
+      <ul class="results">
+        <li class="item">
+          <div data-wishlist-heart='{"productId":1001,"source":"synthetic"}'></div>
+          <a href="/preisvergleich/OffersOfProduct/1001_alpha-book-15.html">Alpha Book 15 Notebook Intel Core i7-13700H 16GB 512GB</a>
+          <span class="sr-detailedPriceInfo__price">1.299,00 €</span>
+        </li>
+        <li class="item">
+          <div data-wishlist-heart='{"productId":"1002"}'></div>
+          <a href="/preisvergleich/OffersOfProduct/1002_beta-air-14.html">Beta Air 14 Notebook</a>
+          <p>Prozessor: AMD Ryzen 5 7640U, 16 GB RAM</p>
+          <span class="sr-detailedPriceInfo__price">899,00 €</span>
+        </li>
+        <li class="item">
+          <div data-wishlist-heart='{"productId":1003}'></div>
+          <a href="/preisvergleich/OffersOfProduct/1003_gamma-pro-16.html">Gamma Pro 16 Intel Core i9-13900HX</a>
+          <span class="sr-detailedPriceInfo__price">ab 1.999,00 €</span>
+        </li>
+        <li class="item">
+          <div data-wishlist-heart='{"productId":1004}'></div>
+          <a href="/preisvergleich/OffersOfProduct/1004_delta-mystery.html">Delta Mystery Notebook Intel Core i5-99999X</a>
+          <span class="sr-detailedPriceInfo__price">549,00 €</span>
+        </li>
+        <li class="item">
+          <a href="/preisvergleich/OffersOfProduct/1005_epsilon-plain.html">Epsilon Plain Notebook without a processor mention</a>
+          <span>479,99 €</span>
+        </li>
+      </ul>
+    </main>
+    <script>
+      fetch("/api/filters.json")
+        .then((r) => r.json())
+        .then((data) => {
+          window.__filters = data;
+        });
+    </script>
+  </body>
+</html>

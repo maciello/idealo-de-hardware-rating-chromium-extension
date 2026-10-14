@@ -5,6 +5,7 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "customConditions": ["browser"]
   }
 }

@@ -8,7 +8,8 @@
     "build": "wxt build",
     "zip": "wxt zip",
     "typecheck": "tsc -p . --noEmit",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "e2e": "wxt build && playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
     "@idealo-hw/hw-bench": "workspace:*",
