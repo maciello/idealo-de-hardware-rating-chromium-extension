@@ -186,10 +186,17 @@ importers:
         version: 4.10.2
 
   packages/sensors:
+    dependencies:
+      '@idealo-hw/idealo-query':
+        specifier: workspace:*
+        version: link:../idealo-query
     devDependencies:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      fast-check:
+        specifier: ^4.10.2
+        version: 4.10.2
 
 packages:
 

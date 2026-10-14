@@ -1,5 +1,5 @@
 import { type CpuBenchmarkRecord, classifyCpu, type FormFactor } from "@idealo-hw/hw-bench";
-import type { DeviceClass, SensorInput } from "@idealo-hw/sensors";
+import type { DeviceClass, SensorClock, SensorInput } from "@idealo-hw/sensors";
 
 /**
  * Same pick as hw-bench's segment_percentile: the page's device class when known, else the class the
@@ -12,7 +12,11 @@ export function deviceClassOf(formFactor: FormFactor, cpuName: string): DeviceCl
   return own.laptop ? "laptop" : "desktop";
 }
 
-export const sensorInputOf = (record: CpuBenchmarkRecord, formFactor: FormFactor): SensorInput => ({
+export const sensorInputOf = (
+  record: CpuBenchmarkRecord,
+  formFactor: FormFactor,
+  now: SensorClock,
+): SensorInput => ({
   facts: {},
   cpu: {
     name: record.name,
@@ -21,4 +25,5 @@ export const sensorInputOf = (record: CpuBenchmarkRecord, formFactor: FormFactor
     releaseYear: record.released?.year ?? null,
   },
   deviceClass: deviceClassOf(formFactor, record.name),
+  now,
 });

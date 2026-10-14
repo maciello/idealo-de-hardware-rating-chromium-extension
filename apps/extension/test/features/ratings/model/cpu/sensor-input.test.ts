@@ -41,11 +41,12 @@ describe("sensorInputOf", () => {
 
   it("maps the benchmark record onto the sensor input", () => {
     if (record === undefined) throw new Error("expected a record");
-    expect(sensorInputOf(record, "unknown")).toEqual({
+    expect(sensorInputOf(record, "unknown", { year: 2026 })).toEqual({
       facts: {},
       cpu: { name: "Intel Core i9-13900HX", cpuMark: 45000, tdpWatts: 55, releaseYear: 2023 },
       deviceClass: "unknown",
+      now: { year: 2026 },
     });
-    expect(sensorInputOf(record, "laptop").deviceClass).toBe("laptop");
+    expect(sensorInputOf(record, "laptop", { year: 2026 }).deviceClass).toBe("laptop");
   });
 });

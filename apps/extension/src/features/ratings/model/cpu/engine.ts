@@ -81,7 +81,11 @@ export function createRatingEngine(
           formFactor: formFactorOf(queries[i]),
           ramType: ramTypeOf(queries[i]?.text ?? ""),
           ratings,
-          signals: senseAll(sensorInputOf(match.record, formFactorOf(queries[i]))),
+          signals: senseAll(
+            sensorInputOf(match.record, formFactorOf(queries[i]), {
+              year: new Date().getFullYear(),
+            }),
+          ),
           pageRank: pageRankOf(match.record.cpuMark, peers),
         };
       });
