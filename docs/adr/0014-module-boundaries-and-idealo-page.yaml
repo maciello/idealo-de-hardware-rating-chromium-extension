@@ -39,6 +39,10 @@ adr.0014:
     enforcement:
       tool: dependency-cruiser (root devDependency), config .dependency-cruiser.cjs, command just boundaries, part of just check
       severity: every rule runs at error; there are no warn rules and just boundaries reports 0 violations
+      deadcode:
+        tool: knip (root devDependency), config knip.jsonc, command just deadcode, part of just check
+        scope: unused files, exports, types, duplicate exports and unused or unlisted dependencies in every workspace; wxt entrypoints, vitest and playwright specs and each package.json exports entry are entries, so package barrels stay public API and exports used by tests count as used
+        complements: R2 no-orphans finds modules nobody imports; knip adds unused exports below a barrel and unused dependencies
       rules: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client and sensors-not-to-hw-bench, R6 idealo-page-no-platform and idealo-page-only-idealo-query, R7 package-submodules-via-barrel and cross-feature-via-index, R8 app-screens-via-feature-index and view-is-pure and model-is-pure and platform-not-to-features-or-ui and ui-not-to-features-or-platform and contracts-pure, R9 secret reachability, R10 main-world-tap-is-lean, R11 src-not-to-tests, R12 no-non-package-json]
       layer_rule_scopes:
         view-is-pure: features/<x>/view/ may not import controller, adapters, background, platform or the wxt/@wxt-dev/@webext-core runtimes
@@ -82,3 +86,5 @@ adr.0014:
   evidence:
     - context7 /sverweij/dependency-cruiser doc/rules-reference.md and doc/options-reference.md
     - "depcruise 18.6.0 on the pre-refactor tree: 0 errors, no file-level cycles, workspace and ?raw/?inline specifiers resolved"
+    - "2026-10-14 post-refactor, just boundaries: 628 modules, 1489 dependencies cruised, 0 violations; all 21 rules at severity error; the directory dependency graph (apps/extension/src/features/<x>, app, contracts, platform, ui; 12 directories) has no strongly connected component of more than one directory (was 1 SCC of 8 of 13)"
+    - "2026-10-14 post-refactor, just deadcode (knip 6.41.0): exit 0; the sweep found no unused files or dependencies, resolved 61 unused export and type findings by un-exporting or dropping barrel re-exports, and kept DEFAULT_PRIMARY_ID and DEFAULT_ORIGIN as documented alias constants"
