@@ -36,6 +36,67 @@ interface SingleSliderModel extends SliderBase {
 
 export type NumericSliderModel = RangeSliderModel | SingleSliderModel;
 
+/** What both kinds of slider are built from: the facet's label, its snap values and the stored bound. */
+interface Axis {
+  base: Omit<SliderBase, "label" | "valueText">;
+  label: string;
+  axis: readonly number[];
+  first: number;
+  last: number;
+  bound: Bound | undefined;
+}
+
+/** A range slider: both ends move, an end at the axis edge means "no limit". */
+function rangeSlider({ base, label, axis, first, last, bound }: Axis): RangeSliderModel {
+  const low = bound?.min === undefined ? first : snapUp(axis, bound.min);
+  const high = bound?.max === undefined ? last : snapDown(axis, bound.max);
+  const { format } = base;
+  const valueText =
+    low === first && high === last
+      ? COPY.any
+      : low === first
+        ? COPY.upTo(format(high))
+        : high === last
+          ? COPY.from(format(low))
+          : COPY.between(format(low), format(high));
+  return {
+    ...base,
+    kind: "range",
+    label,
+    valueText,
+    value: [low, Math.max(low, high)],
+    thumbFromLabel: COPY.rangeFrom(label),
+    thumbToLabel: COPY.rangeTo(label),
+    toBound: ([from, to]) => ({
+      ...(from === first ? {} : { min: from }),
+      ...(to === last ? {} : { max: to }),
+    }),
+  };
+}
+
+/** A one-ended slider: a minimum (lowest value = no limit) or a maximum (highest value = no limit). */
+function singleSlider(
+  { base, label, axis, first, last, bound }: Axis,
+  isMin: boolean,
+): SingleSliderModel {
+  const unlimited = isMin ? first : last;
+  const stored = isMin ? bound?.min : bound?.max;
+  const value = stored === undefined ? unlimited : (isMin ? snapUp : snapDown)(axis, stored);
+  return {
+    ...base,
+    kind: "single",
+    label: COPY.bounded(label, isMin),
+    valueText: value === unlimited ? COPY.any : base.format(value),
+    value,
+    inverted: isMin,
+    thumbLabel: label,
+    toBound: (next) => {
+      if (next === unlimited) return {};
+      return isMin ? { min: next } : { max: next };
+    },
+  };
+}
+
 /**
  * One slider per numeric facet, snapping to the values idealo lists. The end that means "no
  * restriction" (lowest for a minimum, highest for a maximum) clears the requirement. Null when the
@@ -48,67 +109,25 @@ export function numericSliderModel(
   plan: FacetPlan | undefined,
 ): NumericSliderModel | null {
   const { facet, unit, direction } = control;
-  const label = COPY.numericLabels[facet] ?? facet;
   const axis = axisOf(options, direction);
   const format = (value: number): string => formatMeasure(value, unit);
   const first = axis[0];
   const last = axis[axis.length - 1];
   if (first === undefined || last === undefined || axis.length < 2) return null;
-  const base = {
-    id: facet,
-    status: statusLine(plan),
-    min: first,
-    max: last,
-    marks: labelledMarks(axis, format),
-    format,
-  };
-
-  if (direction === "range") {
-    const low = bound?.min === undefined ? first : snapUp(axis, bound.min);
-    const high = bound?.max === undefined ? last : snapDown(axis, bound.max);
-    const valueText =
-      low === first && high === last
-        ? COPY.any
-        : low === first
-          ? COPY.upTo(format(high))
-          : high === last
-            ? COPY.from(format(low))
-            : COPY.between(format(low), format(high));
-    return {
-      ...base,
-      kind: "range",
-      label,
-      valueText,
-      value: [low, Math.max(low, high)],
-      thumbFromLabel: COPY.rangeFrom(label),
-      thumbToLabel: COPY.rangeTo(label),
-      toBound: ([from, to]) => ({
-        ...(from === first ? {} : { min: from }),
-        ...(to === last ? {} : { max: to }),
-      }),
-    };
-  }
-
-  const isMin = direction === "min";
-  const value = isMin
-    ? bound?.min === undefined
-      ? first
-      : snapUp(axis, bound.min)
-    : bound?.max === undefined
-      ? last
-      : snapDown(axis, bound.max);
-  const unset = value === (isMin ? first : last);
-  return {
-    ...base,
-    kind: "single",
-    label: COPY.bounded(label, isMin),
-    valueText: unset ? COPY.any : format(value),
-    value,
-    inverted: isMin,
-    thumbLabel: label,
-    toBound: (next) => {
-      if (next === (isMin ? first : last)) return {};
-      return isMin ? { min: next } : { max: next };
+  const ctx: Axis = {
+    base: {
+      id: facet,
+      status: statusLine(plan),
+      min: first,
+      max: last,
+      marks: labelledMarks(axis, format),
+      format,
     },
+    label: COPY.numericLabels[facet] ?? facet,
+    axis,
+    first,
+    last,
+    bound,
   };
+  return direction === "range" ? rangeSlider(ctx) : singleSlider(ctx, direction === "min");
 }
