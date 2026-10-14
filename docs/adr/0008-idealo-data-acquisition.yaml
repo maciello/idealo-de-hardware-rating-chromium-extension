@@ -27,15 +27,24 @@ adr.0008:
         - "GET /price-chart/sites/1/products/<productId>/history?period=3M -> {siteId, startDate, data: [{x: YYYY-MM-DD, y: <euro cents>, date: [y, m, d]}]}; days without data omitted"
         - "POST /offerpage/api/sponsored-slider -> {items: [{offer: {productId, title, variantName, price (de-DE string), shopName, relocateUrl (categoryId=3751), ...}}]}; ads, request body not captured"
       conclusion: price history is a clean same-origin GET keyed by productId (the id in OffersOfProduct/<id>_ URLs); calling it from listing tiles would be extra requests, so it stays unused until a feature needs it and no_extra_requests_to_idealo is revisited
-    - id: devtools-2026-10-14
-      source: user DevTools screenshot, Notebooks search "laptop 32GB"
+    - id: har-2026-10-14
+      source: user HAR (sanitized, 0 cookies), Notebooks "laptop 32GB", pages 1-4
       observed:
-        - "GET searchResult?categoryId=3751&locale=de_DE&pageIndex=1&query=<text>&delphiQuery=<text> -> JSON with offers (shopInfo, shippingCosts, deliveryInformation, leadoutHref, energyInfo, ...)"
-      gap: extension capture did not record it; host, content-type, initiator and whether page 0 also loads via JSON unknown
-      consequence: searchResult JSON is the candidate primary source for listing tiles; capture filter (same-origin + json content-type) is suspect until a HAR shows the request's real shape
+        - "page 0: server-rendered HTML; tile = [class^=sr-resultItemTile_], id in data-wishlist-heart JSON {id, type: PRODUCT}, full spec line in p[class^=sr-productSummary__mainDetails_] (CPU and GPU names included)"
+        - "page 0 HTML filter sidebar: labels + hit counts, no filter ids"
+        - "pages >= 1: XHR GET /csr/api/v2/modules/searchResult?categoryId&locale=de_DE&pageIndex&query, application/json, same origin; request carries sessioninfoencrypted + x-growthbook-* headers"
+        - "searchResult = {items[] (PRODUCT: characteristics[] with CPU/GPU; OFFER: none), filterGroups[29] with filter ids + hits, priceRanges, sorting, pagination, metadata}"
+        - "GET /mvc/metadata/category/<cat>?pageIndex&filters&query&... -> {browserUrl} (web URL for a filter/page state)"
+        - "web paging: ProductCategory/3751I16-<15*pageIndex>.html"
+      capture_gap: extension captures ran without pagination, so searchResult never fired; filter widened anyway (any idealo host, JSON by parse)
+  decision_update:
+    listing_tiles: DOM adapter over SSR tile markup for every page (client-rendered pages reuse the same component); no request needed
+    filter_catalog: parseSearchResult (packages/idealo-query) on tapped searchResult responses; on page 0, one same-origin GET via searchResultUrl only on explicit user action (opening the filter builder)
+    no_extra_requests_to_idealo: relaxed to "at most one searchResult GET per user action"
   unknowns:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
-    - full searchResult request/response shape (needs sanitized HAR)
+    - whether searchResult answers without the page's sessioninfoencrypted header
+    - multi-filter encoding of searchResult filters= and equality of its ids with web F-ids
     - DOM location of spec table (Prozessor/Grafikkarte) on product pages (text shape known from fixture captiva-r10-1257ge.spec.txt)
     - valid price-chart period values besides 3M
     - meaning of opaque URL suffix like "oE0oJ1"

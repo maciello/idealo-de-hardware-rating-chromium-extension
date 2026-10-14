@@ -29,6 +29,15 @@ export {
   type SortKey,
 } from "./model";
 export {
+  type ListingItem,
+  type ListingItemKind,
+  parseSearchResult,
+  SEARCH_RESULT_PATH,
+  type SearchResultPage,
+  type SearchResultRequest,
+  searchResultUrl,
+} from "./search-result";
+export {
   addFilters,
   addManufacturers,
   clearGroup,
