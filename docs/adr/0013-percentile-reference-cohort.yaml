@@ -1,5 +1,5 @@
 adr.0013:
-  title: Percentile ratings rank against recent hardware only
+  title: Percentile ratings rank against recent hardware of the buyer's own device class
   status: accepted-default
   date: 2026-10-14
   context:
@@ -11,18 +11,76 @@ adr.0013:
       - {chip: Intel Core i5-1235U, segment: laptop, all: P80, since_2021: P25}
       - {chip: GeForce RTX 4060, segment: all GPUs, all: P97, since_2021: P90}
       - {chip: Intel Iris Xe, segment: all GPUs, all: P70, since_2021: P40}
-    effect_of_score_floor: CPU Mark >= 3000 on top of a since-2019 cutoff moves results by <= 5 points
+    second_problem: >-
+      pool composition. PassMark `cat` files phone, tablet, embedded, server and virtual devices next to PC parts
+      (laptop + mobile/embedded CPU pool: 1105 records since 2022, p50 CPU Mark 5703; GPU pools hold GRID vGPU profiles,
+      DisplayLink and MS Idd drivers, datacenter cards, EPYC iGPUs) and mislabels PC parts (a Celeron N5095 is Desktop,
+      a Core Ultra 9 285H Mobile/Embedded). A mid CPU therefore read too good. Pool membership, not the score range, was the defect.
+    rejected_fix: >-
+      a score floor in CohortPolicy (CPU Mark >= 8000 proposed and prototyped, per device class). Rejected by the owner:
+      a data threshold hides the defect and shifts with every re-import; comparison groups must be defined sets.
+    year_cutoff_leak: >-
+      PassMark `date` is first seen on charts, not release. The since-2022 universe still holds 23 of 1867 CPUs of
+      pre-2019 generations (Intel Core gen <= 8 such as i3-4100U, i3-8140U; Ryzen 5 2600E; AMD A10-6790B, A4-1350,
+      Athlon X2/X4, Turion X2). The cutoff mechanism is unchanged; replacing it is a separate decision.
   decision:
     port: CohortPolicy (packages/hw-bench/src/rating/cohort.ts), zod-parsed at storage/options boundary
     year_cutoff: [none, since_year <Y>, rolling <N> calendar years anchored to the snapshot's newest record]
-    min_score: optional absolute floor, default off
+    min_score: optional absolute floor, default off (null). Kept for experiments, not used to define a comparison group.
     default: {year_cutoff: rolling 5, min_score: null}
     date_field: PassMark `date` = first seen on charts, proxy for release
     undated_records: excluded whenever a year cutoff applies
     rolling_anchor_reason: tracks re-imports without a clock read and without a hard-coded year rotting
+    cohort_sets:
+      module: packages/hw-bench/src/rating/device-class.ts (classifyCpu, classifyGpu)
+      principle: >-
+        comparison groups are what a buyer on idealo can choose, PC client devices. Phone, embedded, server and virtual
+        silicon is outside the domain by definition. Membership is a function of the parsed chip identity (vendor, family,
+        model suffix via extractCpuIdentity / extractGpuIdentity) and closed named rule tables. It never reads PassMark `cat` or the score.
+      overlap: >-
+        the sets may overlap. A family belongs to every class it ships in, as the idealo market shows: PC-Systeme (3020)
+        list Apple M, Intel N-series and mobile H/HS/HX/U chips in mini PCs. A record is in zero, one or two sets;
+        status explains zero: excluded (named rule) or unclassified (no rule yet, counted, never silently dropped).
+      universe: "U = {r in snapshot : socketCount(r) = 1 and r passes the cohort year cutoff}"
+      sets:
+        client_cpu: "{r in U : family(r) in {Intel Core i3/i5/i7/i9, Core Ultra, Core 3/5/7/9, Core N, Celeron, Pentium, Intel N/U-series, AMD Ryzen, Ryzen AI, Athlon, Apple M, Snapdragon X/7c/8c/8cx, MediaTek Kompanio, Apple A18 Pro}}"
+        laptop_cpu: "{r in client_cpu : suffix(r) in MOBILE_SUFFIX(family) or family in {Apple M except Ultra, Apple A18 Pro, Snapdragon, Kompanio, Ryzen AI, N-series, three-digit Ryzen}}"
+        desktop_cpu: "{r in client_cpu : suffix(r) in DESKTOP_SUFFIX(family)} union {r in laptop_cpu : x86 mobile line, Apple M, N-series} union {Threadripper, Xeon W, Apple M Ultra, Atom x, NVIDIA GB10}"
+        excluded_cpu: "{r in U : name in OutOfDomain} = virtual machines, bare core-IP/AArch64/Android names, dev boards, phone SoCs (Snapdragon 8-series, Dimensity, Helio, Exynos, Tensor, Kirin, Apple A except A18 Pro), server (Xeon except W, EPYC, Opteron, Ampere, Atom C), embedded (Ryzen Embedded, AMD GX/RX-, Intel E/TE/HE/UE/PE/L-suffix IoT SKUs), not sold in DE retail (Hygon, Zhaoxin, Phytium, Kunpeng, CIX)"
+        laptop_gpu: "mobile discrete (Laptop GPU/Max-Q, RX nnnnM/S, Arc AnnnM, GeForce MX and mobile-only GeForce) union mobile workstation (RTX Pro/A/Ada Laptop GPU, Quadro, Radeon Pro nnnnM) union iGPUs of laptop CPU families (Iris Xe, Arc 1x0V/1x0T, Radeon nnnM/nnnnS, Intel HD/UHD, Adreno X, Windows-on-ARM Adreno 6xx) union iGPUs named after a laptop CPU"
+        desktop_gpu: "desktop discrete consumer (GeForce, Radeon RX without M/S, Arc A/B) union workstation and AI cards (RTX A/Ada/PRO, Quadro, T-series, Radeon PRO W/AI PRO, GB10) union iGPUs of desktop CPU families (UHD 710-770, and the mobile-line iGPUs that ship in mini PCs)"
+        excluded_gpu: "virtual and remote adapters (GRID, vGPU profiles like -1B/-16Q, MS Idd, DisplayLink), datacenter accelerators (A100, L4, T4, Tesla, Instinct), embedded/server editions, server iGPUs (EPYC), phone GPUs (Adreno, Mali, PowerVR, Glenfly), mining cards (CMP), pro display controllers (EIZO, Barco, Matrox)"
+      idealo_check_of_the_choice: >-
+        GRID/vGPU, A100/H100/L4/T4/Instinct appear in 0 idealo products. Notebooks do list Apple A18 Pro, Snapdragon X and 7c,
+        MediaTek Kompanio (Chromebooks), RTX Pro/A/Ada and Quadro mobile; PCs list Apple M, N-series, Atom, NVIDIA GB10, RTX A/Pro, Radeon AI Pro.
+    gpu_form_factor_cohort:
+      laptop: page form factor laptop ranks the G3D Mark against laptop_gpu (integrated GPUs included, because a notebook with an iGPU competes with notebooks)
+      desktop: page form factor desktop ranks against desktop_gpu
+      unknown: no percentile. An ambiguous text ("RTX 4060") can be a desktop or a laptop card, so any single pool could be the wrong one (the "top 68% of desktop CPUs on a laptop" bug). The raw score and value per euro are still rated.
+      pool_is_chosen_by: the page, not the rated record. The rated card need not be a member of the set it is ranked in.
+      policy_applied: same CohortPolicy as CPUs (rolling 5 years, no floor); explanation names set and cutoff, e.g. "of 304 laptop GPUs first seen 2022 or later"
+      ambiguous_matches: rated with the weakest candidate (gpuScoreBounds min), explanation says "Lower bound"
+    cpu_pool_rule: formFactor laptop ranks against laptop_cpu, desktop against desktop_cpu. Without a form factor a chip in exactly one set is ranked there; a chip in both sets or neither gets no percentile.
+  measured_after:
+    note: observations on PassMark 2026-10 for the since-2022 universe, not targets; set membership was not tuned to them
+    universe: {cpu: 1867, gpu: 806}
+    cpu_laptop_set: {size: 372, percentile_at: {8000: P10, 12000: P17, 17000: P33, 25000: P69, 35000: P90}}
+    cpu_desktop_set: {size: 615, percentile_at: {8000: P8, 12000: P13, 17000: P27, 25000: P53, 35000: P75}}
+    cpu_before_for_comparison: {laptop_pool_size: 1105, percentile_at: {8000: P58, 12000: P67, 17000: P74}}
+    gpu_laptop_set: {size: 304, g3d_percentile_at: {3000: P41, 6000: P70, 10000: P82, 15000: P89, 20000: P96, 30000: P100}}
+    gpu_desktop_set: {size: 410, g3d_percentile_at: {3000: P45, 6000: P67, 10000: P75, 15000: P80, 20000: P86, 30000: P96}}
+    unclassified: {cpu: "67 of 1867 (3.6%), mostly Android/IoT board names and pre-2019 chips", gpu: "60 of 806 (7.4%), mostly virtual display drivers, pre-2019 APU iGPUs, Mac Pro modules"}
+    yardstick_idealo_market: >-
+      local-only MCP data weighted by product count (never committed; test reads IDEALO_MCP_DIR). Matched Prozessor labels in
+      LaptopCpu: 99.8% of Notebooks; in DesktopCpu: 99.5% of PC-Systeme. Matched Grafikkarte labels in LaptopGpu: 100%; in DesktopGpu: 100%.
+      Umbrella GPU labels (Intel Graphics, AMD Radeon Graphics, ...) name no card and need the product's CPU: 55.5% of Notebooks and
+      14.0% of PC-Systeme products; they are counted apart. CPU misses are by definition (Xeon E5 and Ryzen Embedded in PCs).
   consequences:
-    - segmentPercentile and future GPU percentile take a CohortPolicy; explanation text names the cutoff
+    - segmentPercentile and gpuPercentile take a CohortPolicy; explanation text names the set and the cutoff
     - chips older than the cutoff can still be rated; they land near P0
+    - the CPU segment_percentile now ranks by identity sets, so synthetic test CPUs need real chip names and PassMark `cat` is ignored
+    - unclassified records are rated nowhere as members; a new chip family needs a rule in device-class.ts, and the ceiling tests show the share
   open:
     - options UI for the policy (task 11)
-    - GPU percentile strategy needs GPU in RatingInput
+    - year cutoff leaks pre-2019 generations because PassMark `date` is first seen on charts; needs a decision (generation-based cutoff?)
+    - umbrella GPU labels resolve only through the product's CPU (just-in-time step)
