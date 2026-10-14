@@ -1,0 +1,142 @@
+{
+  "items": [
+    {
+      "id": "206554424",
+      "title": "GMKtec EVO-X2 (Ryzen AI Max+ 395 / 64GB / 1TB)",
+      "categoryId": "3020",
+      "subheading": "Mini-PC",
+      "characteristics": [
+        "Mini-PC",
+        "AMD Ryzen AI Max+ 395",
+        "3 GHz",
+        "16-Core",
+        "64 GB RAM",
+        "DDR5",
+        "1.000 GB SSD-Speicher",
+        "AMD Radeon 8060S",
+        "Microsoft Windows 11 Professional"
+      ],
+      "href": "https://www.idealo.de/preisvergleich/OffersOfProduct/206554424_-evo-x2-ryzen-ai-max-395-64gb-1tb-gmktec.html",
+      "offerInfo": {
+        "offerCount": 3,
+        "usedOnly": false
+      },
+      "type": "PRODUCT",
+      "rawPrice": 2199
+    },
+    {
+      "id": "205489945",
+      "title": "Beelink SER8",
+      "categoryId": "3020",
+      "subheading": "Mini-PC",
+      "characteristics": ["Mini-PC", "3,8 GHz", "8-Core", "DDR5", "AMD Radeon 780M"],
+      "href": "https://www.idealo.de/preisvergleich/OffersOfProduct/205489945_-ser8-beelink.html",
+      "offerInfo": {
+        "offerCount": 7,
+        "usedOnly": false
+      },
+      "type": "PRODUCT",
+      "rawPrice": 669
+    },
+    {
+      "id": "213583112",
+      "title": "Apple Mac Studio M5 2026",
+      "categoryId": "3020",
+      "subheading": "Mini-PC",
+      "characteristics": ["Mini-PC"],
+      "href": "https://www.idealo.de/preisvergleich/OffersOfProduct/213583112_-mac-studio-m5-2026-apple.html",
+      "offerInfo": {
+        "offerCount": 160,
+        "usedOnly": false
+      },
+      "type": "PRODUCT",
+      "rawPrice": 2709.1
+    }
+  ],
+  "filterGroups": [
+    {
+      "id": "productType",
+      "name": "PC-Typ",
+      "filters": [
+        {
+          "id": "720310",
+          "name": "Mini-PC",
+          "pageUrl": "https://www.idealo.de/preisvergleich/ProductCategory/3020.html",
+          "hits": 3259
+        },
+        {
+          "id": "4487778",
+          "name": "Aufrüstkit",
+          "pageUrl": null,
+          "hits": 207
+        },
+        {
+          "id": "971768",
+          "name": "Barebone",
+          "pageUrl": null,
+          "hits": 113
+        }
+      ]
+    },
+    {
+      "id": "30158",
+      "name": "Grafikkarte",
+      "filters": [
+        {
+          "id": "10099749",
+          "name": "AMD Radeon 540X",
+          "pageUrl": null,
+          "hits": 2
+        },
+        {
+          "id": "106763265",
+          "name": "AMD Radeon 610M",
+          "pageUrl": null,
+          "hits": 10
+        },
+        {
+          "id": "104188472",
+          "name": "AMD Radeon 660M",
+          "pageUrl": null,
+          "hits": 6
+        }
+      ]
+    },
+    {
+      "id": "30159",
+      "name": "CPU-Typ",
+      "filters": [
+        {
+          "id": "9574331",
+          "name": "AMD Ryzen 3",
+          "pageUrl": null,
+          "hits": 13
+        },
+        {
+          "id": "9538722",
+          "name": "AMD Ryzen 5",
+          "pageUrl": null,
+          "hits": 146
+        },
+        {
+          "id": "9538723",
+          "name": "AMD Ryzen 7",
+          "pageUrl": null,
+          "hits": 160
+        }
+      ]
+    }
+  ],
+  "selectedFilters": [
+    {
+      "id": "720310",
+      "group": "PC-Typ",
+      "label": "Mini-PC"
+    }
+  ],
+  "metadata": {
+    "search": {
+      "resultCount": 3259
+    }
+  }
+}

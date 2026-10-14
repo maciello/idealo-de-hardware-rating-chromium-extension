@@ -1,11 +1,11 @@
 import { z } from "zod";
 import type { FilterCatalog } from "./catalog";
-import { type CategoryId, FilterIdSchema } from "./ids";
+import { type CategoryId, CategoryIdSchema, type FilterId, FilterIdSchema } from "./ids";
 
 /**
  * idealo's client-side search module: GET /csr/api/v2/modules/searchResult (same origin, JSON).
- * The page itself calls it on pagination, sorting and filter changes; page 0 is server-rendered (ADR 0008).
- * Only fields this package reads are parsed; unknown fields are dropped.
+ * The page calls it on pagination, sorting and filter changes; the server-rendered page embeds the
+ * same payload (readEmbeddedSearchResult). Only fields this package reads are parsed (ADR 0008).
  */
 export const SEARCH_RESULT_PATH = "/csr/api/v2/modules/searchResult";
 
@@ -39,6 +39,7 @@ const CsrItemSchema = z.object({
 const CsrResponseSchema = z.object({
   items: z.array(CsrItemSchema),
   filterGroups: z.array(CsrFilterGroupSchema).default([]),
+  selectedFilters: z.array(z.object({ id: numericString.pipe(FilterIdSchema) })).default([]),
   metadata: z.object({ search: z.object({ resultCount: count.nullish() }).nullish() }).nullish(),
 });
 
@@ -63,6 +64,8 @@ export interface SearchResultPage {
   readonly items: readonly ListingItem[];
   /** Filter groups with ids and hit counts for the current query; manufacturers arrive as group "manufacturer". */
   readonly catalog: FilterCatalog;
+  /** Filters active for this result, in page order. */
+  readonly selected: readonly FilterId[];
   readonly resultCount: number | null;
 }
 
@@ -95,29 +98,34 @@ export function parseSearchResult(json: unknown, categoryId: CategoryId): Search
       })),
       manufacturers: [],
     },
+    selected: response.selectedFilters.map((f) => f.id),
     resultCount: response.metadata?.search?.resultCount ?? null,
   };
 }
 
-export interface SearchResultRequest {
+export interface EmbeddedSearchResult {
   readonly categoryId: CategoryId;
-  readonly text?: string;
-  /** 0-based; omitted for the first page. */
-  readonly pageIndex?: number;
+  /** Raw module payload; pass to parseSearchResult. */
+  readonly json: unknown;
 }
 
-/** Same-origin URL of the module for a category (+ free text). Filters are not encoded: the multi-filter grammar is unobserved. */
-export function searchResultUrl(
-  request: SearchResultRequest,
-  origin = "https://www.idealo.de",
-): URL {
-  const url = new URL(SEARCH_RESULT_PATH, origin);
-  url.searchParams.set("categoryId", request.categoryId);
-  url.searchParams.set("locale", "de_DE");
-  if (request.pageIndex !== undefined && request.pageIndex > 0) {
-    url.searchParams.set("pageIndex", String(request.pageIndex));
-  }
-  if (request.text !== undefined && request.text !== "")
-    url.searchParams.set("query", request.text);
-  return url;
+const EMBEDDED_PAYLOAD = /window\.csr\.initialData\['searchResult'\]\s*=\s*"([A-Za-z0-9+/=]+)"/;
+const EMBEDDED_CATEGORY = /window\.csr\.initialData\['categoryId'\]\s*=\s*"(\d+)"/;
+
+const decodeBase64Utf8 = (base64: string): string =>
+  new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
+
+/**
+ * Reads the searchResult payload that listing pages inline as base64 in
+ * `window.csr.initialData['searchResult']`. `source` is the text of the inline script (or the whole
+ * document HTML). Returns null when the page carries no such payload; throws on a malformed one.
+ */
+export function readEmbeddedSearchResult(source: string): EmbeddedSearchResult | null {
+  const payload = EMBEDDED_PAYLOAD.exec(source)?.[1];
+  const category = EMBEDDED_CATEGORY.exec(source)?.[1];
+  if (payload === undefined || category === undefined) return null;
+  return {
+    categoryId: CategoryIdSchema.parse(category),
+    json: JSON.parse(decodeBase64Utf8(payload)),
+  };
 }

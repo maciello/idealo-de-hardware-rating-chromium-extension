@@ -26,9 +26,9 @@ export const ASSUMPTIONS = {
   "mcp.response-shape":
     "availableFilters and availableManufacturers sit at the root of the response object; ids may arrive as strings or integers; the response does not carry the category id.",
   "csr.search-result":
-    "GET /csr/api/v2/modules/searchResult?categoryId&locale=de_DE[&pageIndex][&query] returns items, filterGroups and metadata (HAR 2026-10-14); page 0 of a listing is server-rendered and does not call it.",
+    "GET /csr/api/v2/modules/searchResult?categoryId&locale=de_DE[&pageIndex][&query] returns items, filterGroups, selectedFilters and metadata (HAR 2026-10-14). Server-rendered listing pages do not call it but inline the same payload as base64 in window.csr.initialData['searchResult'], next to initialData['categoryId'] (5 categories).",
   "csr.filter-ids":
-    "filterGroups[].filters[].id is the value the module accepts as filters=<id> (observed for single filters); equality with web F-ids is unverified.",
+    "filterGroups[].filters[].id is the web F-id: filters=953430 maps to ProductCategory/3020F953430.html via /mvc/metadata browserUrl (HAR 2026-10-14). Multi-filter encoding is unobserved.",
   "csr.manufacturer-group":
     "Manufacturers arrive as filter group id 'manufacturer' whose filter ids work in filters=; they carry no manufacturerId, so catalog.manufacturers stays empty.",
 } as const;

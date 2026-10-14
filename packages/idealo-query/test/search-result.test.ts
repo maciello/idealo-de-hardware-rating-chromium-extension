@@ -4,8 +4,11 @@ import {
   filterId,
   indexCatalog,
   parseSearchResult,
-  searchResultUrl,
+  readEmbeddedSearchResult,
 } from "../src/index";
+import miniPcFixture from "./fixtures/embedded-search-result.minipc.trimmed.json" with {
+  type: "json",
+};
 import fixture from "./fixtures/search-result.trimmed.json" with { type: "json" };
 
 /** Trimmed from a real response (HAR 2026-10-14, Notebooks, query "laptop 32GB", pageIndex 2). */
@@ -60,11 +63,55 @@ describe("parseSearchResult", () => {
   });
 });
 
-describe("searchResultUrl", () => {
-  it("builds the module URL the page itself requests", () => {
-    const url = searchResultUrl({ categoryId: NOTEBOOKS, text: "laptop 32GB", pageIndex: 2 });
-    expect(url.origin + url.pathname).toBe("https://www.idealo.de/csr/api/v2/modules/searchResult");
-    expect(url.search).toBe("?categoryId=3751&locale=de_DE&pageIndex=2&query=laptop+32GB");
-    expect(searchResultUrl({ categoryId: NOTEBOOKS }).search).toBe("?categoryId=3751&locale=de_DE");
+/** Inline script as served on a listing page (shape from 5 HAR documents, 2026-10-14). */
+const inlineScript = (payload: unknown, category = "3020"): string => {
+  const base64 = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload))));
+  return [
+    "window.csr = window.csr || {};",
+    "window.csr.initialData = window.csr.initialData || {};",
+    `window.csr.initialData['categoryId'] = "${category}";`,
+    `window.csr.initialData['searchResultId'] = "03b5f915";`,
+    `window.csr.initialData['searchResult'] = "${base64}";`,
+  ].join("");
+};
+
+describe("readEmbeddedSearchResult", () => {
+  /** Trimmed from the page-0 payload of Mini-PC (ProductCategory/3020F720310.html). */
+  const embedded = readEmbeddedSearchResult(inlineScript(miniPcFixture));
+
+  it("decodes the base64 payload (UTF-8) and the category id", () => {
+    expect(embedded?.categoryId).toBe("3020");
+    const page = parseSearchResult(embedded?.json, categoryId("3020"));
+    expect(page.items.map((item) => item.title)).toEqual([
+      "GMKtec EVO-X2 (Ryzen AI Max+ 395 / 64GB / 1TB)",
+      "Beelink SER8",
+      "Apple Mac Studio M5 2026",
+    ]);
+    expect(page.catalog.groups.map((g) => g.name)).toEqual(["PC-Typ", "Grafikkarte", "CPU-Typ"]);
+    expect(page.catalog.groups[0]?.filters[1]).toEqual({
+      filterId: "4487778",
+      label: "Aufrüstkit",
+      count: 207,
+    });
+  });
+
+  it("reports the active filters", () => {
+    expect(parseSearchResult(embedded?.json, categoryId("3020")).selected).toEqual(["720310"]);
+    expect(parseSearchResult(json, NOTEBOOKS).selected).toEqual([]);
+  });
+
+  it("keeps tiles whose spec line names no CPU (title and Jev must cover them)", () => {
+    const page = parseSearchResult(embedded?.json, categoryId("3020"));
+    expect(page.items[1]?.characteristics).toEqual([
+      "Mini-PC",
+      "3,8 GHz",
+      "8-Core",
+      "DDR5",
+      "AMD Radeon 780M",
+    ]);
+  });
+
+  it("returns null for pages without the payload", () => {
+    expect(readEmbeddedSearchResult("window.csr = window.csr || {};")).toBeNull();
   });
 });

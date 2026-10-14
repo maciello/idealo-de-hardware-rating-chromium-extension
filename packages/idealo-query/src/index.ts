@@ -29,13 +29,13 @@ export {
   type SortKey,
 } from "./model";
 export {
+  type EmbeddedSearchResult,
   type ListingItem,
   type ListingItemKind,
   parseSearchResult,
+  readEmbeddedSearchResult,
   SEARCH_RESULT_PATH,
   type SearchResultPage,
-  type SearchResultRequest,
-  searchResultUrl,
 } from "./search-result";
 export {
   addFilters,

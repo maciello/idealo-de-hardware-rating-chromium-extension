@@ -37,14 +37,24 @@ adr.0008:
         - "GET /mvc/metadata/category/<cat>?pageIndex&filters&query&... -> {browserUrl} (web URL for a filter/page state)"
         - "web paging: ProductCategory/3751I16-<15*pageIndex>.html"
       capture_gap: extension captures ran without pagination, so searchResult never fired; filter widened anyway (any idealo host, JSON by parse)
+    - id: har-2026-10-14-categories
+      source: user HARs (sanitized) of ProductCategory 3020 (PC-System; Gaming/Mini/Office-PC toggles), 3020F720310 (Mini-PC), 3020F1016264 (Workstation), 19116 (Handy), plus the 3751 search document
+      observed:
+        - "every server-rendered listing inlines the full searchResult payload: window.csr.initialData['searchResult'] = \"<base64 UTF-8 JSON>\", with initialData['categoryId']; same shape as the XHR (items, filterGroups, selectedFilters, metadata, ...) plus sessionInfo (opaque string, never stored)"
+        - "searchResult filters=<id> equals the web F-id: filters=953430 -> /mvc/metadata browserUrl ProductCategory/3020F953430.html"
+        - "client-side filter toggles fire searchResult + /mvc/metadata + /mvc/resultmetadata + /cn/data/* per change; full navigations (F-id URLs, paging links) re-render server-side"
+        - "filterGroups are capped at 100 filters per group (Prozessor, Hersteller)"
+        - "Mini-PC page 0: 12/36 PRODUCT tiles name no CPU in characteristics (e.g. Beelink SER8: '3,8 GHz ; 8-Core'); Apple tiles name 'Apple M6' etc."
+      capture_note: DevTools drops its log on full navigation unless 'Preserve log' is set, so each HAR holds one document; the extension capture ring persists across navigations
   decision_update:
-    listing_tiles: DOM adapter over SSR tile markup for every page (client-rendered pages reuse the same component); no request needed
-    filter_catalog: parseSearchResult (packages/idealo-query) on tapped searchResult responses; on page 0, one same-origin GET via searchResultUrl only on explicit user action (opening the filter builder)
-    no_extra_requests_to_idealo: relaxed to "at most one searchResult GET per user action"
+    listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
+    filter_catalog: parseSearchResult over readEmbeddedSearchResult (packages/idealo-query) of the current document; tapped searchResult responses only in capture mode
+    no_extra_requests_to_idealo: true (the embedded payload makes the planned page-0 GET unnecessary)
+    capture_tap: debug only; records idealo hosts only so the 300-entry ring spans more pages
   unknowns:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
-    - whether searchResult answers without the page's sessioninfoencrypted header
-    - multi-filter encoding of searchResult filters= and equality of its ids with web F-ids
+    - multi-filter encoding of searchResult filters= (web URL form is F<id>-F<id>, unverified for the module)
+    - how idealo exposes filters beyond the 100-per-group cap
     - DOM location of spec table (Prozessor/Grafikkarte) on product pages (text shape known from fixture captiva-r10-1257ge.spec.txt)
     - valid price-chart period values besides 3M
     - meaning of opaque URL suffix like "oE0oJ1"
