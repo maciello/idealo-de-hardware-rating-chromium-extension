@@ -2,10 +2,9 @@ import { createAiTestService, probeDecider } from "../src/ai/ai-test-service";
 import { storageKeyProvider } from "../src/ai/key-provider";
 import { createOpenRouterService } from "../src/ai/openrouter-service";
 import { createTapRegistrar } from "../src/capture/tap-registration";
-import { installGlobalErrorReporting, recordError } from "../src/diagnostics/error-log";
-import { onMessage } from "../src/messaging";
-import { aiTestResultItem } from "../src/storage/ai-test-result";
-import { captureModeItem } from "../src/storage/items";
+import { installGlobalErrorReporting, recordError } from "../src/platform/errors";
+import { onMessage } from "../src/platform/messaging";
+import { aiTestResultItem, captureModeItem } from "../src/platform/storage";
 
 export default defineBackground(() => {
   installGlobalErrorReporting("background");

@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { installGlobalErrorReporting } from "../../src/diagnostics/error-log";
+import { installGlobalErrorReporting } from "../../src/platform/errors";
 import { PopupApp } from "../../src/popup/PopupApp";
 import { createHwTheme, tokenCss } from "../../src/ui";
 

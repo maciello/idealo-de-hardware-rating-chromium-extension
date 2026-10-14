@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { basicTimestamp, downloadJson, exportFilename } from "../src/ui/download";
+import { basicTimestamp, downloadJson, exportFilename } from "../../src/platform/download";
 
 const AT = new Date("2026-10-14T13:38:58.123Z");
 

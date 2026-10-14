@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-/** Structural slice of a WxtStorageItem, so options code is independent of its metadata type. */
+/** Structural slice of a WxtStorageItem, so callers are independent of its metadata type. */
 export interface StoredItem<T> {
   getValue(): Promise<T>;
   setValue(value: T): Promise<void>;

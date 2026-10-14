@@ -1,12 +1,11 @@
 import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import type { ReactNode } from "react";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
-import { recordError } from "../diagnostics/error-log";
-import type { InspectedItem, PageInspection } from "../diagnostics/page-report";
-import type { PageStats } from "../messaging";
-import { sendMessage } from "../messaging";
+import type { InspectedItem, PageInspection, PageStats } from "../contracts";
 import type { PageAdapter } from "../page/adapter";
 import { listingFormFactor, productFormFactor } from "../page/device-class";
+import { recordError } from "../platform/errors";
+import { sendMessage } from "../platform/messaging";
 import {
   cohortPolicyItem,
   cpuSnapshotItem,
@@ -16,7 +15,7 @@ import {
   loadGpuSnapshot,
   loadSettings,
   settingsItem,
-} from "../storage/items";
+} from "../platform/storage";
 import { type ChipHost, type ChipPlacement, mountChipHost } from "../ui/chip-host";
 import type { Overlay } from "../ui/host";
 import {

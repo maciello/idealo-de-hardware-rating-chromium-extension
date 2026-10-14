@@ -1,12 +1,19 @@
 import { passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { recordError } from "../src/diagnostics/error-log";
+import type { PageReport } from "../src/contracts";
 import { collectDebugReport } from "../src/diagnostics/export";
-import type { PageReport } from "../src/diagnostics/page-report";
-import { aiTestResultItem } from "../src/storage/ai-test-result";
-import { captureModeItem, cpuSnapshotItem, settingsItem } from "../src/storage/items";
-import { openrouterKeyItem, saveOpenRouterCredentials } from "../src/storage/openrouter-key";
+import { recordError } from "../src/platform/errors";
+import {
+  aiTestResultItem,
+  captureModeItem,
+  cpuSnapshotItem,
+  settingsItem,
+} from "../src/platform/storage";
+import {
+  openrouterKeyItem,
+  saveOpenRouterCredentials,
+} from "../src/platform/storage/openrouter-key";
 
 const KEY = "sk-or-v1-0123456789abcdef";
 const SESSION = ["session", "Info"].join("");
@@ -24,7 +31,7 @@ const pageReport: PageReport = {
 };
 
 const answer = vi.hoisted(() => ({ page: undefined as unknown }));
-vi.mock("../src/messaging", () => ({
+vi.mock("../src/platform/messaging", () => ({
   sendMessage: vi.fn(async () => {
     if (answer.page === undefined) throw new Error("no receiver");
     return answer.page;

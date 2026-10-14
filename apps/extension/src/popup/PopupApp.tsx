@@ -8,19 +8,29 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { captureRing } from "../capture/ring";
-import { recordError } from "../diagnostics/error-log";
-import { exportDebugReport } from "../diagnostics/export";
-import { type PageStats, sendMessage } from "../messaging";
-import { useStorageItem } from "../options/use-storage-item";
-import { resolveEnabledStrategyIds } from "../ratings/engine";
-import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
-import { captureModeItem, cpuSnapshotItem, gpuSnapshotItem, settingsItem } from "../storage/items";
+import type { PageStats } from "../contracts";
 import {
+  CpuSnapshotSchema,
+  GpuSnapshotSchema,
   NOT_CONNECTED,
   OpenRouterStatusSchema,
+  SettingsSchema,
+} from "../contracts";
+import { exportDebugReport } from "../diagnostics/export";
+import { downloadJson } from "../platform/download";
+import { recordError } from "../platform/errors";
+import { sendMessage } from "../platform/messaging";
+import {
+  captureModeItem,
+  cpuSnapshotItem,
+  gpuSnapshotItem,
   openrouterStatusItem,
-} from "../storage/openrouter-status";
-import { CpuSnapshotSchema, GpuSnapshotSchema, SettingsSchema } from "../storage/schemas";
+  settingsItem,
+} from "../platform/storage";
+import { useStorageItem } from "../platform/storage/use-storage-item";
+import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
+import { resolveEnabledStrategyIds } from "../ratings/engine";
+import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
 import {
   formatInteger,
   formatMegabytes,
@@ -29,10 +39,6 @@ import {
   MutedText,
   StatusNote,
 } from "../ui";
-import { downloadJson } from "../ui/download";
-import { findTargetTab, type TargetTab } from "./target-tab";
-
-const openOptions = (): void => void browser.runtime.openOptionsPage();
 
 function useRecord<T>(
   value: unknown,
@@ -317,7 +323,7 @@ export function PopupApp() {
     if (tab === null) return;
     try {
       await sendMessage("openFilterBuilder", undefined, tab.id);
-      await browser.tabs.update(tab.id, { active: true });
+      await activateTab(tab.id);
       window.close();
     } catch {
       setStats(null);

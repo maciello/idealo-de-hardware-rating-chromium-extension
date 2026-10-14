@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { buildPageReport, type PageInspection } from "../src/diagnostics/page-report";
+import type { PageInspection } from "../src/contracts";
+import { buildPageReport } from "../src/diagnostics/page-report";
 import { embeddedStatus } from "../src/page/embedded-listing";
 import { idealoAdapter } from "../src/page/idealo-adapter";
 import ssrHtml from "./fixtures/listing.idealo-ssr.html?raw";

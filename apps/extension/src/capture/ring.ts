@@ -1,4 +1,5 @@
 import { storage } from "@wxt-dev/storage";
+import { withLock } from "../platform/locks";
 import { type CapturedResponse, CapturedResponseSchema, RING_CAPACITY } from "./protocol";
 
 type SlotKey = `local:capture:${number}`;
@@ -7,11 +8,8 @@ const slotKey = (sequence: number): SlotKey => `local:capture:${sequence % RING_
 const headItem = storage.defineItem<number>("local:captureHead", { fallback: 0, version: 1 });
 
 /** Serialises read-modify-write of the head counter across tabs (all idealo tabs share one origin). */
-async function withLock<T>(task: () => Promise<T>): Promise<T> {
-  return globalThis.navigator?.locks
-    ? await navigator.locks.request("idealo-hw-capture-ring", task)
-    : task();
-}
+const withRingLock = <T>(task: () => Promise<T>): Promise<T> =>
+  withLock("idealo-hw-capture-ring", task);
 
 /**
  * Ring buffer of captured responses, one storage key per slot so an append rewrites one entry
@@ -19,7 +17,7 @@ async function withLock<T>(task: () => Promise<T>): Promise<T> {
  */
 export const captureRing = {
   append: (entry: CapturedResponse): Promise<void> =>
-    withLock(async () => {
+    withRingLock(async () => {
       const head = await headItem.getValue();
       await storage.setItem(slotKey(head), entry);
       await headItem.setValue(head + 1);
@@ -45,7 +43,7 @@ export const captureRing = {
   watch: (callback: () => void) => headItem.watch(callback),
 
   clear: (): Promise<void> =>
-    withLock(async () => {
+    withRingLock(async () => {
       const keys = Array.from({ length: RING_CAPACITY }, (_, i) => slotKey(i));
       await storage.removeItems(keys);
       await headItem.removeValue();

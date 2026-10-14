@@ -1,11 +1,16 @@
 import { type CohortPolicy, CohortPolicySchema } from "@idealo-hw/hw-bench";
 import { z } from "zod";
-import { type AiTestResult, AiTestResultSchema } from "../storage/ai-test-result";
-import type { CpuSnapshot, GpuSnapshot } from "../storage/items";
-import type { OpenRouterStatus } from "../storage/openrouter-status";
-import type { Settings } from "../storage/schemas";
-import { type ErrorEntry, ErrorEntrySchema } from "./error-log";
-import { type PageReport, PageReportSchema } from "./page-report";
+import {
+  type AiTestResult,
+  AiTestResultSchema,
+  type CpuSnapshot,
+  type GpuSnapshot,
+  type OpenRouterStatus,
+  type PageReport,
+  PageReportSchema,
+  type Settings,
+} from "../contracts";
+import { type ErrorEntry, ErrorEntrySchema } from "../platform/errors";
 
 const DataStatusSchema = z.object({
   records: z.number().int().nonnegative(),

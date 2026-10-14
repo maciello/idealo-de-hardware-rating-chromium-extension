@@ -1,6 +1,6 @@
 import { TapMessageSchema } from "../src/capture/protocol";
 import { captureRing } from "../src/capture/ring";
-import { captureModeItem } from "../src/storage/items";
+import { captureModeItem } from "../src/platform/storage";
 
 export default defineContentScript({
   matches: ["https://www.idealo.de/*"],

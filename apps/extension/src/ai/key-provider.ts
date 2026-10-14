@@ -1,4 +1,4 @@
-import { loadOpenRouterCredentials } from "../storage/openrouter-key";
+import { loadOpenRouterCredentials } from "../platform/storage/openrouter-key";
 
 /**
  * Port for whoever needs the OpenRouter key (the future Jev decider adapter). BACKGROUND ONLY:

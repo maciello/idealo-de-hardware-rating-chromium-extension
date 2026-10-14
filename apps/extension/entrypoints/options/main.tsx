@@ -3,8 +3,8 @@ import "@mantine/dropzone/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { installGlobalErrorReporting } from "../../src/diagnostics/error-log";
 import { OptionsApp } from "../../src/options/OptionsApp";
+import { installGlobalErrorReporting } from "../../src/platform/errors";
 
 installGlobalErrorReporting("options");
 

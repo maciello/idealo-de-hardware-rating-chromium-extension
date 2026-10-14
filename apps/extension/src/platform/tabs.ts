@@ -22,3 +22,11 @@ export async function findTargetTab(): Promise<TargetTab | null> {
   const [active] = await browser.tabs.query({ active: true, currentWindow: true });
   return active ? idealoTab(active) : null;
 }
+
+/** Opens the options page; content scripts ask the background to do it (`openOptions` message). */
+export const openOptions = (): void => void browser.runtime.openOptionsPage();
+
+/** Brings a tab to the front of its window. */
+export const activateTab = async (tabId: number): Promise<void> => {
+  await browser.tabs.update(tabId, { active: true });
+};

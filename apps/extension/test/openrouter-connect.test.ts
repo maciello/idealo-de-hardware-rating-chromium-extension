@@ -3,17 +3,14 @@ import { fakeBrowser } from "wxt/testing/fake-browser";
 import { storageKeyProvider } from "../src/ai/key-provider";
 import { type ConnectDeps, connectOpenRouter } from "../src/ai/openrouter-connect";
 import { createOpenRouterService, isExtensionPage } from "../src/ai/openrouter-service";
+import { NOT_CONNECTED } from "../src/contracts";
+import { loadOpenRouterStatus, openrouterStatusItem } from "../src/platform/storage";
 import {
   clearOpenRouterCredentials,
   loadOpenRouterCredentials,
   openrouterKeyItem,
   saveOpenRouterCredentials,
-} from "../src/storage/openrouter-key";
-import {
-  loadOpenRouterStatus,
-  NOT_CONNECTED,
-  openrouterStatusItem,
-} from "../src/storage/openrouter-status";
+} from "../src/platform/storage/openrouter-key";
 
 const REDIRECT = "https://abcdefghijklmnopabcdefghijklmnop.chromiumapp.org/";
 const EXTENSION_BASE = "chrome-extension://abcdefghijklmnopabcdefghijklmnop/";

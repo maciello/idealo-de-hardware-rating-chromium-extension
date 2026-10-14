@@ -1,15 +1,11 @@
 import { Alert, Badge, Button, Card, Group, Stack, Text, Title } from "@mantine/core";
 import { IconCheck, IconFlask, IconLink, IconLinkOff, IconX } from "@tabler/icons-react";
 import { useState } from "react";
-import { recordError } from "../diagnostics/error-log";
-import { sendMessage } from "../messaging";
-import { AiTestResultSchema, aiTestResultItem } from "../storage/ai-test-result";
-import {
-  NOT_CONNECTED,
-  OpenRouterStatusSchema,
-  openrouterStatusItem,
-} from "../storage/openrouter-status";
-import { useStorageItem } from "./use-storage-item";
+import { AiTestResultSchema, NOT_CONNECTED, OpenRouterStatusSchema } from "../contracts";
+import { recordError } from "../platform/errors";
+import { sendMessage } from "../platform/messaging";
+import { aiTestResultItem, openrouterStatusItem } from "../platform/storage";
+import { useStorageItem } from "../platform/storage/use-storage-item";
 
 export function OpenRouterCard() {
   const [stored] = useStorageItem(openrouterStatusItem);

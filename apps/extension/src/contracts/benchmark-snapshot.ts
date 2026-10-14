@@ -5,6 +5,9 @@ import type {
 } from "@idealo-hw/hw-bench";
 import { z } from "zod";
 
+export type CpuSnapshot = BenchmarkSnapshot<CpuBenchmarkRecord>;
+export type GpuSnapshot = BenchmarkSnapshot<GpuBenchmarkRecord>;
+
 const nullableNumber = z.number().nullable();
 const releaseDate = z.object({ year: z.number(), month: z.number() }).nullable();
 
@@ -56,19 +59,5 @@ const snapshotSchema = <R extends z.ZodType>(kind: "cpu" | "gpu", record: R) =>
   });
 
 /** Stored snapshots are re-validated on read: storage is a trust boundary (older versions, manual edits). */
-export const CpuSnapshotSchema: z.ZodType<BenchmarkSnapshot<CpuBenchmarkRecord>> = snapshotSchema(
-  "cpu",
-  CpuRecordSchema,
-);
-export const GpuSnapshotSchema: z.ZodType<BenchmarkSnapshot<GpuBenchmarkRecord>> = snapshotSchema(
-  "gpu",
-  GpuRecordSchema,
-);
-
-export const SettingsSchema = z.object({
-  /** Ids of hw-bench strategies that render in badges. */
-  enabledStrategyIds: z.array(z.string()),
-  /** Strategy whose value is the chip's headline number; absent = multi-thread score. */
-  primaryStrategyId: z.string().optional(),
-});
-export type Settings = z.infer<typeof SettingsSchema>;
+export const CpuSnapshotSchema: z.ZodType<CpuSnapshot> = snapshotSchema("cpu", CpuRecordSchema);
+export const GpuSnapshotSchema: z.ZodType<GpuSnapshot> = snapshotSchema("gpu", GpuRecordSchema);

@@ -1,5 +1,9 @@
-import { clearOpenRouterCredentials, saveOpenRouterCredentials } from "../storage/openrouter-key";
-import { type ConnectDeps, type ConnectResult, connectOpenRouter } from "./openrouter-connect";
+import type { ConnectResult } from "../contracts";
+import {
+  clearOpenRouterCredentials,
+  saveOpenRouterCredentials,
+} from "../platform/storage/openrouter-key";
+import { type ConnectDeps, connectOpenRouter } from "./openrouter-connect";
 
 export interface ServiceEnv {
   redirectUrl: string;

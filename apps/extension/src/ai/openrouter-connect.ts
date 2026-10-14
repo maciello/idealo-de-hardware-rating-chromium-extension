@@ -1,16 +1,10 @@
-import type { OpenRouterStatus } from "../storage/openrouter-status";
+import type { ConnectResult, OpenRouterStatus } from "../contracts";
 import {
   buildAuthorizationUrl,
   createPkce,
   exchangeCodeForKey,
-  type OAuthError,
   parseCallbackUrl,
 } from "./openrouter-oauth";
-
-/** What the background reports to the options page. Never carries the key. */
-export type ConnectResult =
-  | { ok: true; status: OpenRouterStatus }
-  | { ok: false; error: OAuthError };
 
 export interface ConnectDeps {
   /** `browser.identity.getRedirectURL()`, i.e. https://<extension-id>.chromiumapp.org/ */

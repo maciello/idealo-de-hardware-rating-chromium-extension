@@ -1,19 +1,19 @@
-import { sendMessage } from "../messaging";
-import type { TargetTab } from "../popup/target-tab";
-import { resolveEnabledStrategyIds } from "../ratings/engine";
-import { loadAiTestResult } from "../storage/ai-test-result";
+import { type PageReport, PageReportSchema } from "../contracts";
+import { downloadJson } from "../platform/download";
+import { readErrorLog } from "../platform/errors";
+import { sendMessage } from "../platform/messaging";
 import {
   captureModeItem,
+  loadAiTestResult,
   loadCohortPolicy,
   loadCpuSnapshot,
   loadGpuSnapshot,
+  loadOpenRouterStatus,
   loadSettings,
-} from "../storage/items";
-import { loadOpenRouterStatus } from "../storage/openrouter-status";
-import { downloadJson } from "../ui/download";
+} from "../platform/storage";
+import type { TargetTab } from "../platform/tabs";
+import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { buildDebugReport, type DebugReport } from "./debug-report";
-import { readErrorLog } from "./error-log";
-import { type PageReport, PageReportSchema } from "./page-report";
 
 async function readPage(
   tab: TargetTab | null,
