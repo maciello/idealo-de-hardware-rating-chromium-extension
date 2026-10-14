@@ -21,6 +21,7 @@ adr.0018:
       params: "SignalParamsById maps each signal id to the exact figures its sentence needs (null when the id says it all)"
       evidence: "{field, value} with value a union: quantity with a unit, wifi or usb generation, year, ram type label, storage kind, os kind, video outputs, yes/no answer, tdp source"
       ids: unchanged
+    query_description: idealo-query describeQuery returns the structure only (groups, manufacturers, unknown ids, price, sort, text, offset); the filters feature writes the summary lines (view-model/summary.ts, copy.ts)
     wording:
       owner: the extension feature that shows the data (features/ratings/copy/*, view-model/rating-text, view-model/signals)
       numbers: apps/extension/src/ui/format (de-DE)
