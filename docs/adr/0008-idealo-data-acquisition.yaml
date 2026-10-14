@@ -4,7 +4,7 @@ adr.0008:
   date: 2026-10-14
   decision:
     extension:
-      sources_ranked: [SSR JSON/ld+json, DOM, MAIN-world fetch/XHR tap (debug only)]
+      sources_ranked: [embedded searchResult payload (window.csr.initialData), DOM, MAIN-world fetch/XHR tap (debug only)]
       capture_mode: records idealo JSON responses (url, status, body) to local storage; exportable as file
       network_tap: registered at runtime only while capture_mode is on (page fetch/XHR stay native otherwise)
       page_snapshot: popup exports document HTML of the active tab -> ground truth for listing/product/FilterCatalog adapters
@@ -48,7 +48,7 @@ adr.0008:
       capture_note: DevTools drops its log on full navigation unless 'Preserve log' is set, so each HAR holds one document; the extension capture ring persists across navigations
   decision_update:
     listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
-    filter_catalog: parseSearchResult over readEmbeddedSearchResult (packages/idealo-query) of the current document; tapped searchResult responses only in capture mode
+    filter_catalog: parseSearchResult over readEmbeddedSearchResult (packages/idealo-query) of the current document, then the DOM link catalog; after client-side filter changes the payload is stale but its F-ids stay valid
     no_extra_requests_to_idealo: true (the embedded payload makes the planned page-0 GET unnecessary)
     capture_tap: debug only; records idealo hosts only so the 300-entry ring spans more pages
   unknowns:
