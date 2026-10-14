@@ -127,3 +127,83 @@ describe("createRatingEngine cohort policy", () => {
     expect(percentile()).not.toBe(percentile({ yearCutoff: { kind: "none" }, minScore: null }));
   });
 });
+
+describe("createRatingEngine device class", () => {
+  const classRow = (id: number, name: string, cpumark: string, cat: string) => ({
+    ...row(id, name, cpumark),
+    cat,
+  });
+  const classes = passmarkCpuSource.parse(
+    JSON.stringify({
+      data: [
+        classRow(1, "AMD Ryzen AI 7 445", "25,000", "Desktop"),
+        classRow(2, "Intel Core i5-1235U", "9,000", "Laptop"),
+        classRow(3, "Intel Core i7-13700H", "12,000", "Laptop"),
+        classRow(4, "Intel Core i9-13900HX", "20,000", "Laptop"),
+        classRow(5, "AMD Ryzen 5 7640U", "11,000", "Laptop"),
+        classRow(6, "Intel Core i5-12400", "19,000", "Desktop"),
+        classRow(7, "AMD Ryzen 7 7700X", "34,000", "Desktop"),
+        classRow(8, "AMD Ryzen 9 7950X", "62,000", "Desktop"),
+        classRow(9, "Intel Core i9-14900K", "59,000", "Desktop"),
+        classRow(10, "Intel Celeron N5095 @ 2.00GHz", "4,000", "Desktop"),
+      ],
+    }),
+  );
+  const engine = createRatingEngine(classes, ["segment_percentile"], {
+    yearCutoff: { kind: "none" },
+    minScore: null,
+  });
+  const rate = (formFactor?: "laptop" | "desktop" | "unknown") => {
+    const [result] = engine.rate([
+      { title: "Ryzen AI 7 445 Notebook", text: "AMD Ryzen AI 7 445", formFactor },
+    ]);
+    if (result?.status !== "matched") throw new Error("expected a match");
+    return result;
+  };
+
+  it("ranks a CPU that PassMark files as Desktop against laptop CPUs on a laptop page", () => {
+    const laptop = rate("laptop");
+    expect(laptop.formFactor).toBe("laptop");
+    expect(laptop.ratings[0]?.explanation).toContain("laptop CPUs");
+    expect(laptop.ratings[0]?.value).toBeGreaterThan(rate("desktop").ratings[0]?.value ?? 100);
+  });
+
+  it("ranks it against desktop CPUs on a desktop page", () => {
+    const desktop = rate("desktop");
+    expect(desktop.formFactor).toBe("desktop");
+    expect(desktop.ratings[0]?.explanation).toContain("desktop CPUs");
+  });
+
+  it("falls back to the CPU's own PassMark segment without a device class", () => {
+    const unknown = rate();
+    expect(unknown.formFactor).toBe("unknown");
+    expect(unknown.ratings[0]?.explanation).toContain("desktop CPUs");
+    expect(unknown.ratings[0]?.value).toBe(rate("desktop").ratings[0]?.value);
+  });
+
+  it("reads the CPU from a bare model token and says how it matched", () => {
+    const [result] = engine.rate([
+      {
+        title: "Budget Laptop",
+        text: "15,6 Zoll, N5095-CPU, 32 GB RAM, 1TB SSD",
+        formFactor: "laptop",
+      },
+    ]);
+    expect(result?.status).toBe("matched");
+    expect(result?.status === "matched" && result.via).toBe("model_token");
+    expect(result?.status === "matched" && result.record.name).toBe(
+      "Intel Celeron N5095 @ 2.00GHz",
+    );
+  });
+
+  it("prefers a spec fragment that names the CPU over a title that only hints at one", () => {
+    const [result] = engine.rate([
+      {
+        title: "Notebook 7700X Edition",
+        text: "Gaming Notebook, Intel Core i7-13700H, 32 GB RAM",
+        formFactor: "laptop",
+      },
+    ]);
+    expect(result?.status === "matched" && result.record.name).toBe("Intel Core i7-13700H");
+  });
+});

@@ -89,6 +89,24 @@
       "secondaryLogicals": "1",
       "rank": 60,
       "samples": "300"
+    },
+    {
+      "id": "9206",
+      "name": "AMD Ryzen 5 7600X",
+      "cpumark": "27,000",
+      "thread": "4,200",
+      "tdp": "105",
+      "price": "NA",
+      "date": "Sep 2022",
+      "socket": "AM5",
+      "cat": "Desktop",
+      "cpuCount": 1,
+      "cores": "6",
+      "logicals": "2",
+      "secondaryCores": "0",
+      "secondaryLogicals": "0",
+      "rank": 80,
+      "samples": "400"
     }
   ]
 }

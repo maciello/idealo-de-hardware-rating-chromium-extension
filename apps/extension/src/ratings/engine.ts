@@ -4,7 +4,8 @@ import {
   type CpuBenchmarkRecord,
   createCanonicalKeyMatcher,
   createStrategies,
-  extractCpuIdentity,
+  type FormFactor,
+  type FreeTextMatchResult,
   type Rating,
   type RatingStrategy,
 } from "@idealo-hw/hw-bench";
@@ -13,13 +14,17 @@ export interface RatingQuery {
   title: string;
   text: string;
   priceEur?: number | undefined;
+  /** Device class of the page the item sits on; ranks the CPU against laptop or desktop CPUs. */
+  formFactor?: FormFactor | undefined;
 }
 
 export type ItemRating =
   | {
       status: "matched";
       record: CpuBenchmarkRecord;
-      via: "exact" | "normalized";
+      via: "exact" | "normalized" | "model_token";
+      /** Device class the ratings were computed for; names the comparison group on the chip. */
+      formFactor: FormFactor;
       ratings: readonly Rating[];
       /** Position among the matched products of the same page (1 = fastest); null below two peers. */
       pageRank: PageRank | null;
@@ -67,6 +72,25 @@ const pageRankOf = (cpuMark: number, peers: readonly { cpuMark: number }[]): Pag
 const priceOf = (query: RatingQuery | undefined): { priceEur?: number } =>
   query?.priceEur === undefined ? {} : { priceEur: query.priceEur };
 
+type CpuMatch = FreeTextMatchResult<CpuBenchmarkRecord>;
+
+const NO_MATCH: CpuMatch = { status: "no_match" };
+
+/** A match through a bare model token is the weakest evidence; ambiguity from a real name beats it. */
+const strength = (match: CpuMatch): number => {
+  if (match.status === "matched") return match.via === "model_token" ? 1 : 3;
+  return match.status === "ambiguous" ? 2 : 0;
+};
+
+/** Tile spec fragments ("Intel Core i5-10210U", "32 GB RAM") or datasheet lines; free text stays one piece. */
+const fragmentsOf = (text: string): string[] =>
+  text
+    .split(/\n|,\s+/)
+    .map((fragment) => fragment.trim())
+    .filter((fragment) => fragment !== "");
+
+const formFactorOf = (query: RatingQuery | undefined): FormFactor => query?.formFactor ?? "unknown";
+
 export interface RatingEngine {
   rate(queries: readonly RatingQuery[]): ItemRating[];
 }
@@ -89,8 +113,14 @@ export function createRatingEngine(
   return {
     rate(queries) {
       const matches = queries.map(({ title, text }) => {
-        const identity = extractCpuIdentity(title) ?? extractCpuIdentity(text);
-        return identity === null ? ({ status: "no_match" } as const) : matcher.match(identity);
+        // Spec fragments name the CPU more reliably than a marketing title; the title is the fallback.
+        let best = NO_MATCH;
+        for (const source of [...fragmentsOf(text), title]) {
+          const found = matcher.matchText(source);
+          if (strength(found) > strength(best)) best = found;
+          if (strength(best) === 3) break;
+        }
+        return best;
       });
       const peers = matches.flatMap((match, i) =>
         match.status === "matched"
@@ -100,13 +130,19 @@ export function createRatingEngine(
       return matches.map((match, i): ItemRating => {
         if (match.status !== "matched") return match;
         const ratings = strategies.flatMap((strategy) => {
-          const rating = strategy.rate({ cpu: match.record, ...priceOf(queries[i]), peers });
+          const rating = strategy.rate({
+            cpu: match.record,
+            ...priceOf(queries[i]),
+            peers,
+            formFactor: formFactorOf(queries[i]),
+          });
           return rating === null ? [] : [rating];
         });
         return {
           status: "matched",
           record: match.record,
           via: match.via,
+          formFactor: formFactorOf(queries[i]),
           ratings,
           pageRank: pageRankOf(match.record.cpuMark, peers),
         };

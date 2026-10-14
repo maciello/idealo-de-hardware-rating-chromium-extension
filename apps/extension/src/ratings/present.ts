@@ -1,4 +1,4 @@
-import type { CpuBenchmarkRecord, Rating } from "@idealo-hw/hw-bench";
+import type { Rating } from "@idealo-hw/hw-bench";
 import type { ItemRating, PageRank } from "./engine";
 
 export const MULTI = "raw_multithread_score";
@@ -26,6 +26,8 @@ export const ROW_LABELS: Readonly<Record<string, string>> = {
   [PAGE_RANK]: "On this page",
   [SEGMENT]: "In its segment",
 };
+
+type Matched = Extract<ItemRating, { status: "matched" }>;
 
 const SEGMENTS = 5;
 const NUMBER = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
@@ -68,8 +70,15 @@ const SEGMENT_NOUN: Readonly<Record<string, string>> = {
   mobile_embedded: "mobile CPUs",
 };
 
-/** Same pick as hw-bench's segment_percentile: the first listed segment that is not "unknown". */
-export function segmentNoun(record: CpuBenchmarkRecord): string {
+/**
+ * Same pick as hw-bench's segment_percentile: the page's device class when known, else the first
+ * segment of the CPU's own PassMark record that is not "unknown".
+ */
+export function segmentNoun({
+  record,
+  formFactor,
+}: Pick<Matched, "record" | "formFactor">): string {
+  if (formFactor !== "unknown") return SEGMENT_NOUN[formFactor] ?? "CPUs";
   const segment = record.segments.find((s) => s !== "unknown");
   return (segment !== undefined && SEGMENT_NOUN[segment]) || "CPUs";
 }
@@ -91,8 +100,6 @@ export function valueText(rating: Rating, pageRank: PageRank | null): string {
   }
 }
 
-type Matched = Extract<ItemRating, { status: "matched" }>;
-
 const find = (rating: Matched, id: string): Rating | undefined =>
   rating.ratings.find((r) => r.strategyId === id);
 
@@ -105,7 +112,7 @@ const segmentMeter = (rating: Matched): MeterInfo | null => {
   const segment = find(rating, SEGMENT);
   const filled = meterSegments(segment?.value);
   return segment && filled !== null
-    ? { filled, context: `top ${topPercent(segment.value)}% of ${segmentNoun(rating.record)}` }
+    ? { filled, context: `top ${topPercent(segment.value)}% of ${segmentNoun(rating)}` }
     : null;
 };
 
@@ -187,7 +194,7 @@ export function cardRows(rating: Matched): CardRow[] {
       label: ROW_LABELS[SEGMENT] ?? SEGMENT,
       value: valueText(segmentRating, null),
       title: segmentRating.explanation,
-      meter: segment ? { filled: segment.filled, text: `of ${segmentNoun(rating.record)}` } : null,
+      meter: segment ? { filled: segment.filled, text: `of ${segmentNoun(rating)}` } : null,
     });
   }
   return rows;

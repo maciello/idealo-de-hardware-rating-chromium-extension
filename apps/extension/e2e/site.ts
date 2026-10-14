@@ -24,6 +24,8 @@ export const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel"
 export const LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/19116.html";
 /** Real idealo tile markup and embedded payload (category 3751). */
 export const SSR_LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
+/** The same listing markup served as category 3020 (PC-Systeme): the page's category sets the device class. */
+export const SSR_DESKTOP_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3020.html";
 export const SSR_PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/209657188_-magicbook-pro-14-honor.html";
 export const SEARCH_URL =
@@ -58,7 +60,7 @@ export async function installSite(context: BrowserContext): Promise<void> {
     if (pathname === "/api/filters.json") {
       return route.fulfill({ contentType: "application/json", body: FILTERS_JSON });
     }
-    if (pathname.includes("/ProductCategory/3751")) {
+    if (pathname.includes("/ProductCategory/3751") || pathname.includes("/ProductCategory/3020")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: SSR_LISTING_HTML });
     }
     if (pathname.includes("/ProductCategory/") || pathname.includes("/MainSearchProductCategory")) {

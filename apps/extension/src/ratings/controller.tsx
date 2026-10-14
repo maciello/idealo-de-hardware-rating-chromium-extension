@@ -5,6 +5,7 @@ import type { InspectedItem, PageInspection } from "../diagnostics/page-report";
 import type { PageStats } from "../messaging";
 import { sendMessage } from "../messaging";
 import type { PageAdapter } from "../page/adapter";
+import { listingFormFactor, productFormFactor } from "../page/device-class";
 import {
   cohortPolicyItem,
   cpuSnapshotItem,
@@ -67,7 +68,7 @@ const signatureOf = (rating: ItemRating): string => {
       .map((r) => `${r.strategyId}=${r.value}:${r.explanation}`)
       .join(",");
     const rank = rating.pageRank ? `${rating.pageRank.rank}/${rating.pageRank.total}` : "-";
-    return `m:${rating.record.id}:${values}:${rank}`;
+    return `m:${rating.record.id}:${rating.formFactor}:${values}:${rank}`;
   }
   return rating.status === "ambiguous" ? `a:${rating.candidates.map((c) => c.id).join(",")}` : "n";
 };
@@ -75,10 +76,11 @@ const signatureOf = (rating: ItemRating): string => {
 function collectTargets(adapter: PageAdapter): Target[] {
   const kind = adapter.detect(location.href);
   if (kind === "listing") {
+    const formFactor = listingFormFactor(location.href, document);
     return adapter.listingItems(document).map((item) => ({
       element: item.element,
       placement: "corner",
-      query: { title: item.title, text: item.text, priceEur: item.priceEur },
+      query: { title: item.title, text: item.text, priceEur: item.priceEur, formFactor },
       seen: {
         adapterId: item.adapterId,
         productId: item.productId ?? null,
@@ -95,7 +97,12 @@ function collectTargets(adapter: PageAdapter): Target[] {
         {
           element: info.element,
           placement: "inline",
-          query: { title: info.title, text: info.specText, priceEur: info.priceEur },
+          query: {
+            title: info.title,
+            text: info.specText,
+            priceEur: info.priceEur,
+            formFactor: productFormFactor(info),
+          },
           seen: {
             adapterId: info.adapterId,
             productId: null,

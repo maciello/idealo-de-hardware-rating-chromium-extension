@@ -5,6 +5,7 @@ import {
   importCpuFixture,
   installSite,
   SSR_CPU_FIXTURE,
+  SSR_DESKTOP_URL,
   SSR_LISTING_URL,
   SSR_PRODUCT_URL,
   shot,
@@ -27,7 +28,7 @@ test.beforeAll(async () => {
   context = await launchWithExtension();
   await installSite(context);
   extensionId = await extensionIdOf(context);
-  await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "5");
+  await importCpuFixture(context, extensionId, SSR_CPU_FIXTURE, "6");
 });
 
 test.afterAll(async () => {
@@ -58,6 +59,27 @@ test("real markup: chips sit on the tiles of a server-rendered idealo listing", 
   await page.close();
 });
 
+test("real markup: the percentile compares against the page's device class", async () => {
+  const notebooks = await context.newPage();
+  await notebooks.goto(SSR_LISTING_URL);
+  await expect(chipOf(notebooks, "205984319")).toHaveCount(1);
+  await expect(chipOf(notebooks, "205984319").getByTestId("rating-badge")).toHaveAttribute(
+    "aria-label",
+    /of laptop CPUs/,
+  );
+  await notebooks.close();
+
+  // Same markup and CPUs served as the PC-Systeme category: the page decides, not PassMark's own tag.
+  const desktops = await context.newPage();
+  await desktops.goto(SSR_DESKTOP_URL);
+  await expect(chipOf(desktops, "205984319")).toHaveCount(1);
+  await expect(chipOf(desktops, "205984319").getByTestId("rating-badge")).toHaveAttribute(
+    "aria-label",
+    /of desktop CPUs/,
+  );
+  await desktops.close();
+});
+
 test("real markup: the filter builder offers the embedded payload's filters", async () => {
   const page = await context.newPage();
   await page.goto(SSR_LISTING_URL);
@@ -81,6 +103,7 @@ test("real markup: the product page gets a chip next to the title and a card", a
   const card = page.locator('[role="dialog"]').filter({ hasText: "PassMark" });
   await expect(card).toBeVisible();
   await expect(card).toContainText("Intel Core Ultra 9 285H");
+  await expect(card.getByTestId("card-row-raw_multithread_score")).toContainText("laptop CPUs");
   await page.waitForTimeout(400);
   await shot(page, "chip-product-page");
   await page.close();
@@ -113,7 +136,7 @@ test("debug report: the popup downloads page counts for the open listing, withou
   });
   expect(report.pageNote).toBeNull();
   expect(report.exportedAt).toMatch(/Z$/);
-  expect(report.benchmarkData.cpu).toMatchObject({ records: 5 });
+  expect(report.benchmarkData.cpu).toMatchObject({ records: 6 });
   expect(report.ai).toEqual({ connected: false, lastTest: null });
   expect(report.settings.captureMode).toBe(false);
   expect(text).not.toMatch(/sk-or-|session.?info/i);
