@@ -33,9 +33,37 @@
         "rules": {
           "style": {
             "noExcessiveLinesPerFile": {
-              "level": "warn",
+              "level": "error",
               "options": {
                 "maxLines": 150
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/src/features/*/view/**",
+        "**/src/features/*/model/**",
+        "**/src/features/*/view-model/**",
+        "**/src/ui/components/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "browser": "Extension APIs belong in controller/ or adapters/; views, models and view-models stay pure.",
+                  "chrome": "Extension APIs belong in controller/ or adapters/; views, models and view-models stay pure.",
+                  "document": "DOM access belongs in controller/ or adapters/; views, models and view-models stay pure.",
+                  "window": "DOM access belongs in controller/ or adapters/; views, models and view-models stay pure.",
+                  "localStorage": "Storage belongs in adapters/ or platform/storage.",
+                  "sessionStorage": "Storage belongs in adapters/ or platform/storage.",
+                  "fetch": "Network IO belongs in adapters/ or platform/."
+                }
               }
             }
           }

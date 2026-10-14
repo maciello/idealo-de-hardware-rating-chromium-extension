@@ -31,7 +31,7 @@ docs-check:
 boundaries:
     pnpm exec depcruise --config .dependency-cruiser.cjs apps packages
 
-# Report source files over 150 lines via Biome noExcessiveLinesPerFile (warn until the refactor's last step sets it to error).
+# Source files over 150 lines (Biome style/noExcessiveLinesPerFile, level error in biome.json); exits non-zero on a violation.
 godfiles:
     pnpm exec biome lint --only=style/noExcessiveLinesPerFile --max-diagnostics=none apps packages
 
