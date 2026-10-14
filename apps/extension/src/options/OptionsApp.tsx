@@ -1,10 +1,7 @@
-import { passmarkCpuSource, passmarkGpuSource } from "@idealo-hw/hw-bench";
 import { Container, Stack, Text, Title } from "@mantine/core";
-import { CpuSnapshotSchema, GpuSnapshotSchema } from "../contracts";
-import { cpuSnapshotItem, gpuSnapshotItem } from "../platform/storage";
+import { CpuImportCard, GpuImportCard } from "../features/benchmark-data";
 import { CaptureCard } from "./CaptureCard";
 import { DiagnosticsCard } from "./DiagnosticsCard";
-import { ImportCard } from "./ImportCard";
 import { OpenRouterCard } from "./OpenRouterCard";
 import { StrategiesCard } from "./StrategiesCard";
 
@@ -16,20 +13,8 @@ export function OptionsApp() {
         <Text size="sm" c="dimmed">
           Benchmark data stays in this browser. Import your own PassMark export; nothing is bundled.
         </Text>
-        <ImportCard
-          kind="cpu"
-          title="PassMark CPU data"
-          source={passmarkCpuSource}
-          item={cpuSnapshotItem}
-          schema={CpuSnapshotSchema}
-        />
-        <ImportCard
-          kind="gpu"
-          title="PassMark GPU data"
-          source={passmarkGpuSource}
-          item={gpuSnapshotItem}
-          schema={GpuSnapshotSchema}
-        />
+        <CpuImportCard />
+        <GpuImportCard />
         <StrategiesCard />
         <OpenRouterCard />
         <CaptureCard />

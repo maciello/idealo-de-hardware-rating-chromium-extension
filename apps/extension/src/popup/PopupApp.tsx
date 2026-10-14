@@ -9,75 +9,21 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { captureRing } from "../capture/ring";
 import type { PageStats } from "../contracts";
-import {
-  CpuSnapshotSchema,
-  GpuSnapshotSchema,
-  NOT_CONNECTED,
-  OpenRouterStatusSchema,
-  SettingsSchema,
-} from "../contracts";
+import { NOT_CONNECTED, OpenRouterStatusSchema, SettingsSchema } from "../contracts";
 import { exportDebugReport } from "../diagnostics/export";
+import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
 import { downloadJson } from "../platform/download";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
-import {
-  captureModeItem,
-  cpuSnapshotItem,
-  gpuSnapshotItem,
-  openrouterStatusItem,
-  settingsItem,
-} from "../platform/storage";
+import { captureModeItem, openrouterStatusItem, settingsItem } from "../platform/storage";
 import { useStorageItem } from "../platform/storage/use-storage-item";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
-import {
-  formatInteger,
-  formatMegabytes,
-  formatShortDate,
-  LabeledRow,
-  MutedText,
-  StatusNote,
-} from "../ui";
+import { formatInteger, formatMegabytes, LabeledRow, MutedText, StatusNote } from "../ui";
 
-function useRecord<T>(
-  value: unknown,
-  schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } },
-): T | null {
-  return useMemo(() => {
-    const parsed = schema.safeParse(value);
-    return parsed.success ? parsed.data : null;
-  }, [value, schema]);
-}
-
-function BenchmarkData() {
-  const [cpuRaw] = useStorageItem(cpuSnapshotItem);
-  const [gpuRaw] = useStorageItem(gpuSnapshotItem);
-  const cpu = useRecord(cpuRaw, CpuSnapshotSchema);
-  const gpu = useRecord(gpuRaw, GpuSnapshotSchema);
-  const imported = formatShortDate(cpu?.importedAt ?? gpu?.importedAt);
-  const parts = [
-    cpu ? `CPU ${formatInteger(cpu.records.length)}` : null,
-    gpu ? `GPU ${formatInteger(gpu.records.length)}` : null,
-  ].filter((part) => part !== null);
-  return (
-    <LabeledRow label="Benchmark data" stacked>
-      <Group justify="space-between" wrap="nowrap" gap="xs">
-        <Text fz="sm" data-testid="popup-data">
-          {parts.length === 0 ? "Nothing imported yet" : parts.join(" · ")}
-          {parts.length > 0 && imported ? ` (imported ${imported})` : ""}
-        </Text>
-        <Button
-          size="compact-sm"
-          variant="default"
-          onClick={openOptions}
-          data-testid="popup-import"
-        >
-          Import
-        </Button>
-      </Group>
-    </LabeledRow>
-  );
+function BenchmarkRow() {
+  return <BenchmarkSummary {...useBenchmarkSummary()} />;
 }
 
 function pageSummary(tab: TargetTab | null, stats: PageStats | null | "loading"): string {
@@ -335,7 +281,7 @@ export function PopupApp() {
       <Text fz="lg" fw={600}>
         idealo Hardware Rating
       </Text>
-      <BenchmarkData />
+      <BenchmarkRow />
       <LabeledRow label="This page">
         <Text fz="sm" data-testid="popup-page">
           {pageSummary(tab, stats)}
