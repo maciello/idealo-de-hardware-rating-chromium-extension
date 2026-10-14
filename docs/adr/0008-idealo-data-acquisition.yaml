@@ -46,7 +46,14 @@ adr.0008:
         - "filterGroups are capped at 100 filters per group (Prozessor, Hersteller)"
         - "Mini-PC page 0: 12/36 PRODUCT tiles name no CPU in characteristics (e.g. Beelink SER8: '3,8 GHz ; 8-Core'); Apple tiles name 'Apple M6' etc."
       capture_note: DevTools drops its log on full navigation unless 'Preserve log' is set, so each HAR holds one document; the extension capture ring persists across navigations
+    - id: har-2026-10-14-product-page
+      source: user HAR of OffersOfProduct/209657188 (Honor MagicBook Pro 14) + DevTools screenshots
+      observed:
+        - "no window.csr/phx initialData; title in h1#oopStage-title; full datasheet server-rendered in section#datasheet table: <th colspan=2> section rows, <td>label</td><td>value</td> rows (Notebook-Typ, Prozessor, Grafikkarte, RAM, SSD-Speicher, Gewicht, Markteinführung, ...)"
+        - "4 application/ld+json blocks (Product with AggregateOffer lowPrice, ProductGroup, Review, FAQPage); no CPU/GPU in them"
+        - "price history GET /price-chart/sites/1/products/<id>/history?period=3M|6M|1Y (periods confirmed by user)"
   decision_update:
+    product_page: datasheet table rows as "Label\tValue" spec text (hw-bench parseSpecBlock); title from h1#oopStage-title
     listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
     filter_catalog: parseSearchResult over readEmbeddedSearchResult (packages/idealo-query) of the current document, then the DOM link catalog; after client-side filter changes the payload is stale but its F-ids stay valid
     no_extra_requests_to_idealo: true (the embedded payload makes the planned page-0 GET unnecessary)
@@ -55,8 +62,6 @@ adr.0008:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
     - multi-filter encoding of searchResult filters= (web URL form is F<id>-F<id>, unverified for the module)
     - how idealo exposes filters beyond the 100-per-group cap
-    - DOM location of spec table (Prozessor/Grafikkarte) on product pages (text shape known from fixture captiva-r10-1257ge.spec.txt)
-    - valid price-chart period values besides 3M
     - meaning of opaque URL suffix like "oE0oJ1"
   consequences:
     - FilterCatalog and spec extraction are ports; first real adapters written from capture-mode exports.
