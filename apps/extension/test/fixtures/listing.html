@@ -3,6 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <title>SYNTHETIC listing fixture</title>
+    <style>
+      /* Reproduces idealo's grid: 4 columns, every tile its own stacking context (transform), and
+         tiles shorter than their copy so text sits exactly where a hover card opens. */
+      body { margin: 0; font: 14px/1.35 Roboto, Arial, sans-serif; color: #0a3761; background: #f2f6fa; display: flex; gap: 16px; padding: 16px; }
+      #filters { flex: 0 0 200px; font-size: 13px; }
+      #filters ul { list-style: none; margin: 0 0 8px; padding: 0; }
+      main { flex: 1 1 auto; min-width: 0; }
+      ul.results { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 120px; gap: 12px; }
+      li.item { position: relative; transform: translateZ(0); box-sizing: border-box; background: #fff; border: 1px solid #d5e0eb; padding: 8px; }
+      li.item .thumb { height: 28px; margin: 0 0 6px; background: #d5e0eb; }
+      li.item a { display: block; color: inherit; font-weight: 600; }
+      li.item p { margin: 4px 0 0; }
+    </style>
   </head>
   <body>
     <!--
@@ -32,29 +45,38 @@
     <main>
       <ul class="results">
         <li class="item">
+          <div class="thumb"></div>
           <div data-wishlist-heart='{"productId":1001,"source":"synthetic"}'></div>
           <a href="/preisvergleich/OffersOfProduct/1001_alpha-book-15.html">Alpha Book 15 Notebook Intel Core i7-13700H 16GB 512GB</a>
           <span class="sr-detailedPriceInfo__price">1.299,00 €</span>
+          <p class="blurb">Versand in 2 bis 3 Werktagen, Rueckgabe kostenlos, Preis laut Haendler pruefen</p>
         </li>
         <li class="item">
+          <div class="thumb"></div>
           <div data-wishlist-heart='{"productId":"1002"}'></div>
           <a href="/preisvergleich/OffersOfProduct/1002_beta-air-14.html">Beta Air 14 Notebook</a>
           <p>Prozessor: AMD Ryzen 5 7640U, 16 GB RAM</p>
           <span class="sr-detailedPriceInfo__price">899,00 €</span>
         </li>
         <li class="item">
+          <div class="thumb"></div>
           <div data-wishlist-heart='{"productId":1003}'></div>
           <a href="/preisvergleich/OffersOfProduct/1003_gamma-pro-16.html">Gamma Pro 16 Intel Core i9-13900HX</a>
           <span class="sr-detailedPriceInfo__price">ab 1.999,00 €</span>
+          <p class="blurb">Versand in 2 bis 3 Werktagen, Rueckgabe kostenlos, Preis laut Haendler pruefen</p>
         </li>
         <li class="item">
+          <div class="thumb"></div>
           <div data-wishlist-heart='{"productId":1004}'></div>
           <a href="/preisvergleich/OffersOfProduct/1004_delta-mystery.html">Delta Mystery Notebook Intel Core i5-99999X</a>
           <span class="sr-detailedPriceInfo__price">549,00 €</span>
+          <p class="blurb">Versand in 2 bis 3 Werktagen, Rueckgabe kostenlos, Preis laut Haendler pruefen</p>
         </li>
         <li class="item">
+          <div class="thumb"></div>
           <a href="/preisvergleich/OffersOfProduct/1005_epsilon-plain.html">Epsilon Plain Notebook without a processor mention</a>
           <span>479,99 €</span>
+          <p class="blurb">Versand in 2 bis 3 Werktagen, Rueckgabe kostenlos, Preis laut Haendler pruefen</p>
         </li>
       </ul>
     </main>
