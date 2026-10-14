@@ -1,0 +1,28 @@
+adr.0013:
+  title: Percentile ratings rank against recent hardware only
+  status: accepted-default
+  date: 2026-10-14
+  context:
+    problem: full PassMark history (CPU first-seen dates from 2008, GPU from 2009) packs every current chip into the top percentiles
+    measured_on: user-imported PassMark snapshot 2026-10, single-socket CPUs, own segment
+    effect_of_year_cutoff:
+      - {chip: Intel Core i5-13400, segment: desktop, all: P85, since_2021: P50}
+      - {chip: AMD Ryzen 9 9950X, segment: desktop, all: P98, since_2021: P94}
+      - {chip: Intel Core i5-1235U, segment: laptop, all: P80, since_2021: P25}
+      - {chip: GeForce RTX 4060, segment: all GPUs, all: P97, since_2021: P90}
+      - {chip: Intel Iris Xe, segment: all GPUs, all: P70, since_2021: P40}
+    effect_of_score_floor: CPU Mark >= 3000 on top of a since-2019 cutoff moves results by <= 5 points
+  decision:
+    port: CohortPolicy (packages/hw-bench/src/rating/cohort.ts), zod-parsed at storage/options boundary
+    year_cutoff: [none, since_year <Y>, rolling <N> calendar years anchored to the snapshot's newest record]
+    min_score: optional absolute floor, default off
+    default: {year_cutoff: rolling 5, min_score: null}
+    date_field: PassMark `date` = first seen on charts, proxy for release
+    undated_records: excluded whenever a year cutoff applies
+    rolling_anchor_reason: tracks re-imports without a clock read and without a hard-coded year rotting
+  consequences:
+    - segmentPercentile and future GPU percentile take a CohortPolicy; explanation text names the cutoff
+    - chips older than the cutoff can still be rated; they land near P0
+  open:
+    - options UI for the policy (task 11)
+    - GPU percentile strategy needs GPU in RatingInput

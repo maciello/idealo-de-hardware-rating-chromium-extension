@@ -43,6 +43,15 @@ export {
 export type { FormFactor } from "./identity/form-factor";
 export { createCanonicalKeyMatcher } from "./matcher/canonical-key";
 export type { Matcher, MatchResult } from "./matcher/matcher";
+export {
+  type Cohort,
+  type CohortPolicy,
+  CohortPolicySchema,
+  createCohort,
+  type DatedRecord,
+  DEFAULT_COHORT_POLICY,
+  describeCohort,
+} from "./rating/cohort";
 export { createStrategies, defaultStrategies } from "./rating/defaults";
 export { percentileRank } from "./rating/percentile";
 export { segmentPercentile } from "./rating/segment-percentile";

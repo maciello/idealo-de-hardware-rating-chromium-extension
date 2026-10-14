@@ -1,5 +1,6 @@
 import type { CpuBenchmarkRecord } from "../benchmark/records";
 import type { BenchmarkSnapshot } from "../benchmark/snapshot";
+import type { CohortPolicy } from "./cohort";
 import { segmentPercentile } from "./segment-percentile";
 import { multiThreadScore, peerPercentile, singleThreadScore, valuePerEuro } from "./strategies";
 import type { RatingStrategy } from "./strategy";
@@ -15,4 +16,5 @@ export const defaultStrategies: readonly RatingStrategy[] = [
 /** Defaults plus the strategies that are built from the imported snapshot. */
 export const createStrategies = (
   snapshot: BenchmarkSnapshot<CpuBenchmarkRecord>,
-): readonly RatingStrategy[] => [...defaultStrategies, segmentPercentile(snapshot)];
+  cohortPolicy?: CohortPolicy,
+): readonly RatingStrategy[] => [...defaultStrategies, segmentPercentile(snapshot, cohortPolicy)];

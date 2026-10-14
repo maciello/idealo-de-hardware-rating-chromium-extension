@@ -1,5 +1,6 @@
 import type { CpuBenchmarkRecord, CpuSegment } from "../benchmark/records";
 import type { BenchmarkSnapshot } from "../benchmark/snapshot";
+import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY, describeCohort } from "./cohort";
 import { formatInteger } from "./format";
 import { percentileRank } from "./percentile";
 import type { Rating, RatingStrategy } from "./strategy";
@@ -11,14 +12,19 @@ const primarySegment = (cpu: CpuBenchmarkRecord): CpuSegment | null =>
   cpu.segments.find((segment) => segment !== "unknown") ?? null;
 
 /**
- * Percentile of a CPU's multi-thread score within its segment across the whole snapshot.
+ * Percentile of a CPU's multi-thread score within its segment, against the snapshot records the cohort policy admits.
  * Sorted score arrays are built once here; each `rate` call is a binary search.
  * Multi-socket results are excluded from the distribution (they would inflate server/desktop pools).
  */
-export function segmentPercentile(snapshot: BenchmarkSnapshot<CpuBenchmarkRecord>): RatingStrategy {
+export function segmentPercentile(
+  snapshot: BenchmarkSnapshot<CpuBenchmarkRecord>,
+  policy: CohortPolicy = DEFAULT_COHORT_POLICY,
+): RatingStrategy {
+  const cohort = createCohort(snapshot.records, (record) => record.cpuMark, policy);
+  const cohortText = describeCohort(cohort, formatInteger);
   const bySegment = new Map<CpuSegment, number[]>();
   for (const record of snapshot.records) {
-    if (record.socketCount !== 1) continue;
+    if (record.socketCount !== 1 || !cohort.includes(record)) continue;
     for (const segment of record.segments) {
       const marks = bySegment.get(segment);
       if (marks === undefined) bySegment.set(segment, [record.cpuMark]);
@@ -41,7 +47,7 @@ export function segmentPercentile(snapshot: BenchmarkSnapshot<CpuBenchmarkRecord
         strategyId: SEGMENT_PERCENTILE_ID,
         value,
         display: `P${Math.round(value)}`,
-        explanation: `CPU Mark ${formatInteger(cpu.cpuMark)} is at the ${formatInteger(value)}th percentile of ${formatInteger(sorted.length)} ${segment.replace("_", "/")} CPUs in the imported snapshot.`,
+        explanation: `CPU Mark ${formatInteger(cpu.cpuMark)} is at the ${formatInteger(value)}th percentile of ${formatInteger(sorted.length)} ${segment.replace("_", "/")} CPUs${cohortText} in the imported snapshot.`,
       };
     },
   };
