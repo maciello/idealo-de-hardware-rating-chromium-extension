@@ -1,0 +1,74 @@
+Produktdetails
+Captiva Highend Gaming R10-1257GE
+Notebook-Typ	Gaming Notebook
+Serie	Captiva Highend Gaming
+Display
+Displaygröße	16 Zoll
+Bildschirmdiagonale	40,64 cm
+Display-Technologie	WQXGA
+Displayauflösung	2.560 x 1.600 Pixel
+Displays	Widescreen, LED-Backlight
+Bildformat	16:10
+Helligkeit	500 cd/m²
+Prozessor
+Prozessorhersteller	Intel
+Prozessortyp	Intel Core Ultra 9
+Prozessor	Intel Core Ultra 9 275HX
+Prozessor Codename	Arrow Lake-HX
+Anzahl Prozessorkerne	24
+Taktfrequenz	2,7 GHz
+max. Turbotakt	5,4 GHz
+Leistungsaufnahme max. (TDP)	55 Watt
+Cache-Level	L3
+Cache	36 MB
+Arbeitsspeicher
+RAM	64 GB
+Speicher
+Anzahl Festplatten (installiert)	1
+Festplattentyp	SSD-Festplatte
+SSD-Speicher	2.000 GB
+Grafik
+Grafikkartenhersteller	NVIDIA
+Grafikkarte	NVIDIA GeForce RTX 5080
+Grafikspeicher	16384 MB / 16 GB
+Grafikspeichertyp	GDDR7
+Grafikeigenschaften	NVIDIA CUDA, OpenGL 4.6, NVIDIA DLSS 4, OpenCL 3.0, DirectX 12 Ultimate, Raytracing
+Videoausgänge	Mini-DisplayPort, HDMI 2.1
+Betriebssystem
+Betriebssystem	Windows 11 Home
+Bit-Architektur	64 Bit
+KI
+KI-Prozessor	Intel AI Boost
+Konnektivität
+Anschlüsse	Kopfhörerausgang, Mikrofoneingang, 3 x USB 3.2, 1 x USB 3.2 Power Delivery, 1 x USB 4.0 Power Delivery
+Kartenleser	integriert
+Kommunikation
+Datenkommunikation	Ethernet, WLAN, Bluetooth
+Bluetooth-Version	Bluetooth 5.3
+LAN-Standard	Gigabit-Ethernet
+WLAN-Standard	IEEE 802.11ax
+Laufwerke
+Optische Laufwerke	ohne optisches Laufwerk
+Kamera
+Webcam	integriert
+Kamerafunktion	HD-fähig
+Kameraauflösung	1920 x 1080 Pixel
+Sound
+Anzahl Lautsprecher	2
+Lautsprecher System	Stereo
+Stromversorgung
+Akku	Lithium-Polymer
+Akkulaufzeit	8 h
+Wattstunden	99,8 Wh
+Netzteil	420 Watt
+Ausgangsspannung	20 V
+Abmessungen & Gewicht
+Bauform	Clamshell
+Tiefe	25,5 cm
+Höhe	26 mm
+Breite	35,7 cm
+Gewicht	2,6 kg
+Weitere Eigenschaften
+Ausstattung	Kartenleser, Webcam, Lautsprecher, USB-C, USB-C Power Delivery
+Lieferumfang	Notebook
+Markteinführung	2026

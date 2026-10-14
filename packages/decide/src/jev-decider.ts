@@ -34,8 +34,8 @@ export const OPENROUTER_BASE_URL = "https://openrouter.ai/api";
 export const DEFAULT_THRESHOLD = 0.7;
 /** Jev choice questions hold 255 options; one is `none_of_the_above`. */
 export const MAX_CHOICE_CANDIDATES = 254;
-/** Jev 1.13 limit for a whole request is 64k tokens; leave headroom for the estimate being rough. */
-export const DEFAULT_MAX_REQUEST_TOKENS = 48_000;
+/** OpenRouter serves Jev 1.13 with a 32k context (TypeSafe direct: 64k); leave headroom for the rough estimate. */
+export const DEFAULT_MAX_REQUEST_TOKENS = 24_000;
 /** Jev 1.13 limit for the state plus the single longest question. */
 const MAX_STATE_AND_QUESTION_TOKENS = 32_000;
 
@@ -69,7 +69,7 @@ export interface JevDeciderOptions {
   readonly dangerouslyAllowBrowser?: boolean;
   /** Per-call timeout/retry/abort settings. The SDK's own retry and timeout apply otherwise. */
   readonly requestOptions?: RequestOptions;
-  /** Estimated-token budget per request when chunking filter questions. Default 48,000. */
+  /** Estimated-token budget per request when chunking filter questions. Default 24,000. */
   readonly maxRequestTokens?: number;
 }
 
