@@ -7,6 +7,7 @@ describe("isIdealoHost", () => {
     ["idealo.de", true],
     ["api.idealo.com", true],
     ["a.b.idealo.de", true],
+    ["www.idealo.es", true],
     ["WWW.IDEALO.DE", true],
     ["idealo.de.evil.example", false],
     ["notidealo.de", false],
