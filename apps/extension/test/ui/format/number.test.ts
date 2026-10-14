@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDecimal, formatInteger } from "../../../src/ui/format";
+import { formatDecimal, formatInteger, formatTrimmed } from "../../../src/ui/format";
 
 describe("de-DE number formatting", () => {
   it("groups thousands with a dot and uses a decimal comma", () => {
@@ -10,5 +10,11 @@ describe("de-DE number formatting", () => {
     expect(formatDecimal(17.6)).toBe("17,6");
     expect(formatDecimal(21.5496)).toBe("21,5");
     expect(formatDecimal(3)).toBe("3,0");
+  });
+
+  it("trims to two decimals without trailing zeros", () => {
+    expect(formatTrimmed(16)).toBe("16");
+    expect(formatTrimmed(1.4)).toBe("1,4");
+    expect(formatTrimmed(0.3549)).toBe("0,35");
   });
 });

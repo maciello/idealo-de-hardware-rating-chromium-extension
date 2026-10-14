@@ -6,7 +6,7 @@ import {
   gpuScoreBounds,
 } from "@idealo-hw/hw-bench";
 import type { FilterGroup, ModelFacet, ModelScorer } from "@idealo-hw/idealo-query";
-import type { CpuSnapshot, GpuSnapshot } from "../contracts";
+import type { CpuSnapshot, GpuSnapshot } from "../../../contracts";
 
 /** Metric names the requirement sliders and the scorer agree on. */
 export const METRIC = { cpuMark: "cpu_mark", cpuSingle: "cpu_single", g3d: "g3d" } as const;
