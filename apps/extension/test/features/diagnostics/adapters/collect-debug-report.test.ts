@@ -2,7 +2,10 @@ import { passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import type { PageReport } from "../../../../src/contracts";
-import { collectDebugReport } from "../../../../src/features/diagnostics/adapters/collect-debug-report";
+import {
+  collectDebugReport as collectWith,
+  type PageReportAsker,
+} from "../../../../src/features/diagnostics/adapters/collect-debug-report";
 import { recordError } from "../../../../src/platform/errors";
 import {
   aiTestResultItem,
@@ -30,13 +33,12 @@ const pageReport: PageReport = {
   payload: { present: true, categoryId: "3751", resultCount: 53609, error: null },
 };
 
-const answer = vi.hoisted(() => ({ page: undefined as unknown }));
-vi.mock("../../../../src/platform/messaging", () => ({
-  sendMessage: vi.fn(async () => {
-    if (answer.page === undefined) throw new Error("no receiver");
-    return answer.page;
-  }),
-}));
+const answer: { page: unknown } = { page: undefined };
+const ask: PageReportAsker = async () => {
+  if (answer.page === undefined) throw new Error("no receiver");
+  return answer.page as PageReport;
+};
+const collectDebugReport = (tab: Parameters<typeof collectWith>[0]) => collectWith(tab, ask);
 
 const TAB = { id: 7, url: "https://www.idealo.de/preisvergleich/ProductCategory/3751.html" };
 

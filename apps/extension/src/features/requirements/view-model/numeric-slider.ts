@@ -48,7 +48,7 @@ export function numericSliderModel(
   plan: FacetPlan | undefined,
 ): NumericSliderModel | null {
   const { facet, unit, direction } = control;
-  const label = COPY.numericLabels[facet];
+  const label = COPY.numericLabels[facet] ?? facet;
   const axis = axisOf(options, direction);
   const format = (value: number): string => formatMeasure(value, unit);
   const first = axis[0];

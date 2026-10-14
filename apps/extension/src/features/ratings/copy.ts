@@ -2,6 +2,35 @@ import { MULTI, PAGE_RANK, PER_EURO, SEGMENT, SINGLE } from "./model/cpu/strateg
 import type { GpuKind, GpuMemory } from "./model/gpu";
 import { GPU_G3D, GPU_PER_EURO, GPU_PERCENTILE } from "./model/gpu/strategy-ids";
 
+/** Names looked up by an id the engine reports as a plain string; a miss falls back to the id. */
+type LabelTable = Readonly<Record<string, string>>;
+
+const PRIMARY_LABELS: LabelTable = {
+  [MULTI]: "Multi",
+  [SINGLE]: "Single",
+  [PER_EURO]: "Per €",
+  [PAGE_RANK]: "Page rank",
+};
+const ROW_LABELS: LabelTable = {
+  [MULTI]: "Multi-thread",
+  [SINGLE]: "Single-thread",
+  [PER_EURO]: "Per euro",
+  [PAGE_RANK]: "On this page",
+  [SEGMENT]: "In its segment",
+};
+const SEGMENT_NOUNS: LabelTable = {
+  laptop: "laptop CPUs",
+  desktop: "desktop CPUs",
+  server: "server CPUs",
+  mobile_embedded: "mobile CPUs",
+};
+const GPU_ROW_LABELS: LabelTable = {
+  [GPU_G3D]: "G3D Mark",
+  [GPU_PERCENTILE]: "In its class",
+  [GPU_PER_EURO]: "Per euro",
+};
+const GPU_SEGMENT_NOUNS: LabelTable = { laptop: "laptop GPUs", desktop: "desktop GPUs" };
+
 export const RATINGS_COPY = {
   // Chip, CPU line
   cpuLabel: "CPU",
@@ -16,25 +45,9 @@ export const RATINGS_COPY = {
   oldMemoryAria: (label: string, hint: string): string => `${label}: ${hint}`,
 
   /** The four numbers a user can pick as the chip's headline value. */
-  primaryLabels: {
-    [MULTI]: "Multi",
-    [SINGLE]: "Single",
-    [PER_EURO]: "Per €",
-    [PAGE_RANK]: "Page rank",
-  } as Readonly<Record<string, string>>,
-  rowLabels: {
-    [MULTI]: "Multi-thread",
-    [SINGLE]: "Single-thread",
-    [PER_EURO]: "Per euro",
-    [PAGE_RANK]: "On this page",
-    [SEGMENT]: "In its segment",
-  } as Readonly<Record<string, string>>,
-  segmentNoun: {
-    laptop: "laptop CPUs",
-    desktop: "desktop CPUs",
-    server: "server CPUs",
-    mobile_embedded: "mobile CPUs",
-  } as Readonly<Record<string, string>>,
+  primaryLabels: PRIMARY_LABELS,
+  rowLabels: ROW_LABELS,
+  segmentNoun: SEGMENT_NOUNS,
   segmentNounFallback: "CPUs",
 
   // Numbers and meters
@@ -54,15 +67,9 @@ export const RATINGS_COPY = {
   settings: "Settings",
 
   // GPU
-  gpuLabels: { dedicated: "GPU", integrated: "iGPU" } as Readonly<Record<GpuKind, string>>,
-  gpuRowLabels: {
-    [GPU_G3D]: "G3D Mark",
-    [GPU_PERCENTILE]: "In its class",
-    [GPU_PER_EURO]: "Per euro",
-  } as Readonly<Record<string, string>>,
-  gpuSegmentNoun: { laptop: "laptop GPUs", desktop: "desktop GPUs" } as Readonly<
-    Record<string, string>
-  >,
+  gpuLabels: { dedicated: "GPU", integrated: "iGPU" } satisfies Readonly<Record<GpuKind, string>>,
+  gpuRowLabels: GPU_ROW_LABELS,
+  gpuSegmentNoun: GPU_SEGMENT_NOUNS,
   gpuUnratedNote: "PassMark has no rating for this GPU",
   gpuUnrated: (note: string): string => `Unrated: ${note}`,
   gpuUnratedTitle: (name: string, note: string): string => `${name}: ${note}`,
@@ -87,5 +94,5 @@ export const RATINGS_COPY = {
     stated: "As stated in the product's specification",
     typical: "Typical for this card (PassMark); the product does not state it",
     shared: "Uses system memory",
-  } as Readonly<Record<GpuMemory["source"], string>>,
+  } satisfies Readonly<Record<GpuMemory["source"], string>>,
 } as const;

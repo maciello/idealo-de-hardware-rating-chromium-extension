@@ -160,9 +160,7 @@ test("listing: tap leaves the page's own fetch untouched and capture mode record
 
   const page = await context.newPage();
   await page.goto(LISTING_URL);
-  await expect
-    .poll(() => page.evaluate(() => Reflect.get(window, "__filters")))
-    .toEqual(JSON.parse(FILTERS_JSON));
+  await expect.poll(() => page.evaluate(() => window.__filters)).toEqual(JSON.parse(FILTERS_JSON));
 
   // The tap reads the body, posts it to the relay and the relay stores it, all after the page's own
   // fetch has resolved: the listing stays open until the options page shows the capture.

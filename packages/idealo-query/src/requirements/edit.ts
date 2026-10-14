@@ -17,6 +17,7 @@ export const isEmpty = (requirements: Requirements): boolean =>
 
 const without = <T extends object>(record: T, key: keyof T): T => {
   const { [key]: _removed, ...rest } = record;
+  // SAFETY: every record passed here is all-optional (Partial<Record<...>>), so dropping a key leaves a valid T.
   return rest as T;
 };
 

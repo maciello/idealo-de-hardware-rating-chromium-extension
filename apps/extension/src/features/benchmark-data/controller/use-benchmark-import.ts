@@ -40,7 +40,7 @@ export function useBenchmarkImport<R>({
       setError(
         cause instanceof BenchmarkFormatError
           ? cause.message
-          : IMPORT_COPY.failed(file.name, (cause as Error).message),
+          : IMPORT_COPY.failed(file.name, cause instanceof Error ? cause.message : String(cause)),
       );
     }
   };

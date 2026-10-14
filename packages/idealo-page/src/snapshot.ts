@@ -36,8 +36,9 @@ function keepsContents(script: Element): boolean {
  * and without script code (JSON data blocks stay).
  */
 export function sanitizedClone(root: Element, hostPrefix: string = DEFAULT_HOST_PREFIX): Element {
+  // SAFETY: cloneNode returns a node of the receiver's own kind, here an Element (lib.dom types it as Node).
   const clone = root.cloneNode(true) as Element;
-  for (const element of [...clone.querySelectorAll("*")]) {
+  for (const element of clone.querySelectorAll("*")) {
     if (element.localName.startsWith(hostPrefix)) element.remove();
   }
   for (const script of clone.querySelectorAll("script")) {

@@ -26,7 +26,7 @@ export function fakeClient(
       answers: respond(request),
       usage: { input_tokens: 1, output_tokens: 1 },
     };
-    return Promise.resolve(result as unknown as SystemOneResult<Questions>);
+    return Promise.resolve(result as SystemOneResult<Questions>);
   }) as SystemOneClient["systemOne"];
   return { requests, systemOne };
 }

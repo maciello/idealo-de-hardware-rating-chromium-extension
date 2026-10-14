@@ -122,17 +122,15 @@ test("layout: chips do not move or resize any tile", async () => {
         const { x, y, width, height } = li.getBoundingClientRect();
         return [x, y, width, height];
       });
-      Reflect.set(window, "__before", {
-        rects,
-        height: document.documentElement.scrollHeight,
-      });
+      window.__before = { rects, height: document.documentElement.scrollHeight };
     });
   });
   await page.goto(LISTING_URL);
   await expect(page.locator("idealo-hw-badge")).toHaveCount(3);
   await page.waitForTimeout(300);
   const result = await page.evaluate(() => {
-    const before = Reflect.get(window, "__before") as { rects: number[][]; height: number };
+    const before = window.__before;
+    if (before === undefined) throw new Error("DOMContentLoaded snapshot missing");
     const after = [...document.querySelectorAll("li.item")].map((li) => {
       const { x, y, width, height } = li.getBoundingClientRect();
       return [x, y, width, height];
@@ -389,7 +387,7 @@ test("tap: not injected while capture is off, injected after it is on and the pa
   await page.reload();
   expect(await fetchSource(page)).not.toContain("[native code]");
   await expect
-    .poll(() => page.evaluate(() => Reflect.get(window, "__filters")))
+    .poll(() => page.evaluate(() => window.__filters))
     .toEqual({ filters: [{ id: 1234, name: "Intel" }] });
 
   await popup.getByTestId("popup-capture").uncheck({ force: true });

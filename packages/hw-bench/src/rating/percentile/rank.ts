@@ -6,6 +6,7 @@ import { quantileRankSorted } from "simple-statistics";
  */
 export function percentileRank(sortedAscending: readonly number[], value: number): number | null {
   if (sortedAscending.length === 0) return null;
+  // SAFETY: quantileRankSorted only reads its array; simple-statistics types the parameter as mutable.
   return quantileRankSorted(sortedAscending as number[], value) * 100;
 }
 

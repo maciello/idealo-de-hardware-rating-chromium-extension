@@ -31,8 +31,10 @@ function heartOf(tile: Element): z.infer<typeof HeartSchema> | null {
   }
 }
 
+const isDocument = (node: Node): node is Document => node.nodeType === 9;
+
 const documentOf = (root: ParentNode): Document | null =>
-  root.nodeType === 9 ? (root as Document) : (root as Node).ownerDocument;
+  isDocument(root) ? root : root.ownerDocument;
 
 /**
  * Listing tiles from idealo's server-rendered markup. Offer tiles (single shop offers) carry an

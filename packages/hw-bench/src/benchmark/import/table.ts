@@ -18,7 +18,9 @@ function readJsonRows(text: string): Table {
   try {
     json = JSON.parse(text);
   } catch (error) {
-    throw new BenchmarkFormatError(`invalid JSON: ${(error as Error).message}`);
+    throw new BenchmarkFormatError(
+      `invalid JSON: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
   const rows = Array.isArray(json) ? json : isObject(json) ? json.data : undefined;
   if (!Array.isArray(rows)) {
