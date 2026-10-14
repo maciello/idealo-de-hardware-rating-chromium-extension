@@ -46,6 +46,16 @@ describe("idealoAdapter.listingItems (real server-rendered tiles)", () => {
     expect(items[2]).toMatchObject({ textSource: "dom", text: "" });
   });
 
+  it("keeps the payload's characteristics as separate values beside the joined text", () => {
+    expect(items[0]?.characteristics).toEqual(expect.arrayContaining(["32 GB RAM"]));
+    expect(items[0]?.characteristics?.join(", ")).toBe(items[0]?.text);
+    expect(items[2]?.characteristics).toBeUndefined();
+    const stale = load(
+      ssrHtml.replace(`&quot;id&quot;:&quot;${MEDION}&quot;`, "&quot;id&quot;:&quot;1&quot;"),
+    );
+    expect(idealoAdapter.listingItems(stale)[0]?.characteristics).toBeUndefined();
+  });
+
   it("uses the rendered spec line when the payload does not list the tile", () => {
     const stale = load(
       ssrHtml.replace(`&quot;id&quot;:&quot;${MEDION}&quot;`, "&quot;id&quot;:&quot;1&quot;"),
