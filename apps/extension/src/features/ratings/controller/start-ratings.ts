@@ -6,7 +6,7 @@ import type { Overlay } from "../../../ui/host";
 import { collectTargets, isOwnMutation, loadRatingView, watchRatingInputs } from "../adapters";
 import { DEBOUNCE_MS } from "../config";
 import { hasChip, isRated, type RatingView, rateQueries } from "../model";
-import { createChipReconciler } from "./chip-reconciler";
+import { createChipReconciler } from "./chips";
 import { createScanLoop } from "./scan-loop";
 import type { ChipRenderer, TileRating } from "./types";
 
