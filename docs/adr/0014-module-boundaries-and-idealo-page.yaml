@@ -1,0 +1,73 @@
+adr.0014:
+  title: Enforce module boundaries with dependency-cruiser; idealo-page package for change-axis isolation
+  status: accepted
+  date: 2026-10-14
+  amends: [adr.0005]
+  context:
+    problem: god files and directory-level import cycles in apps/extension/src (one SCC of 8 of 13 directories among options, popup, requirements, ratings, filters, page, messaging, diagnostics); views doing IO; platform (messaging) importing features
+    file_level_cycles: none today, so no-circular runs at error from the start
+    goal: deep modules (small index.ts over a larger implementation), Parnas information hiding, hexagonal ports and adapters, and MVVM-ish feature slices, kept true by a failing command instead of by review
+  decision:
+    target_layering:
+      packages:
+        hw-bench: PassMark benchmark model, import, CPU/GPU identity, matching, rating strategies
+        idealo-query: query model, URL grammar, catalog and facets, requirements planning, wire parsing; no DOM, no fetch
+        idealo-page: DOM reading of idealo pages behind the PageAdapter port; no extension APIs, no React
+        decide: LLM-assisted choice behind the Decider port; the Typesafe AI SDK only in jev/client.ts
+        edges: [decide -> hw-bench, decide -> idealo-query, idealo-page -> idealo-query, extension -> every package]
+        rule: packages never import apps; cross-sub-domain imports inside a package go through that sub-domain's index.ts
+      extension_src:
+        contracts: shared kernel, zod schemas and types only
+        platform: adapters over wxt, @wxt-dev and @webext-core (messaging, storage, tabs, errors); never features or ui
+        ui: shared kit (theme, host, components, format); never features or platform
+        features: slices with model, view-model, controller, view, adapters and background; cross-feature access only through features/<x>/index.ts
+        app: popup and options screens composing features through their index
+        entrypoints: composition roots, no logic
+      feature_layers:
+        view: pure React over props and callbacks; imports view-model, model types, ui, contracts, react, mantine only
+        view_model: pure derivation for display
+        model: pure domain logic over packages, contracts and zod
+        controller: hooks, state and IO orchestration
+      secret_isolation: entrypoints/*.content.ts, popup and options cannot reach the OpenRouter key module or its key provider, transitively (adr.0012); the network tap in the MAIN world cannot reach storage, React, Mantine or ui
+    enforcement:
+      tool: dependency-cruiser (root devDependency), config .dependency-cruiser.cjs, command just boundaries, part of just check
+      error_now: [R1 no-circular, R2 no-orphans, R3 not-to-unresolvable, R4 packages-not-to-apps, R5 pure-packages-no-platform and sdk-only-in-jev-client, R6 idealo-page-no-platform, R9 secret reachability, R11 src-not-to-tests, R12 no-non-package-json]
+      warn_now: [R7 barrel-only imports for packages and features, R8 extension layers (view, model, platform, ui, contracts, screens), R10 main-world tap stays lean]
+      why_warn: R7 to R10 target the features/, platform/, ui/ and contracts/ layout that later refactor steps create, or the current tree still violates them; each step flips its rules to error when it lands, and the last step leaves no warnings
+      r9_scope: matches both the current key locations (src/storage/openrouter-key, src/ai/key-provider) and the target ones (platform/storage/openrouter-key, features/ai-matching/background/key-provider); the vitest test openrouter-key-isolation stays as a second, independent proof
+      resolver_notes:
+        - workspace packages are TS source (exports ".": ./src/index.ts); enhancedResolveOptions exportsFields [exports] resolves them to packages/*/src/index.ts
+        - specifiers ending ?raw or ?inline are bundler queries; R3 exempts them
+        - WXT auto-imports browser invisibly, so no rule sees it; Biome noRestrictedGlobals in view/ and model/ is the complement (separate step)
+      companions:
+        godfiles: "just godfiles lists source files over 150 lines (report only, exit 0 until the final step)"
+        manifest_check: "just manifest-check rebuilds the extension and diffs manifest.json (jq -S) against docs/baselines/manifest.chrome-mv3.json"
+    idealo_page_package:
+      rule_amended: adr.0005 says packages wait for a second consumer; idealo-page is extracted with one consumer (apps/extension)
+      reason: change-axis isolation, not reuse. idealo markup redesigns change independently of the URL grammar (idealo-query) and of browser-extension APIs (the app); the package makes that boundary a compile-time and depcruise fact (R6)
+      scope: PageAdapter port, ssr-tiles, ssr-product and heuristic adapters, embedded listing, German price parsing, page snapshot, catalog sources, filter-page detection, category to device-class map, HTML fixtures
+      limits: tsconfig lib DOM, no wxt or chrome types; depends on idealo-query and zod only
+      not_a_precedent: other packages still need a distinct change axis plus a consumer or an IO-purity reason; ui-kit and config packages stay rejected (single consumer, grab-bag)
+    test_layout:
+      rule: mirrored. test/<src-relative path>/x.test.ts for apps/extension and packages/*/test/<src-relative dir>/x.test.ts; tests move with their module
+      imports: relative only; no tsconfig path aliases in the extension, because openrouter-key-isolation follows relative imports
+      cross_module_tests: integration tests that span features live under test/integration
+  rejected:
+    - {alt: eslint-plugin-boundaries, why: needs ESLint and typescript-eslint next to Biome (biome.json is the only linter); element-type rules only and no transitive reachability, so it cannot say "content scripts never reach openrouter-key"}
+    - {alt: eslint-plugin-import no-restricted-paths, why: same ESLint cost; path-pair rules only, no cycle and orphan reporting, no capture-group barrel rule}
+    - {alt: Nx enforce-module-boundaries, why: needs the Nx project graph and ESLint; task running stays pnpm -r plus justfile}
+    - {alt: turbo boundaries, why: experimental and package-level only (no intra-app layers), needs turbo}
+    - {alt: Sheriff (softarc), why: barrel-aware and a good fit, but the ESLint plugin is its primary integration and standalone CLI support is unverified}
+    - {alt: Biome noRestrictedImports alone, why: per-file pattern bans; no cycles, no transitive rules, no barrel capture groups; kept only as a complement (noRestrictedGlobals for browser and document in view/ and model/)}
+    - {alt: keep review-only conventions, why: the SCC grew under review; an unenforced layering is not a layering}
+  rationale:
+    - dependency-cruiser expresses all three rule kinds this repo needs in one config: cycles, capture-group barrel rules ($1 back-references) and transitive reachability (secret isolation)
+    - it reads TS source directly, resolves workspace exports, runs standalone with no ESLint, and reports in under a few seconds
+  consequences:
+    - just check fails on any R1 to R6, R9, R11 or R12 violation; a refactor step that adds a cycle or a deep cross-package import cannot land
+    - warn rules print on every run; their count is the migration progress meter
+    - directory-level cycles are not expressible as dependency-cruiser rules (no-circular is file-level); they disappear by construction once R8 holds
+    - the unused ui/mount.tsx (no importers) is deleted; R2 keeps dead modules out
+  evidence:
+    - context7 /sverweij/dependency-cruiser doc/rules-reference.md and doc/options-reference.md
+    - "depcruise 18.6.0 on the pre-refactor tree: 0 errors, no file-level cycles, workspace and ?raw/?inline specifiers resolved"

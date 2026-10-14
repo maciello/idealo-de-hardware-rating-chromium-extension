@@ -7,8 +7,8 @@ default:
 install:
     pnpm install
 
-# Lint + format check, typecheck, tests, docs YAML parse.
-check: lint typecheck test docs-check
+# Lint + format check, typecheck, tests, docs YAML parse, module boundaries.
+check: lint typecheck test docs-check boundaries
 
 lint:
     pnpm exec biome check .
@@ -26,6 +26,18 @@ test:
 # Parse every YAML under docs/ (flow-mapping quoting errors recur).
 docs-check:
     uv run --quiet --with pyyaml python -I -c "import glob,yaml; [yaml.safe_load(open(f)) for f in glob.glob('docs/**/*.yaml', recursive=True)]; print('docs ok')"
+
+# Module-boundary rules (dependency-cruiser, see docs/adr/0014): cycles, orphans, layering, secret reachability.
+boundaries:
+    pnpm exec depcruise --config .dependency-cruiser.cjs apps packages
+
+# Report source files over 150 lines (report only, exits 0; the refactor's last step makes it fail).
+godfiles:
+    @find apps/*/src apps/*/entrypoints packages/*/src \( -name '*.ts' -o -name '*.tsx' \) -not -name '*.d.ts' | xargs wc -l | awk '$2 != "total" && $1 > 150 {print; n++} END {print n+0 " file(s) over 150 lines"; exit 0}' | sort -rn
+
+# Rebuild the extension and diff its manifest against docs/baselines/manifest.chrome-mv3.json.
+manifest-check: build
+    jq -S . apps/extension/.output/chrome-mv3/manifest.json | diff -u docs/baselines/manifest.chrome-mv3.json -
 
 # Fetch PassMark CPU+GPU data into data/ (private use only, see docs/adr/0006).
 fetch-passmark:

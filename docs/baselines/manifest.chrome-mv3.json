@@ -1,0 +1,46 @@
+{
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "idealo Hardware Rating"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "content-scripts/capture-relay.js"
+      ],
+      "matches": [
+        "https://www.idealo.de/*"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "js": [
+        "content-scripts/idealo-ui.js"
+      ],
+      "matches": [
+        "https://www.idealo.de/*"
+      ]
+    }
+  ],
+  "description": "Benchmark ratings and batch filters for idealo.de hardware listings.",
+  "host_permissions": [
+    "https://www.idealo.de/*",
+    "https://openrouter.ai/*"
+  ],
+  "manifest_version": 3,
+  "name": "idealo Hardware Rating",
+  "options_ui": {
+    "open_in_tab": true,
+    "page": "options.html"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "identity",
+    "scripting"
+  ],
+  "version": "0.1.0"
+}
