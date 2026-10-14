@@ -1,6 +1,8 @@
 export {
   type CpuIdentity,
+  type CpuModelParts,
   type CpuNameKey,
+  cpuModelParts,
   cpuNameKeys,
   extractCpuIdentity,
   normalizeCpuName,
