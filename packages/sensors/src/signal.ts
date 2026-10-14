@@ -10,10 +10,16 @@ export interface SensorCpu {
   releaseYear: number | null;
 }
 
+/** The clock, injected so sensors stay pure. */
+export interface SensorClock {
+  year: number;
+}
+
 export interface SensorInput {
   facts: ProductFacts;
   cpu: SensorCpu | null;
   deviceClass: DeviceClass;
+  now: SensorClock;
 }
 
 export interface Evidence {

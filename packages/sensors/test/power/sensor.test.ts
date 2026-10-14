@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { POWER_SIGNAL_IDS, powerSensor } from "../../src/power/sensor";
 import type { DeviceClass, SensorCpu, SensorInput } from "../../src/signal";
 
+const NOW = { year: 2026 };
+
 const cpu = (overrides: Partial<SensorCpu> = {}): SensorCpu => ({
   name: "Test CPU",
   cpuMark: 9180,
@@ -18,6 +20,7 @@ const input = (
   facts: {},
   cpu: cpu({ tdpWatts }),
   deviceClass,
+  now: NOW,
   ...rest,
 });
 
@@ -53,6 +56,7 @@ describe("powerSensor TDP source", () => {
       facts: { cpuTdpWatts: 9 },
       cpu: cpu({ tdpWatts: 45 }),
       deviceClass: "laptop",
+      now: NOW,
     });
     expect(signal?.id).toBe(POWER_SIGNAL_IDS.veryLow);
     expect(signal?.evidence).toEqual([
@@ -63,7 +67,12 @@ describe("powerSensor TDP source", () => {
 
   it("lets a middle datasheet TDP override an extreme benchmark TDP", () => {
     expect(
-      idsOf({ facts: { cpuTdpWatts: 28 }, cpu: cpu({ tdpWatts: 65 }), deviceClass: "laptop" }),
+      idsOf({
+        facts: { cpuTdpWatts: 28 },
+        cpu: cpu({ tdpWatts: 65 }),
+        deviceClass: "laptop",
+        now: NOW,
+      }),
     ).toEqual([]);
   });
 
@@ -76,9 +85,9 @@ describe("powerSensor TDP source", () => {
   });
 
   it("uses a datasheet TDP when no benchmark CPU matched", () => {
-    expect(idsOf({ facts: { cpuTdpWatts: 9 }, cpu: null, deviceClass: "laptop" })).toEqual([
-      POWER_SIGNAL_IDS.veryLow,
-    ]);
+    expect(
+      idsOf({ facts: { cpuTdpWatts: 9 }, cpu: null, deviceClass: "laptop", now: NOW }),
+    ).toEqual([POWER_SIGNAL_IDS.veryLow]);
   });
 
   it.each([
@@ -87,7 +96,7 @@ describe("powerSensor TDP source", () => {
     ["a zero benchmark TDP", { facts: {}, cpu: cpu({ tdpWatts: 0 }) }],
     ["a zero datasheet TDP and no benchmark TDP", { facts: { cpuTdpWatts: 0 }, cpu: cpu() }],
   ] as const)("emits nothing when %s", (_name, rest) => {
-    expect(idsOf({ ...rest, deviceClass: "laptop" })).toEqual([]);
+    expect(idsOf({ ...rest, deviceClass: "laptop", now: NOW })).toEqual([]);
   });
 });
 
@@ -114,6 +123,7 @@ describe("powerSensor signal content", () => {
       facts: {},
       cpu: cpu({ cpuMark: 45000, tdpWatts: 55 }),
       deviceClass: "laptop",
+      now: NOW,
     });
     expect(signal?.label).toBe("Very high power");
     expect(signal?.detail).toBe("55 W TDP · 818 CPU Mark per W");
@@ -124,6 +134,7 @@ describe("powerSensor signal content", () => {
       facts: { cpuTdpWatts: 9 },
       cpu: null,
       deviceClass: "laptop",
+      now: NOW,
     });
     expect(signal?.detail).toBe("9 W TDP");
   });
