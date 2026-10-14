@@ -3,8 +3,8 @@
 import { embeddedStatus, idealoAdapter } from "@idealo-hw/idealo-page";
 import ssrHtml from "@idealo-hw/idealo-page/fixtures/listing.idealo-ssr.html?raw";
 import { describe, expect, it } from "vitest";
-import type { PageInspection } from "../src/contracts";
-import { buildPageReport } from "../src/diagnostics/page-report";
+import type { PageInspection } from "../../src/contracts";
+import { buildPageReport } from "../../src/features/diagnostics";
 
 const URL_3751 = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 const doc = new DOMParser().parseFromString(ssrHtml, "text/html");

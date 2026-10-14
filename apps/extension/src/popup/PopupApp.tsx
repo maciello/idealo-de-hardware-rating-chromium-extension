@@ -1,17 +1,16 @@
 import { parseIdealoUrl } from "@idealo-hw/idealo-query";
-import { Anchor, Button, Group, Stack, Text } from "@mantine/core";
-import { IconAdjustmentsHorizontal, IconBug } from "@tabler/icons-react";
+import { Anchor, Button, Stack, Text } from "@mantine/core";
+import { IconAdjustmentsHorizontal } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { PageStats } from "../contracts";
-import { exportDebugReport } from "../diagnostics/export";
 import { OpenRouterConnectedRow } from "../features/ai-matching";
 import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
 import { CaptureConnectedRow } from "../features/capture";
+import { DiagnosticsConnectedRow } from "../features/diagnostics";
 import { PrimaryNumberConnectedRow } from "../features/settings";
-import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
-import { LabeledRow, StatusNote } from "../ui";
+import { LabeledRow } from "../ui";
 
 function BenchmarkRow() {
   return <BenchmarkSummary {...useBenchmarkSummary()} />;
@@ -26,43 +25,6 @@ function pageSummary(tab: TargetTab | null, stats: PageStats | null | "loading")
   if (stats.kind !== "listing") return "Open an idealo listing or product page";
   if (stats.total === 0) return "No products found on this page";
   return `${stats.rated} of ${stats.total} products rated`;
-}
-
-function Diagnostics({ tab }: { tab: TargetTab | null }) {
-  const [note, setNote] = useState<string | null>(null);
-
-  const exportReport = async (): Promise<void> => {
-    setNote(null);
-    try {
-      setNote(`Saved ${await exportDebugReport(tab)}`);
-    } catch (cause) {
-      void recordError("popup", cause);
-      setNote("Could not create the report.");
-    }
-  };
-
-  return (
-    <LabeledRow label="Diagnostics" stacked>
-      <Stack gap={8}>
-        <Group>
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconBug size={14} />}
-            onClick={() => void exportReport()}
-            data-testid="popup-debug-report"
-          >
-            Export debug report
-          </Button>
-        </Group>
-        {note && (
-          <StatusNote tone="muted" testId="popup-debug-note">
-            {note}
-          </StatusNote>
-        )}
-      </Stack>
-    </LabeledRow>
-  );
 }
 
 export function PopupApp() {
@@ -123,7 +85,7 @@ export function PopupApp() {
       </Button>
       <OpenRouterConnectedRow />
       <CaptureConnectedRow tab={tab} />
-      <Diagnostics tab={tab} />
+      <DiagnosticsConnectedRow tab={tab} />
       <Anchor
         component="button"
         type="button"

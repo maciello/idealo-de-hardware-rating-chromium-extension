@@ -1,8 +1,6 @@
 import type { EmbeddedStatus } from "@idealo-hw/idealo-page";
-import { MAX_UNRATED, type PageInspection, type PageReport } from "../contracts";
-
-const MAX_TITLE_CHARS = 200;
-const MAX_TEXT_CHARS = 300;
+import { MAX_UNRATED, type PageInspection, type PageReport } from "../../../contracts";
+import { MAX_TEXT_CHARS, MAX_TITLE_CHARS } from "../config";
 
 export function buildPageReport(
   url: string,

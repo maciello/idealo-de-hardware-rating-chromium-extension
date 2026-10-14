@@ -4,13 +4,14 @@ import {
   type AiTestResult,
   AiTestResultSchema,
   type CpuSnapshot,
+  type ErrorEntry,
+  ErrorEntrySchema,
   type GpuSnapshot,
   type OpenRouterStatus,
   type PageReport,
   PageReportSchema,
   type Settings,
-} from "../contracts";
-import { type ErrorEntry, ErrorEntrySchema } from "../platform/errors";
+} from "../../../contracts";
 
 const DataStatusSchema = z.object({
   records: z.number().int().nonnegative(),

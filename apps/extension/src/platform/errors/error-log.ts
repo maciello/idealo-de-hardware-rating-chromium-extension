@@ -1,5 +1,5 @@
 import { storage } from "@wxt-dev/storage";
-import { z } from "zod";
+import { type ErrorEntry, ErrorEntrySchema } from "../../contracts";
 import { withLock } from "../locks";
 
 export const MAX_ERRORS = 50;
@@ -8,14 +8,6 @@ const STACK_LINES = 5;
 /** OpenRouter keys; an error message that echoes one must not reach the log. */
 const KEY_PATTERN = /sk-or-[\w-]+/g;
 
-export const ErrorEntrySchema = z.object({
-  at: z.iso.datetime(),
-  where: z.enum(["background", "content", "options", "popup"]),
-  message: z.string(),
-  /** First lines of the stack; empty when the thrown value had none. */
-  stack: z.string(),
-});
-export type ErrorEntry = z.infer<typeof ErrorEntrySchema>;
 export type ErrorSource = ErrorEntry["where"];
 
 /**
