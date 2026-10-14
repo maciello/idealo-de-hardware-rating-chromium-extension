@@ -81,7 +81,7 @@ function BenchmarkData() {
     gpu ? `GPU ${formatInteger(gpu.records.length)}` : null,
   ].filter((part) => part !== null);
   return (
-    <Row label="Benchmark data">
+    <Row label="Benchmark data" stacked>
       <Group justify="space-between" wrap="nowrap" gap="xs">
         <Text fz="sm" data-testid="popup-data">
           {parts.length === 0 ? "Nothing imported yet" : parts.join(" · ")}
@@ -246,7 +246,7 @@ function Capture({ tab }: { tab: TargetTab | null }) {
             data-testid="popup-capture"
           />
         </Group>
-        <Group gap="xs" wrap="nowrap" grow>
+        <Group gap="xs">
           <Button
             size="compact-sm"
             variant="default"
