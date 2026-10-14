@@ -27,7 +27,7 @@ test.afterAll(async () => {
   await context.close();
 });
 
-test("cohort policy: narrowing it to years without data drops the segment percentile from the chip live", async () => {
+test("cohort policy: narrowing it to years without data drops the segment percentile from the chip live, with no page-relative stand-in", async () => {
   const listing = await context.newPage();
   await listing.goto(NOTEBOOKS_LISTING_URL);
   const chip = listing
@@ -57,7 +57,9 @@ test("cohort policy: narrowing it to years without data drops the segment percen
     .screenshot({ path: resolve(ARTIFACTS_DIR, "options-cohort.png") });
 
   await listing.bringToFront();
-  await expect(chip).toHaveAttribute("aria-label", /on this page/);
+  // Without a class percentile the chip shows no standing at all; never a page-relative one.
+  await expect(chip).not.toHaveAttribute("aria-label", /of laptop CPUs/);
+  await expect(chip).not.toHaveAttribute("aria-label", /on this page/);
 
   await options.bringToFront();
   await options.getByTestId("cohort-cutoff").getByText("All years").click();

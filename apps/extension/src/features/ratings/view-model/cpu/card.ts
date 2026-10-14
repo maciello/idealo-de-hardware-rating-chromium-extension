@@ -9,7 +9,7 @@ import { valueText } from "./value-text";
 /**
  * One row per enabled strategy that produced a rating. The segment percentile describes the
  * multi-thread score, so it rides on that row; without it, it gets a row of its own. The on-page
- * percentile only shows as a meter on the page-rank row when no segment percentile exists.
+ * percentile only shows as a meter on its own, labelled page-rank row, when no segment percentile exists.
  */
 export function cardRows(rating: MatchedRating): CardRow[] {
   const segment = segmentMeter(rating);
@@ -17,12 +17,7 @@ export function cardRows(rating: MatchedRating): CardRow[] {
   for (const id of ROW_ORDER) {
     const r = findRating(rating, id);
     if (!r) continue;
-    const meter =
-      id === MULTI
-        ? (segment ?? pageMeter(rating))
-        : id === PAGE_RANK && !segment
-          ? pageMeter(rating)
-          : null;
+    const meter = id === MULTI ? segment : id === PAGE_RANK && !segment ? pageMeter(rating) : null;
     rows.push({
       id,
       label: RATINGS_COPY.rowLabels[id] ?? id,

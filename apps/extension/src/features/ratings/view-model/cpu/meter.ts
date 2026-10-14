@@ -42,6 +42,8 @@ export const pageMeter = (rating: MatchedRating): MeterInfo | null => {
     : null;
 };
 
-/** Segment percentile first, the on-page percentile when the former is unavailable. */
-export const meterOf = (rating: MatchedRating): MeterInfo | null =>
-  segmentMeter(rating) ?? pageMeter(rating);
+/**
+ * The chip meter shows standing in the CPU's device class only. A page-relative meter would fill
+ * every bar for a mid CPU on a page of weak ones (owner requirement: a mid CPU must not look good).
+ */
+export const meterOf = (rating: MatchedRating): MeterInfo | null => segmentMeter(rating);

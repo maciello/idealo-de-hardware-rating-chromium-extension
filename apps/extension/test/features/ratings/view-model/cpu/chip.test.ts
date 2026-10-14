@@ -97,13 +97,25 @@ describe("chipModel and cardRows", () => {
     expect(chipModel(only, "raw_multithread_score")?.value).toBe("3.900");
   });
 
-  it("uses the on-page percentile for the meter when the segment one is disabled", () => {
+  it("never fills the chip meter from the on-page percentile", () => {
+    // Page-relative bars would make a mid CPU on a page of weak ones look top-tier.
     const model = chipModel(
       rate(["raw_multithread_score", "peer_percentile_on_listing"]),
       "raw_multithread_score",
     );
-    expect(model?.filled).toBe(4);
-    expect(model?.aria).toContain("on this page");
+    expect(model?.filled).toBeNull();
+    expect(model?.aria).not.toContain("on this page");
+  });
+
+  it("shows no meter when the device class is unknown, however the CPU ranks on the page", () => {
+    const [first] = createRatingEngine(snapshot, allIds).rate([
+      { title: "A Intel Core i7-13700H", text: "", priceEur: 1299, formFactor: "unknown" },
+      { title: "B AMD Ryzen 5 7640U", text: "", priceEur: 899, formFactor: "unknown" },
+      { title: "C Intel Core i9-13900HX", text: "", priceEur: 1999, formFactor: "unknown" },
+    ]);
+    if (first?.status !== "matched") throw new Error("expected a match");
+    expect(chipModel(first, "raw_multithread_score")?.filled).toBeNull();
+    expect(cardRows(first).find((r) => r.label === "Multi-thread")?.meter).toBeNull();
   });
 
   it("hides the meter when neither percentile is enabled, and the chip when nothing is", () => {
