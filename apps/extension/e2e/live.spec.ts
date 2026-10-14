@@ -57,6 +57,13 @@ test("live: chips on real idealo pages", async () => {
         .filter((el) => /^sr-resultItemTile_[\w-]{5}$/.test(el.className.split(" ")[0] ?? ""))
         .map((el) => ({
           title: el.querySelector("[class*='productSummary__title']")?.textContent?.trim() ?? null,
+          specs:
+            el.querySelector("[class*='productSummary__mainDetails']")?.textContent?.trim() ?? null,
+          gpuLine:
+            el
+              .querySelector("idealo-hw-badge")
+              ?.shadowRoot?.querySelector('[data-testid="chip-gpu"]')
+              ?.getAttribute("title") ?? null,
           chip:
             el
               .querySelector("idealo-hw-badge")

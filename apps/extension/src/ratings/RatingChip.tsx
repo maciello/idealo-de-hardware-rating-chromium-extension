@@ -1,8 +1,18 @@
+import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import { Popover } from "@mantine/core";
 import { IconFlame, IconLeaf } from "@tabler/icons-react";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
 import type { ItemRating } from "./engine";
-import { type CardRow, cardRows, chipModel, formatImportDate, OLD_MEMORY_HINT } from "./present";
+import {
+  AMBIGUOUS_CPU_ARIA,
+  type CardRow,
+  cardRows,
+  chipAria,
+  chipModel,
+  formatImportDate,
+  OLD_MEMORY_HINT,
+} from "./present";
+import { gpuCardHead, gpuCardRows, gpuLineModel } from "./present-gpu";
 
 const OPEN_DELAY_MS = 80;
 const CLOSE_DELAY_MS = 150;
@@ -11,11 +21,20 @@ const CARD_WIDTH = 300;
 type Matched = Extract<ItemRating, { status: "matched" }>;
 type Ambiguous = Extract<ItemRating, { status: "ambiguous" }>;
 
-export function Meter({ filled, label }: { filled: number; label?: string }) {
+export function Meter({
+  filled,
+  label,
+  testId,
+}: {
+  filled: number;
+  label?: string;
+  testId?: string;
+}) {
   return (
     <span
       className="hw-meter"
       data-filled={filled}
+      {...(testId ? { "data-testid": testId } : {})}
       {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
     >
       {[0, 1, 2, 3, 4].map((i) => (
@@ -44,10 +63,12 @@ function Row({ row }: { row: CardRow }) {
 
 function CardBody({
   rating,
+  gpu,
   importedAt,
   onOpenSettings,
 }: {
-  rating: Matched | Ambiguous;
+  rating: Matched | Ambiguous | null;
+  gpu: GpuMatchRating | null;
   importedAt: string | null;
   onOpenSettings: () => void;
 }) {
@@ -60,6 +81,28 @@ function CardBody({
       </button>
     </div>
   );
+  const gpuHead = gpu ? gpuCardHead(gpu) : null;
+  const gpuSection = gpu && gpuHead && (
+    <div data-testid="card-gpu">
+      <div className="hw-card__head">
+        <div className="hw-card__title">{gpuHead.title}</div>
+        <div className="hw-card__sub">{gpuHead.sub}</div>
+      </div>
+      <div className="hw-card__rows">
+        {gpuCardRows(gpu).map((row) => (
+          <Row key={row.id} row={row} />
+        ))}
+      </div>
+    </div>
+  );
+  if (rating === null) {
+    return (
+      <div className="hw-card" data-testid="rating-card">
+        {gpuSection}
+        {footer}
+      </div>
+    );
+  }
   if (rating.status === "ambiguous") {
     return (
       <div className="hw-card" data-testid="rating-card">
@@ -72,6 +115,7 @@ function CardBody({
             <li key={c.id}>{c.name}</li>
           ))}
         </ul>
+        {gpuSection}
         {footer}
       </div>
     );
@@ -87,13 +131,16 @@ function CardBody({
           <Row key={row.id} row={row} />
         ))}
       </div>
+      {gpuSection}
       {footer}
     </div>
   );
 }
 
 export interface RatingChipProps {
-  rating: Matched | Ambiguous;
+  /** Null when only the GPU was recognised: the chip then shows the GPU line alone. */
+  rating: Matched | Ambiguous | null;
+  gpu?: GpuMatchRating | null | undefined;
   primaryId: string;
   importedAt: string | null;
   onOpenSettings: () => void;
@@ -103,7 +150,13 @@ export interface RatingChipProps {
  * Collapsed chip in the tile; the card is a Popover dropdown that Mantine portals into the overlay.
  * HoverCard is not used because it cannot be controlled: after Escape, Enter must reopen the card.
  */
-export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: RatingChipProps) {
+export function RatingChip({
+  rating,
+  gpu = null,
+  primaryId,
+  importedAt,
+  onOpenSettings,
+}: RatingChipProps) {
   const [opened, setOpened] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   const settle = (next: boolean, delay: number): void => {
@@ -113,8 +166,14 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
   const cancel = (): void => window.clearTimeout(timer.current);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  const model = rating.status === "matched" ? chipModel(rating, primaryId) : null;
-  if (rating.status === "matched" && model === null) return null;
+  const model = rating?.status === "matched" ? chipModel(rating, primaryId) : null;
+  const gpuModel = gpu ? gpuLineModel(gpu) : null;
+  const cpu = rating !== null && (rating.status === "ambiguous" || model !== null) ? rating : null;
+  if (cpu === null && gpuModel === null) return null;
+  const aria = chipAria([
+    ...(cpu ? [model?.aria ?? AMBIGUOUS_CPU_ARIA] : []),
+    ...(gpuModel ? [gpuModel.aria] : []),
+  ]);
 
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== "Escape" || !opened) return;
@@ -149,8 +208,8 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
           type="button"
           className="hw-chip"
           data-testid="rating-badge"
-          data-status={rating.status}
-          aria-label={model?.aria ?? "CPU: several PassMark matches. Show details"}
+          data-status={cpu?.status ?? "gpu"}
+          aria-label={aria}
           onPointerEnter={() => settle(true, OPEN_DELAY_MS)}
           onPointerLeave={() => settle(false, CLOSE_DELAY_MS)}
           onFocus={(event) => {
@@ -163,37 +222,60 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
           onKeyDown={onKeyDown}
           onClick={onClick}
         >
-          {model ? (
-            <>
-              {model.filled !== null && <Meter filled={model.filled} />}
-              <span className="hw-chip__value" data-testid="chip-value">
-                {model.value}
-              </span>
-              <span className="hw-chip__label">{model.label}</span>
-              {model.power !== null && (
-                <span
-                  className="hw-chip__power"
-                  data-level={model.power.level}
-                  role="img"
-                  aria-label={model.power.label}
-                  title={model.power.label}
-                  data-testid="chip-power"
-                >
-                  {model.power.level === "low" ? (
-                    <IconLeaf aria-hidden />
-                  ) : (
-                    <IconFlame aria-hidden />
+          {cpu && (
+            <span className="hw-chip__line" data-testid="chip-cpu">
+              {model ? (
+                <>
+                  {model.filled !== null && <Meter filled={model.filled} />}
+                  <span className="hw-chip__value" data-testid="chip-value">
+                    {model.value}
+                  </span>
+                  <span className="hw-chip__label">{model.label}</span>
+                  {model.power !== null && (
+                    <span
+                      className="hw-chip__power"
+                      data-level={model.power.level}
+                      role="img"
+                      aria-label={model.power.label}
+                      title={model.power.label}
+                      data-testid="chip-power"
+                    >
+                      {model.power.level === "low" ? (
+                        <IconLeaf aria-hidden />
+                      ) : (
+                        <IconFlame aria-hidden />
+                      )}
+                    </span>
                   )}
-                </span>
+                  {model.memoryWarning !== null && (
+                    <span
+                      className="hw-chip__tag"
+                      title={OLD_MEMORY_HINT}
+                      data-testid="chip-memory"
+                    >
+                      {model.memoryWarning}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="hw-chip__value">CPU ?</span>
               )}
-              {model.memoryWarning !== null && (
-                <span className="hw-chip__tag" title={OLD_MEMORY_HINT} data-testid="chip-memory">
-                  {model.memoryWarning}
-                </span>
+            </span>
+          )}
+          {gpuModel && (
+            <span
+              className="hw-chip__line"
+              data-testid="chip-gpu"
+              {...(gpuModel.context ? { title: gpuModel.context } : {})}
+            >
+              {gpuModel.filled !== null && (
+                <Meter filled={gpuModel.filled} testId="chip-gpu-meter" />
               )}
-            </>
-          ) : (
-            <span className="hw-chip__value">CPU ?</span>
+              <span className="hw-chip__value" data-testid="chip-gpu-value">
+                {gpuModel.value}
+              </span>
+              <span className="hw-chip__label">{gpuModel.label}</span>
+            </span>
           )}
         </button>
       </Popover.Target>
@@ -204,7 +286,7 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
         onBlur={() => settle(false, CLOSE_DELAY_MS)}
         data-testid="rating-card-host"
       >
-        <CardBody rating={rating} importedAt={importedAt} onOpenSettings={onOpenSettings} />
+        <CardBody rating={cpu} gpu={gpu} importedAt={importedAt} onOpenSettings={onOpenSettings} />
       </Popover.Dropdown>
     </Popover>
   );

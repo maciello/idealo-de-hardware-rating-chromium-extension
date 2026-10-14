@@ -12,6 +12,7 @@ import {
 import { type Signal, senseAll } from "@idealo-hw/sensors";
 import { type RamType, ramTypeOf } from "./ram-type";
 import { sensorInputOf } from "./sensor-input";
+import { fragmentsOf } from "./text-fragments";
 
 export interface RatingQuery {
   title: string;
@@ -88,13 +89,6 @@ const strength = (match: CpuMatch): number => {
   if (match.status === "matched") return match.via === "model_token" ? 1 : 3;
   return match.status === "ambiguous" ? 2 : 0;
 };
-
-/** Tile spec fragments ("Intel Core i5-10210U", "32 GB RAM") or datasheet lines; free text stays one piece. */
-const fragmentsOf = (text: string): string[] =>
-  text
-    .split(/\n|,\s+/)
-    .map((fragment) => fragment.trim())
-    .filter((fragment) => fragment !== "");
 
 const formFactorOf = (query: RatingQuery | undefined): FormFactor => query?.formFactor ?? "unknown";
 

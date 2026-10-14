@@ -25,9 +25,10 @@ const COMPONENTS = `
     all: unset;
     box-sizing: border-box;
     display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 24px;
     padding: 0 8px;
     border: 1px solid var(--hw-line);
     border-radius: var(--hw-radius-s);
@@ -41,6 +42,7 @@ const COMPONENTS = `
     white-space: nowrap;
     cursor: default;
   }
+  .hw-chip__line { display: inline-flex; align-items: center; gap: 6px; height: 22px; }
   .hw-chip:hover, .hw-chip[aria-expanded="true"] { box-shadow: var(--hw-shadow); }
   .hw-chip:focus-visible { outline: 2px solid var(--hw-focus); outline-offset: 1px; }
   .hw-chip__value { font-weight: 600; }

@@ -1,4 +1,4 @@
-import type { Rating } from "@idealo-hw/hw-bench";
+import { GPU_PERCENTILE_ID, g3dScore, gpuValuePerEuro, type Rating } from "@idealo-hw/hw-bench";
 import { POWER_SENSOR_ID, POWER_SIGNAL_IDS, type Signal } from "@idealo-hw/sensors";
 import type { ItemRating, PageRank } from "./engine";
 
@@ -27,6 +27,29 @@ export const ROW_LABELS: Readonly<Record<string, string>> = {
   [PAGE_RANK]: "On this page",
   [SEGMENT]: "In its segment",
 };
+
+export const AMBIGUOUS_CPU_ARIA = "CPU: several PassMark matches";
+
+/** Accessible name of the whole chip button: one sentence per line, then the hint that it opens a card. */
+export const chipAria = (parts: readonly string[]): string => `${parts.join(". ")}. Show details`;
+
+export const GPU_LABEL = "GPU";
+export const GPU_G3D = g3dScore.id;
+export const GPU_PERCENTILE = GPU_PERCENTILE_ID;
+export const GPU_PER_EURO = gpuValuePerEuro.id;
+export const GPU_ROW_LABELS: Readonly<Record<string, string>> = {
+  [GPU_G3D]: "G3D Mark",
+  [GPU_PERCENTILE]: "In its class",
+  [GPU_PER_EURO]: "Per euro",
+};
+export const GPU_SEGMENT_NOUN: Readonly<Record<string, string>> = {
+  laptop: "laptop GPUs",
+  desktop: "desktop GPUs",
+};
+export const GPU_MATCH_NOTE = "Matched to PassMark GPU entry";
+export const GPU_AT_LEAST = "at least";
+export const gpuLowerBoundNote = (variants: number): string =>
+  `Weakest of ${variants} cards the text could mean`;
 
 type Matched = Extract<ItemRating, { status: "matched" }>;
 
@@ -156,7 +179,7 @@ export interface ChipModel {
   memoryWarning: string | null;
   /** Power extreme to show as an icon; null for everything in between. */
   power: PowerBadge | null;
-  /** Spoken summary for the button. */
+  /** Spoken summary of the CPU line; `chipAria` joins it with the other lines. */
   aria: string;
 }
 
@@ -179,7 +202,7 @@ export function chipModel(rating: Matched, primaryId: string): ChipModel | null 
       meter ? `, ${meter.context}` : ""
     }${memoryWarning ? `, ${memoryWarning}: ${OLD_MEMORY_HINT.toLowerCase()}` : ""}${
       power ? `, ${power.label.toLowerCase()}` : ""
-    }. Show details`,
+    }`,
   };
 }
 

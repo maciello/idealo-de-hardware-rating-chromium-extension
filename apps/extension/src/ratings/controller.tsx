@@ -1,3 +1,4 @@
+import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import type { ReactNode } from "react";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { recordError } from "../diagnostics/error-log";
@@ -9,8 +10,10 @@ import { listingFormFactor, productFormFactor } from "../page/device-class";
 import {
   cohortPolicyItem,
   cpuSnapshotItem,
+  gpuSnapshotItem,
   loadCohortPolicy,
   loadCpuSnapshot,
+  loadGpuSnapshot,
   loadSettings,
   settingsItem,
 } from "../storage/items";
@@ -23,8 +26,10 @@ import {
   type RatingQuery,
   resolveEnabledStrategyIds,
 } from "./engine";
+import { createGpuEngine, type GpuEngine } from "./gpu-engine";
 import { DEFAULT_PRIMARY_ID } from "./present";
 import { RatingChip } from "./RatingChip";
+import { signatureOf } from "./signature";
 
 const DEBOUNCE_MS = 250;
 
@@ -48,6 +53,7 @@ interface ChipEntry {
 
 interface View {
   engine: RatingEngine | null;
+  gpuEngine: GpuEngine | null;
   primaryId: string;
   importedAt: string | null;
 }
@@ -62,17 +68,15 @@ export interface RatingsHandle {
 const isVisible = (rating: ItemRating): boolean =>
   rating.status === "ambiguous" || (rating.status === "matched" && rating.ratings.length > 0);
 
-const signatureOf = (rating: ItemRating): string => {
-  if (rating.status === "matched") {
-    const values = rating.ratings
-      .map((r) => `${r.strategyId}=${r.value}:${r.explanation}`)
-      .join(",");
-    const rank = rating.pageRank ? `${rating.pageRank.rank}/${rating.pageRank.total}` : "-";
-    const signals = rating.signals.map((s) => s.id).join(",");
-    return `m:${rating.record.id}:${rating.formFactor}:${rating.ramType?.label ?? "-"}:${values}:${rank}:${signals}`;
-  }
-  return rating.status === "ambiguous" ? `a:${rating.candidates.map((c) => c.id).join(",")}` : "n";
-};
+interface TileRating {
+  target: Target;
+  rating: ItemRating;
+  gpu: GpuMatchRating | null;
+}
+
+/** The CPU rating a chip can show: matched with at least one number, or ambiguous. */
+const visibleCpu = (rating: ItemRating) =>
+  rating.status !== "no_match" && isVisible(rating) ? rating : null;
 
 function collectTargets(adapter: PageAdapter): Target[] {
   const kind = adapter.detect(location.href);
@@ -151,8 +155,9 @@ export function startRatings(
   let inspection: PageInspection = { kind: stats.kind, items: [] };
 
   const buildView = async (): Promise<View> => {
-    const [snapshot, settings, cohortPolicy] = await Promise.all([
+    const [snapshot, gpuSnapshot, settings, cohortPolicy] = await Promise.all([
       loadCpuSnapshot(),
+      loadGpuSnapshot(),
       loadSettings(),
       loadCohortPolicy(),
     ]);
@@ -165,8 +170,9 @@ export function startRatings(
               resolveEnabledStrategyIds(settings?.enabledStrategyIds),
               cohortPolicy,
             ),
+      gpuEngine: gpuSnapshot === null ? null : createGpuEngine(gpuSnapshot, cohortPolicy),
       primaryId: settings?.primaryStrategyId ?? DEFAULT_PRIMARY_ID,
-      importedAt: snapshot?.importedAt ?? null,
+      importedAt: snapshot?.importedAt ?? gpuSnapshot?.importedAt ?? null,
     };
   };
 
@@ -178,25 +184,23 @@ export function startRatings(
     entry.restorePosition();
   };
 
-  const sync = (
-    overlay: Overlay,
-    current: View,
-    results: readonly { target: Target; rating: ItemRating }[],
-  ): void => {
+  const sync = (overlay: Overlay, current: View, results: readonly TileRating[]): void => {
     const live = new Set<Element>();
-    for (const { target, rating } of results) {
-      if (rating.status === "no_match" || !isVisible(rating)) continue;
+    for (const { target, rating, gpu } of results) {
+      const cpu = visibleCpu(rating);
+      if (cpu === null && gpu === null) continue;
       const { element } = target;
       live.add(element);
       const node = (
         <RatingChip
-          rating={rating}
+          rating={cpu}
+          gpu={gpu}
           primaryId={current.primaryId}
           importedAt={current.importedAt}
           onOpenSettings={() => void sendMessage("openOptions", undefined)}
         />
       );
-      const signature = `${current.primaryId}|${current.importedAt}|${signatureOf(rating)}`;
+      const signature = `${current.primaryId}|${current.importedAt}|${signatureOf(rating, gpu)}`;
       const existing = chips.get(element);
       if (existing && (existing.host === undefined || element.contains(existing.host.host))) {
         if (existing.signature !== signature) {
@@ -230,26 +234,29 @@ export function startRatings(
 
   const scan = async (): Promise<void> => {
     const targets = collectTargets(adapter);
-    let ratings: ItemRating[] = [];
+    let results: TileRating[] = [];
     let current: View | undefined;
     if (targets.length > 0) {
       view ??= buildView();
       current = await view;
-      ratings = current.engine?.rate(targets.map((t) => t.query)) ?? [];
+      const queries = targets.map((t) => t.query);
+      const ratings = current.engine?.rate(queries) ?? [];
+      const gpus = current.gpuEngine?.rate(queries) ?? [];
+      results = targets.map((target, i) => ({
+        target,
+        rating: ratings[i] ?? { status: "no_match" },
+        gpu: gpus[i] ?? null,
+      }));
     }
-    const results = targets.flatMap((target, i) => {
-      const rating = ratings[i];
-      return rating ? [{ target, rating }] : [];
-    });
-    const isRated = (rating: ItemRating | undefined): boolean =>
-      rating?.status === "matched" && isVisible(rating);
+    const isRated = ({ rating, gpu }: TileRating): boolean =>
+      (rating.status === "matched" && isVisible(rating)) || gpu !== null;
     const kind = adapter.detect(location.href);
-    stats = { kind, total: targets.length, rated: ratings.filter(isRated).length };
+    stats = { kind, total: targets.length, rated: results.filter(isRated).length };
     inspection = {
       kind,
-      items: targets.map((target, i) => ({ ...target.seen, rated: isRated(ratings[i]) })),
+      items: results.map((result) => ({ ...result.target.seen, rated: isRated(result) })),
     };
-    if (results.some(({ rating }) => isVisible(rating)) && current) {
+    if (results.some(({ rating, gpu }) => isVisible(rating) || gpu !== null) && current) {
       sync(await getOverlay(), current, results);
     } else if (chips.size > 0) {
       const overlay = await getOverlay();
@@ -291,6 +298,7 @@ export function startRatings(
   };
   const unwatch = [
     cpuSnapshotItem.watch(invalidate),
+    gpuSnapshotItem.watch(invalidate),
     settingsItem.watch(invalidate),
     cohortPolicyItem.watch(invalidate),
   ];
