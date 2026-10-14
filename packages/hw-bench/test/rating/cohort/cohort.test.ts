@@ -117,6 +117,20 @@ describe.skipIf(!haveData("passmark_cpu.json", "passmark_gpu.csv"))(
       expect(rate("AMD Ryzen 9 9950X", DEFAULT_COHORT_POLICY)).toBeGreaterThan(90);
     });
 
+    it("keeps a mid CPU (CPU Mark 8000-17000) in the bottom 40 percent of either class", () => {
+      // Owner requirement: a mid CPU must not look good. The extension meter fills ceil(percentile / 20) of 5 bars.
+      const snapshot = passmarkCpuSource.parse(readFileSync(cpuPath, "utf8"));
+      const strategy = segmentPercentile(snapshot, DEFAULT_COHORT_POLICY);
+      const base = snapshot.records.find((r) => r.socketCount === 1);
+      if (base === undefined) throw new Error("no single-socket CPU in snapshot");
+      for (const formFactor of ["laptop", "desktop"] as const) {
+        const at = (cpuMark: number) =>
+          strategy.rate({ cpu: { ...base, cpuMark }, formFactor })?.value ?? Number.NaN;
+        expect(at(8_000)).toBeLessThanOrEqual(20);
+        expect(at(17_000)).toBeLessThanOrEqual(40);
+      }
+    });
+
     it("ranks CPUs against the set of the page's device class, not PassMark's first segment", () => {
       const snapshot = passmarkCpuSource.parse(readFileSync(cpuPath, "utf8"));
       const strategy = segmentPercentile(snapshot, DEFAULT_COHORT_POLICY);
