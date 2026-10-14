@@ -34,7 +34,6 @@ export const AMBIGUOUS_CPU_ARIA = "CPU: several PassMark matches";
 /** Accessible name of the whole chip button: one sentence per line, then the hint that it opens a card. */
 export const chipAria = (parts: readonly string[]): string => `${parts.join(". ")}. Show details`;
 
-export const GPU_LABEL = "GPU";
 export const GPU_G3D = g3dScore.id;
 export const GPU_PERCENTILE = GPU_PERCENTILE_ID;
 export const GPU_PER_EURO = gpuValuePerEuro.id;

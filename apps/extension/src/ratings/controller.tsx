@@ -1,4 +1,3 @@
-import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import { listingFormFactor, type PageAdapter } from "@idealo-hw/idealo-page";
 import type { ReactNode } from "react";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
@@ -26,6 +25,7 @@ import {
   resolveEnabledStrategyIds,
 } from "./engine";
 import { createGpuEngine, type GpuEngine } from "./gpu-engine";
+import type { GpuReading } from "./gpu-reading";
 import { DEFAULT_PRIMARY_ID } from "./present";
 import { RatingChip } from "./RatingChip";
 import { signatureOf } from "./signature";
@@ -70,7 +70,7 @@ const isVisible = (rating: ItemRating): boolean =>
 interface TileRating {
   target: Target;
   rating: ItemRating;
-  gpu: GpuMatchRating | null;
+  gpu: GpuReading | null;
 }
 
 /** The CPU rating a chip can show: matched with at least one number, or ambiguous. */
@@ -240,7 +240,7 @@ export function startRatings(
       current = await view;
       const queries = targets.map((t) => t.query);
       const ratings = current.engine?.rate(queries) ?? [];
-      const gpus = current.gpuEngine?.rate(queries) ?? [];
+      const gpus = current.gpuEngine?.rate(queries, ratings) ?? [];
       results = targets.map((target, i) => ({
         target,
         rating: ratings[i] ?? { status: "no_match" },

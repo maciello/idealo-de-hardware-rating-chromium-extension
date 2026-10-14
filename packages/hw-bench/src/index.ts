@@ -33,15 +33,26 @@ export {
 } from "./candidates";
 export {
   createGpuMatcher,
+  createGpuNameLookup,
   extractGpuIdentity,
   type GpuIdentity,
   type GpuMatcher,
   type GpuMatchOptions,
+  type GraphicsMemory,
+  graphicsMemoryOf,
+  IGPU_RULES,
+  type IgpuMatch,
+  type IgpuRule,
+  type IgpuTarget,
+  integratedGpuOf,
+  isIntegratedGpu,
   normalizeGpuName,
 } from "./gpu";
 export type { FormFactor } from "./identity";
 export {
   type CpuIdentity,
+  type CpuModelParts,
+  cpuModelParts,
   extractCpuIdentity,
   normalizeCpuName,
 } from "./identity";

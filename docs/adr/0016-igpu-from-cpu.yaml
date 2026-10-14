@@ -1,0 +1,71 @@
+adr.0016:
+  title: The iGPU comes from the CPU through a lookup table; the GPU line says iGPU unless a dedicated card is named
+  status: accepted-default
+  date: 2026-10-14
+  issues: ["maciello/idealo-de-hardware-rating-chromium-extension#10"]
+  context:
+    problem:
+      - the chip labelled integrated graphics "GPU" (a tile text naming "Intel Iris Xe Graphics" became the GPU line)
+      - most notebook tiles name only the CPU, so no GPU line showed at all
+      - a tile naming both an iGPU and a card took whichever text matched first
+      - graphics memory (VRAM) was never shown
+    passmark_facts:
+      - the GPU list has no CPU-to-iGPU link; some iGPU rows are named after CPUs ("Ryzen 7 6800H", "Radeon Ryzen 7 7700 8-Core")
+      - "no row named 'Radeon Graphics' exists; Raphael/Granite Ridge (2 CU RDNA2) and Vega 7 have no row of their own"
+      - Apple M-series, Apple A-series and Arm Mali GPUs have no row at all
+  decision:
+    igpu_from_cpu:
+      rule: the iGPU is only ever derived from the CPU, never from GPU text
+      table: packages/hw-bench src/gpu/integrated (rules/{amd,intel,other}/*.ts), typed const arrays, one rule per CPU group
+      rule_shape: "{id, match, igpu, caveat, evidence, confidence}; igpu is none, an exact PassMark GPU name, or unrated (named, no PassMark row)"
+      match_keys: vendor, family, familyIn, modelIn, numberIn, numberRange, suffixIn, prefix, prefixIn, genIn, pro, wordsIncludeAny, labelKeyIn
+      matcher: generic over the keys (all keys must hold), first match wins; no-graphics rules open each vendor's list so F/KF parts never reach an iGPU rule
+      cpu_input: CpuIdentity vendor/family/model plus cpuModelParts(identity), a pure function in identity/cpu that reads number, prefix, suffix, generation, pro, plus and tier words out of the model string; CpuIdentity itself is not widened
+      label_key_fallback: CPUs with no identity extractor (Xeon, Ryzen Embedded, Snapdragon X2 and 7c, Core 2, AMD 3020e, Intel U300, NVIDIA RTX Spark, Apple A18) match through the slug of the CPU text (labelKeyIn); extractors for them are not added, a rule per label is smaller and tested
+      cpu_text_sources: datasheet CPU row, tile fragments, title, then the name of the PassMark record the CPU engine matched
+      snapshot_lookup: the rule's PassMark name is resolved by exact name in the imported GPU snapshot (best-sampled row on duplicates); a missing row shows the iGPU as unrated
+    discrete_vs_integrated:
+      method: "isIntegratedGpu(name) on the PassMark record name: (1) a name the iGPU table can return is integrated, (2) else a name that is exactly one integrated-only model (Radeon nnnM/S, Iris, HD, UHD, Arc without a model) is integrated, (3) everything else is a discrete card"
+      rejected_signals:
+        cat_column: the Radeon 780M is filed under Mobile and Vega 8 under Desktop and Mobile; Intel iGPUs are Unknown
+        mem_size_column: empty for old discrete cards (GeForce 920M, 610M) and set for some old iGPU rows (Intel HD 4400, Radeon R7 A10-7850K)
+        gpu_identity_integrated_flag: true for "Radeon RX" and "Arc A770" (family prefix test), so it cannot separate them; it is left as is because the matcher's form-factor handling reads it
+      ambiguous_match: integrated only when every candidate is integrated
+      failure_modes:
+        - an iGPU that is neither in the table nor an integrated-only model name (old APU graphics such as "Radeon R7 A10-7850K") is classed discrete
+        - a discrete card that PassMark names like an iGPU would be classed integrated; none exists in the 2026-10-14 list (checked against GeForce RTX/GTX, Radeon RX, Arc A and B5xx rows)
+    gpu_line:
+      dedicated_card_named: the line is "GPU" with the card's rating; the CPU's iGPU rides along in the card only
+      no_card: the line is "iGPU" with the CPU's iGPU rating
+      never: an iGPU under the "GPU" label
+      tile_naming_both: the card wins (integrated matches are skipped, not ranked), which replaces first-match-wins
+      cpu_without_igpu_and_no_card: no GPU line
+      igpu_without_passmark_row: the line shows the name in the value slot, an unrated state (data-state=unrated, tooltip, card note) and no score
+      text_named_igpu: ignored, even when the CPU is unknown (strict reading of "never from text")
+    vram:
+      source_priority:
+        - "tile or datasheet text: 'Grafikspeicher N GB', 'Grafikspeicher N MB / M GB', or the size behind the model name ('RTX 4060 (8GB)'); memory type from 'Grafikspeichertyp'"
+        - PassMark memorySizeMb of the matched card, labelled typical
+        - "iGPU: shared"
+      parser: hw-bench graphicsMemoryOf, built on the existing memoryAfter size parser of gpu/identity; the extension holds no regex for it
+      igpu_rule: an iGPU always says shared, even when the tile states a size, because idealo writes "Shared Memory" for integrated graphics and a stated size belongs to a card (seen on the real-markup fixture, where a card the snapshot lacks left an iGPU line next to "8 GB GDDR6")
+      formatting: ui/format formatMemorySize (de-DE, binary units); copy strings in ratings/gpu-copy.ts
+  data_policy:
+    committed: GPU names, rule ids, caveats, evidence URLs, confidence
+    never_committed: PassMark scores and sample counts, data/idealo-mcp-labels.json, anything from data/
+    caveats: machine-readable "key=value" strings; sample counts from the research were reduced to flags (low_samples=true)
+  evidence:
+    method: golden tests list CPU to iGPU pairs written out from vendor pages (amd.com, Intel ARK, Qualcomm briefs) independently of the table
+    coverage:
+      source: 247 distinct CPU labels of the idealo Notebooks and Desktop filter lists (private, data-guarded test)
+      before: 236 of 247
+      after: 242 of 247
+      added_rules: [Xeon E5-2666 v3 and E5-2678 v3 (none), Xeon W-2125 (none), Core 2 Duo (none), Snapdragon 7c (Adreno 618), AMD 3020e (Radeon Vega 3 3020e)]
+      left_unmatched: [AMD Athlon, Intel Celeron, Intel Pentium Dual Core, AMD Ryzen 5 40, Intel Core 7 225H]
+      reason_unmatched: ambiguous or truncated labels; Core 7 225H has no source naming its iGPU
+    vendor_pages_note: direct vendor spec pages could not be fetched during research; many evidence links are review sites, the new none-rules rest on third-party spec databases (confidence 0.85-0.9)
+  consequences:
+    - a PassMark GPU CSV that lacks a rule's row shows that iGPU as unrated until imported
+    - rules with proxy_row=true (Vega 7, Raphael 2 CU RDNA2) show the nearest PassMark row and the card says so
+    - "Iris Xe and Arc on Meteor Lake need dual-channel memory to report as such (caveat only, not modelled)"
+    - the ratings split (refactor S3) can move gpu-engine.ts, gpu-dedicated.ts, gpu-integrated.ts, gpu-memory.ts, present-gpu*.ts and GpuParts.tsx as a unit
