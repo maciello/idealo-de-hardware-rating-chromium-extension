@@ -32,11 +32,13 @@ export {
   tokenize,
 } from "./candidates";
 export {
+  createGpuMatcher,
   extractGpuIdentity,
   type GpuIdentity,
+  type GpuMatcher,
+  type GpuMatchOptions,
   normalizeGpuName,
-} from "./gpu/identity";
-export { createGpuMatcher, type GpuMatcher, type GpuMatchOptions } from "./gpu/matcher";
+} from "./gpu";
 export type { FormFactor } from "./identity";
 export {
   type CpuIdentity,
@@ -59,55 +61,47 @@ export {
 } from "./matcher";
 export {
   type Cohort,
+  type CohortPercentileInput,
   type CohortPolicy,
   CohortPolicySchema,
-  createCohort,
-  type DatedRecord,
-  DEFAULT_COHORT_POLICY,
-  describeCohort,
-} from "./rating/cohort";
-export { createStrategies, defaultStrategies } from "./rating/defaults";
-export {
   classifyCpu,
   classifyGpu,
+  cohortPercentileRating,
+  createCohort,
+  createGpuStrategies,
+  createStrategies,
+  type DatedRecord,
+  DEFAULT_COHORT_POLICY,
   type DeviceClass,
   type DeviceMembership,
-} from "./rating/device-class";
-export {
-  createGpuStrategies,
+  defaultStrategies,
+  describeCohort,
+  GPU_PERCENTILE_ID,
   type GpuMatchRating,
   type GpuRateOptions,
+  type GpuRatingInput,
+  type GpuRatingStrategy,
   g3dScore,
   gpuDefaultStrategies,
+  gpuPercentile,
   gpuValuePerEuro,
-  rateGpuMatch,
-} from "./rating/gpu";
-export { GPU_PERCENTILE_ID, gpuPercentile } from "./rating/gpu-percentile";
-export {
-  type CohortPercentileInput,
-  cohortPercentileRating,
+  multiThreadScore,
+  type PeerSample,
+  peerPercentile,
   percentileDisplay,
   percentileRank,
-} from "./rating/percentile";
-export { segmentPercentile } from "./rating/segment-percentile";
-export {
-  multiThreadScore,
-  peerPercentile,
+  type Rating,
+  type RatingInput,
+  type RatingStrategy,
+  rateGpuMatch,
   type ScoreStrategySpec,
   scoreStrategy,
+  segmentPercentile,
   singleThreadScore,
   type ValuePerEuroSpec,
   valuePerEuro,
   valuePerEuroStrategy,
-} from "./rating/strategies";
-export type {
-  GpuRatingInput,
-  GpuRatingStrategy,
-  PeerSample,
-  Rating,
-  RatingInput,
-  RatingStrategy,
-} from "./rating/strategy";
+} from "./rating";
 export {
   DESKTOP_TITLE_WORDS,
   LAPTOP_TITLE_WORDS,

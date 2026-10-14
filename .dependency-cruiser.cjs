@@ -93,25 +93,11 @@ module.exports = {
     {
       name: "package-submodules-via-barrel",
       comment: "Inside a package, sub-domains are imported through their index.ts.",
-      severity: "warn",
-      from: {
-        path: "^packages/([^/]+)/src/([^/]+)/",
-        pathNot: "^packages/hw-bench/src/(rating|gpu)/",
-      },
+      severity: "error",
+      from: { path: "^packages/([^/]+)/src/([^/]+)/" },
       to: {
         path: "^packages/$1/src/([^/]+)/.+",
         pathNot: ["^packages/$1/src/$2/", "^packages/[^/]+/src/[^/]+/index\\.ts$"],
-      },
-    },
-    {
-      name: "hw-bench-agent-dirs-barrel",
-      comment:
-        "hw-bench rating/ and gpu/ reach the benchmark, identity, matcher, candidates and specs sub-domains through their index.ts.",
-      severity: "error",
-      from: { path: "^packages/hw-bench/src/(rating|gpu)/" },
-      to: {
-        path: "^packages/hw-bench/src/(benchmark|identity|matcher|candidates|specs)/.+",
-        pathNot: "/index\\.ts$",
       },
     },
     {
