@@ -8,6 +8,9 @@ export const TOKENS = {
   accent: "#0E7C86",
   "accent-weak": "#CDEBED",
   focus: "#1F6FEB",
+  /** Warning tag (older memory generation): dark amber text on a pale amber ground. */
+  warn: "#8A4B00",
+  "warn-weak": "#FFE9BF",
 } as const;
 
 /** Derived, not new colors: the hover shadow is the ink at low opacity. */

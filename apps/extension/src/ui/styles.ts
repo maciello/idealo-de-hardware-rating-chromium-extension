@@ -45,6 +45,7 @@ const COMPONENTS = `
   .hw-chip:focus-visible { outline: 2px solid var(--hw-focus); outline-offset: 1px; }
   .hw-chip__value { font-weight: 600; }
   .hw-chip__label { color: var(--hw-ink-muted); }
+  .hw-chip__tag { padding: 1px 4px; border-radius: 3px; background: var(--hw-warn-weak); color: var(--hw-warn); font-size: var(--hw-font-s); font-weight: 600; line-height: 1.1; }
 
   .hw-card { display: block; width: 100%; color: var(--hw-ink); font-size: var(--hw-font-m); }
   .hw-card__head { padding: 12px 14px 10px; }

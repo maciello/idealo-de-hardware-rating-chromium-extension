@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
-import { extensionIdOf, launchWithExtension } from "./launch";
+import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
 import {
   importCpuFixture,
   installSite,
@@ -9,6 +10,7 @@ import {
   SSR_LISTING_URL,
   SSR_PRODUCT_URL,
   shot,
+  ssrProductUrl,
 } from "./site";
 
 let context: BrowserContext;
@@ -78,6 +80,50 @@ test("real markup: the percentile compares against the page's device class", asy
     /of desktop CPUs/,
   );
   await desktops.close();
+});
+
+test("real markup: DDR4 gets an amber tag, current and graphics memory get none", async () => {
+  const page = await context.newPage();
+  await page.goto(SSR_LISTING_URL);
+  await expect(page.locator("idealo-hw-badge")).toHaveCount(4);
+  const tag = (id: string) => chipOf(page, id).getByTestId("chip-memory");
+  await expect(tag("212702771")).toHaveText("DDR4");
+  await expect(tag("212702771")).toHaveAttribute("title", "Older memory generation");
+  await expect(chipOf(page, "212702771").getByTestId("rating-badge")).toHaveAttribute(
+    "aria-label",
+    /DDR4: older memory generation/,
+  );
+  // LPDDR5X (baseline), and DDR5 with a GDDR6 graphics fragment beside it: no tag.
+  await expect(tag("205984319")).toHaveCount(0);
+  await expect(tag("207096746")).toHaveCount(0);
+  await shot(page, "chip-memory-tag");
+  await chipOf(page, "212702771").screenshot({
+    path: resolve(ARTIFACTS_DIR, "chip-memory-tag-closeup.png"),
+  });
+  await page.close();
+});
+
+test("real markup: the product page reads the datasheet's RAM-type row", async () => {
+  const old = await context.newPage();
+  await old.goto(ssrProductUrl("DDR4"));
+  const chip = old.locator("h1#oopStage-title idealo-hw-badge");
+  await expect(chip.getByTestId("chip-value")).toHaveText("30.000");
+  await expect(chip.getByTestId("chip-memory")).toHaveText("DDR4");
+  await old.close();
+
+  const current = await context.newPage();
+  await current.goto(ssrProductUrl("LPDDR5X"));
+  await expect(
+    current.locator("h1#oopStage-title idealo-hw-badge").getByTestId("chip-value"),
+  ).toHaveText("30.000");
+  await expect(current.getByTestId("chip-memory")).toHaveCount(0);
+  await current.close();
+
+  const none = await context.newPage();
+  await none.goto(SSR_PRODUCT_URL);
+  await expect(none.getByTestId("chip-value")).toHaveCount(1);
+  await expect(none.getByTestId("chip-memory")).toHaveCount(0);
+  await none.close();
 });
 
 test("real markup: the filter builder offers the embedded payload's filters", async () => {

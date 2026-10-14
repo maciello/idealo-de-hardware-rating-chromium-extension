@@ -207,3 +207,24 @@ describe("createRatingEngine device class", () => {
     expect(result?.status === "matched" && result.record.name).toBe("Intel Core i7-13700H");
   });
 });
+
+describe("createRatingEngine memory type", () => {
+  const engine = createRatingEngine(snapshot, allIds);
+  const ramTypeFor = (text: string) => {
+    const [result] = engine.rate([{ title: "Notebook Intel Core i7-13700H", text }]);
+    return result?.status === "matched" ? result.ramType : undefined;
+  };
+
+  it("carries the type the item's spec text names", () => {
+    expect(ramTypeFor("Intel Core i7-13700H, 16 GB RAM, DDR4")).toEqual({
+      label: "DDR4",
+      outdated: true,
+    });
+    expect(ramTypeFor("Intel Core i7-13700H, DDR5")).toEqual({ label: "DDR5", outdated: false });
+  });
+
+  it("ignores graphics memory and unstated types", () => {
+    expect(ramTypeFor("Intel Core i7-13700H, Grafikspeichertyp GDDR6")).toBeNull();
+    expect(ramTypeFor("Intel Core i7-13700H, 16 GB RAM")).toBeNull();
+  });
+});

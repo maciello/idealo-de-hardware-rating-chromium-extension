@@ -128,10 +128,15 @@ const pageMeter = (rating: Matched): MeterInfo | null => {
 export const meterOf = (rating: Matched): MeterInfo | null =>
   segmentMeter(rating) ?? pageMeter(rating);
 
+/** What the chip says when the item's memory is DDR4 or older; DDR5 and LPDDR5(X) are the baseline. */
+export const OLD_MEMORY_HINT = "Older memory generation";
+
 export interface ChipModel {
   filled: number | null;
   value: string;
   label: string;
+  /** Memory type to flag next to the rating ("DDR4"); null for current memory or none stated. */
+  memoryWarning: string | null;
   /** Spoken summary for the button. */
   aria: string;
 }
@@ -143,13 +148,15 @@ export function chipModel(rating: Matched, primaryId: string): ChipModel | null 
   if (!primary) return null;
   const meter = meterOf(rating);
   const value = valueText(primary, rating.pageRank);
+  const memoryWarning = rating.ramType?.outdated ? rating.ramType.label : null;
   return {
     filled: meter?.filled ?? null,
     value,
     label: "CPU",
+    memoryWarning,
     aria: `CPU rating ${ROW_LABELS[primary.strategyId] ?? primary.strategyId} ${value}${
       meter ? `, ${meter.context}` : ""
-    }. Show details`,
+    }${memoryWarning ? `, ${memoryWarning}: ${OLD_MEMORY_HINT.toLowerCase()}` : ""}. Show details`,
   };
 }
 

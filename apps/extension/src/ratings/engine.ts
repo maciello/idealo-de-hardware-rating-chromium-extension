@@ -9,6 +9,7 @@ import {
   type Rating,
   type RatingStrategy,
 } from "@idealo-hw/hw-bench";
+import { type RamType, ramTypeOf } from "./ram-type";
 
 export interface RatingQuery {
   title: string;
@@ -25,6 +26,8 @@ export type ItemRating =
       via: "exact" | "normalized" | "model_token";
       /** Device class the ratings were computed for; names the comparison group on the chip. */
       formFactor: FormFactor;
+      /** System memory type the item states; null when it names none. */
+      ramType: RamType | null;
       ratings: readonly Rating[];
       /** Position among the matched products of the same page (1 = fastest); null below two peers. */
       pageRank: PageRank | null;
@@ -143,6 +146,7 @@ export function createRatingEngine(
           record: match.record,
           via: match.via,
           formFactor: formFactorOf(queries[i]),
+          ramType: ramTypeOf(queries[i]?.text ?? ""),
           ratings,
           pageRank: pageRankOf(match.record.cpuMark, peers),
         };

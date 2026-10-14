@@ -1,7 +1,7 @@
 import { Popover } from "@mantine/core";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
 import type { ItemRating } from "./engine";
-import { type CardRow, cardRows, chipModel, formatImportDate } from "./present";
+import { type CardRow, cardRows, chipModel, formatImportDate, OLD_MEMORY_HINT } from "./present";
 
 const OPEN_DELAY_MS = 80;
 const CLOSE_DELAY_MS = 150;
@@ -169,6 +169,11 @@ export function RatingChip({ rating, primaryId, importedAt, onOpenSettings }: Ra
                 {model.value}
               </span>
               <span className="hw-chip__label">{model.label}</span>
+              {model.memoryWarning !== null && (
+                <span className="hw-chip__tag" title={OLD_MEMORY_HINT} data-testid="chip-memory">
+                  {model.memoryWarning}
+                </span>
+              )}
             </>
           ) : (
             <span className="hw-chip__value">CPU ?</span>

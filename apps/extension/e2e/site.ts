@@ -30,6 +30,8 @@ export const SSR_LISTING_URL = "https://www.idealo.de/preisvergleich/ProductCate
 export const SSR_DESKTOP_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3020.html";
 export const SSR_PRODUCT_URL =
   "https://www.idealo.de/preisvergleich/OffersOfProduct/209657188_-magicbook-pro-14-honor.html";
+/** The product page with a RAM-type row added to its datasheet (the real page lists none). */
+export const ssrProductUrl = (ramType: string): string => `${SSR_PRODUCT_URL}?ramtype=${ramType}`;
 export const SEARCH_URL =
   "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=laptop+32GB";
 /** Listing without filter links: category link only (no toggles), so the catalog is null. */
@@ -65,6 +67,12 @@ function desktopListingHtml(): string {
   ).replace("initialData['categoryId'] = \"3751\"", "initialData['categoryId'] = \"3020\"");
 }
 
+function productHtml(ramType: string | null): string {
+  if (ramType === null) return SSR_PRODUCT_HTML;
+  const row = `<tr><td class="text-gray-700 px-2 py-1 w-1/2 sm:w-1/3 align-top wrap-break-word">RAM-Typ</td><td class="px-2 py-1 w-1/2 sm:w-2/3 align-top">${ramType}</td></tr>`;
+  return SSR_PRODUCT_HTML.replace(/(<td[^>]*>RAM<\/td><td[^>]*>[^<]*<\/td><\/tr>)/, `$1${row}`);
+}
+
 const withoutFilters = (variant: string): string =>
   LISTING_HTML.replace(/<aside id="filters">[\s\S]*?<\/aside>/, () =>
     variant === "bare"
@@ -98,7 +106,10 @@ export async function installSite(context: BrowserContext): Promise<void> {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: LISTING_HTML });
     }
     if (pathname.includes("/OffersOfProduct/209657188")) {
-      return route.fulfill({ contentType: "text/html; charset=utf-8", body: SSR_PRODUCT_HTML });
+      return route.fulfill({
+        contentType: "text/html; charset=utf-8",
+        body: productHtml(url.searchParams.get("ramtype")),
+      });
     }
     if (pathname.includes("/OffersOfProduct/")) {
       return route.fulfill({ contentType: "text/html; charset=utf-8", body: PRODUCT_HTML });
