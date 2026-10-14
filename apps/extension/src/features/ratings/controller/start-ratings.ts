@@ -1,4 +1,5 @@
 import type { PageAdapter } from "@idealo-hw/idealo-page";
+import type { SensorClock } from "@idealo-hw/sensors";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import type { PageInspection, PageStats } from "../../../contracts";
 import type { Overlay } from "../../../ui/host";
@@ -16,12 +17,16 @@ export interface RatingsHandle {
   inspect(): Promise<PageInspection>;
 }
 
-/** Keeps exactly one chip per rated element, in sync with the DOM and the user's settings. */
+/**
+ * Keeps exactly one chip per element with something to show, in sync with the DOM and the user's
+ * settings. `clock` is read on every scan: the age of a model is judged against the date of the scan.
+ */
 export function startRatingsController(
   ctx: ContentScriptContext,
   adapter: PageAdapter,
   getOverlay: () => Promise<Overlay>,
   renderChip: ChipRenderer,
+  clock: () => SensorClock,
 ): RatingsHandle {
   const reconciler = createChipReconciler(ctx, renderChip);
   let view: Promise<RatingView> | undefined;
@@ -38,6 +43,7 @@ export function startRatingsController(
       const rated = rateQueries(
         current,
         targets.map((t) => t.query),
+        clock(),
       );
       results = targets.flatMap((target, i) => {
         const found = rated[i];

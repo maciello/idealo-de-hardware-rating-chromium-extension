@@ -5,6 +5,7 @@ import { CpuChipLine } from "./CpuChipLine";
 import { GpuChipLine } from "./gpu/GpuChipLine";
 import type { PopoverControl } from "./popover-control";
 import { RatingCard } from "./RatingCard";
+import { SignalsChip } from "./SignalsChip";
 
 export interface RatingChipProps {
   chip: ChipView;
@@ -19,6 +20,7 @@ export interface RatingChipProps {
  */
 export function RatingChip({ chip, card, popover, onOpenSettings }: RatingChipProps) {
   const { target, dropdown } = popover;
+  const signals = chip.signals && <SignalsChip model={chip.signals} />;
   return (
     <Popover
       opened={popover.opened}
@@ -46,8 +48,11 @@ export function RatingChip({ chip, card, popover, onOpenSettings }: RatingChipPr
           onKeyDown={target.onKeyDown}
           onClick={target.onClick}
         >
-          {chip.cpu && <CpuChipLine model={chip.model} />}
-          {chip.gpuModel && <GpuChipLine model={chip.gpuModel} />}
+          {chip.cpu && <CpuChipLine model={chip.model} trailing={signals} />}
+          {chip.gpuModel && (
+            <GpuChipLine model={chip.gpuModel} trailing={chip.cpu ? undefined : signals} />
+          )}
+          {!(chip.cpu || chip.gpuModel) && <span className="hw-chip__line">{signals}</span>}
         </button>
       </Popover.Target>
       <Popover.Dropdown

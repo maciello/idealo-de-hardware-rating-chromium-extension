@@ -11,6 +11,9 @@ export const TOKENS = {
   /** Warning tag (older memory generation): dark amber text on a pale amber ground. */
   warn: "#8A4B00",
   "warn-weak": "#FFE9BF",
+  /** Red flag (chip count, card marker): dark red text on a pale red ground. */
+  danger: "#9B1C1C",
+  "danger-weak": "#FDE0DE",
 } as const;
 
 /** Derived, not new colors: the hover shadow is the ink at low opacity. */

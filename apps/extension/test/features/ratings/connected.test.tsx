@@ -9,6 +9,7 @@ import {
   createRatingEngine,
   type ItemRating,
   STRATEGY_CATALOG,
+  signalsOf,
 } from "../../../src/features/ratings/model";
 
 // jsdom lacks matchMedia and ResizeObserver, which Mantine's provider and Popover probe for.
@@ -90,12 +91,14 @@ describe("RatingChip (memory tag)", () => {
     STRATEGY_CATALOG.map((s) => s.id),
   );
   const chipFor = (text: string) => {
-    const [rating] = engine.rate([{ title: "Intel Core i7-13700H Notebook", text }]);
+    const query = { title: "Intel Core i7-13700H Notebook", text };
+    const [rating] = engine.rate([query]);
     if (rating?.status !== "matched") throw new Error("expected a match");
     render(
       <MantineProvider env="test">
         <RatingChip
           rating={rating}
+          signals={signalsOf(query, rating, { year: 2026 })}
           primaryId="raw_multithread_score"
           importedAt={null}
           onOpenSettings={() => undefined}

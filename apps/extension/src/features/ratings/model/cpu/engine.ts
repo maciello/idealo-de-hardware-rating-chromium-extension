@@ -7,13 +7,10 @@ import {
   type FormFactor,
   type FreeTextMatchResult,
   type RatingStrategy,
-  ramTypeOf,
 } from "@idealo-hw/hw-bench";
-import { senseAll } from "@idealo-hw/sensors";
 import type { RatingQuery } from "../query";
 import { fragmentsOf } from "../text-fragments";
 import { pageRankOf } from "./page-rank";
-import { sensorInputOf } from "./sensor-input";
 import type { ItemRating, RatingEngine } from "./types";
 
 const priceOf = (query: RatingQuery | undefined): { priceEur?: number } =>
@@ -79,13 +76,7 @@ export function createRatingEngine(
           record: match.record,
           via: match.via,
           formFactor: formFactorOf(queries[i]),
-          ramType: ramTypeOf(queries[i]?.text ?? ""),
           ratings,
-          signals: senseAll(
-            sensorInputOf(match.record, formFactorOf(queries[i]), {
-              year: new Date().getFullYear(),
-            }),
-          ),
           pageRank: pageRankOf(match.record.cpuMark, peers),
         };
       });

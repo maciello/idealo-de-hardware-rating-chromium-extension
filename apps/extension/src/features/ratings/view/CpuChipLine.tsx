@@ -1,10 +1,20 @@
 import { IconFlame, IconLeaf } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 import { Meter } from "../../../ui";
 import { RATINGS_COPY } from "../copy";
 import type { ChipModel } from "../view-model";
 
-/** The CPU line of the chip; without a model (ambiguous match) it only says the CPU is unresolved. */
-export function CpuChipLine({ model }: { model: ChipModel | null }) {
+/**
+ * The CPU line of the chip; without a model (ambiguous match) it only says the CPU is unresolved.
+ * `trailing` is where the product's signals sit when this is the chip's first line.
+ */
+export function CpuChipLine({
+  model,
+  trailing,
+}: {
+  model: ChipModel | null;
+  trailing?: ReactNode;
+}) {
   return (
     <span className="hw-chip__line" data-testid="chip-cpu">
       {model ? (
@@ -26,19 +36,11 @@ export function CpuChipLine({ model }: { model: ChipModel | null }) {
               {model.power.level === "low" ? <IconLeaf aria-hidden /> : <IconFlame aria-hidden />}
             </span>
           )}
-          {model.memoryWarning !== null && (
-            <span
-              className="hw-chip__tag"
-              title={RATINGS_COPY.oldMemoryHint}
-              data-testid="chip-memory"
-            >
-              {model.memoryWarning}
-            </span>
-          )}
         </>
       ) : (
         <span className="hw-chip__value">{RATINGS_COPY.cpuUnresolved}</span>
       )}
+      {trailing}
     </span>
   );
 }

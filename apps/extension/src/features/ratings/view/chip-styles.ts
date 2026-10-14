@@ -28,6 +28,11 @@ export const CHIP_STYLES = `
   .hw-chip__label { color: var(--hw-ink-muted); }
   .hw-chip__tag { padding: 1px 4px; border-radius: 3px; background: var(--hw-warn-weak); color: var(--hw-warn); font-size: var(--hw-font-s); font-weight: 600; line-height: 1.1; }
 
+  .hw-chip__flags { display: inline-flex; align-items: center; gap: 2px; flex: none; padding: 1px 4px; border-radius: 3px; font-weight: 600; line-height: 1.1; }
+  .hw-chip__flags svg { display: block; width: 12px; height: 12px; }
+  .hw-chip__flags[data-severity="red"] { background: var(--hw-danger-weak); color: var(--hw-danger); }
+  .hw-chip__flags[data-severity="amber"] { background: var(--hw-warn-weak); color: var(--hw-warn); }
+
   .hw-chip__power { display: inline-flex; align-items: center; flex: none; color: var(--hw-ink-muted); }
   .hw-chip__power svg { display: block; width: 14px; height: 14px; }
   .hw-chip__power[data-level="low"] { color: var(--hw-accent); }
