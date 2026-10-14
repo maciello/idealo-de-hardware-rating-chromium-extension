@@ -1,5 +1,5 @@
+import type { EmbeddedStatus } from "@idealo-hw/idealo-page";
 import { MAX_UNRATED, type PageInspection, type PageReport } from "../contracts";
-import type { EmbeddedStatus } from "../page/embedded-listing";
 
 const MAX_TITLE_CHARS = 200;
 const MAX_TEXT_CHARS = 300;

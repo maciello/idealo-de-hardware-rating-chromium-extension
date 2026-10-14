@@ -1,4 +1,4 @@
-import { embeddedListing } from "../page/embedded-listing";
+import { embeddedListing } from "@idealo-hw/idealo-page";
 import type { FilterCatalogSource } from "./catalog-source";
 
 /**

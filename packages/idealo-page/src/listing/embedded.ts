@@ -1,5 +1,6 @@
 import {
   type CategoryId,
+  EMBEDDED_SEARCH_RESULT_MARKER,
   parseSearchResult,
   readEmbeddedSearchResult,
   type SearchResultPage,
@@ -13,8 +14,6 @@ export interface EmbeddedListing {
   url: string;
 }
 
-const MARKER = "window.csr.initialData['searchResult']";
-
 export interface EmbeddedStatus {
   listing: EmbeddedListing | null;
   /** Why a payload that is present could not be read; null when absent or fine. */
@@ -26,7 +25,7 @@ const cache = new WeakMap<Document, EmbeddedStatus>();
 function scan(doc: Document): EmbeddedListing | null {
   for (const script of doc.scripts) {
     const source = script.textContent ?? "";
-    if (!source.includes(MARKER)) continue;
+    if (!source.includes(EMBEDDED_SEARCH_RESULT_MARKER)) continue;
     const embedded = readEmbeddedSearchResult(source);
     if (embedded === null) continue;
     return {

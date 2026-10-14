@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { heuristicIdealoAdapter as adapter } from "../src/page/heuristic-idealo-adapter";
-import listingHtml from "./fixtures/listing.html?raw";
-import productHtml from "./fixtures/product.html?raw";
+import { heuristicIdealoAdapter as adapter } from "../../src/adapters/heuristic";
+import listingHtml from "../fixtures/listing.html?raw";
+import productHtml from "../fixtures/product.html?raw";
 
 const load = (html: string): Document => new DOMParser().parseFromString(html, "text/html");
 

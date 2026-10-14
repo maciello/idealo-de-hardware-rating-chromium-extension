@@ -73,6 +73,7 @@ export {
   UnrepresentableQueryError,
 } from "./url";
 export {
+  EMBEDDED_SEARCH_RESULT_MARKER,
   type EmbeddedSearchResult,
   type ListingItem,
   type ListingItemKind,

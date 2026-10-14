@@ -1,5 +1,5 @@
-import type { ListingItem, PageAdapter, PageKind, ProductInfo } from "./adapter";
-import { heuristicIdealoAdapter, productPriceOf } from "./heuristic-idealo-adapter";
+import type { ListingItem, PageAdapter, PageKind, ProductInfo } from "../port";
+import { heuristicIdealoAdapter, productPriceOf } from "./heuristic";
 import { ssrProductInfo } from "./ssr-product";
 import { ssrTileItems } from "./ssr-tiles";
 

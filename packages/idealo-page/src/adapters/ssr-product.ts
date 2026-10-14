@@ -1,11 +1,9 @@
-import type { ProductInfo } from "./adapter";
+import type { ProductInfo } from "../port";
+import { collapse } from "../text";
 import { SSR_ADAPTER_ID } from "./ssr-tiles";
 
 const TITLE = "h1#oopStage-title";
 const SPEC_ROWS = "section#datasheet table tr";
-
-const collapse = (text: string | null | undefined): string =>
-  (text ?? "").replace(/\s+/g, " ").trim();
 
 /**
  * Product page from idealo's server-rendered markup: the title in `h1#oopStage-title` and the

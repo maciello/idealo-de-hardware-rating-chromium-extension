@@ -29,6 +29,9 @@ importers:
       '@idealo-hw/hw-bench':
         specifier: workspace:*
         version: link:../../packages/hw-bench
+      '@idealo-hw/idealo-page':
+        specifier: workspace:*
+        version: link:../../packages/idealo-page
       '@idealo-hw/idealo-query':
         specifier: workspace:*
         version: link:../../packages/idealo-query
@@ -146,6 +149,22 @@ importers:
       fast-check:
         specifier: ^4.10.2
         version: 4.10.2
+
+  packages/idealo-page:
+    dependencies:
+      '@idealo-hw/idealo-query':
+        specifier: workspace:*
+        version: link:../idealo-query
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.5
+      jsdom:
+        specifier: ^30.1.2
+        version: 30.1.2
 
   packages/idealo-query:
     dependencies:

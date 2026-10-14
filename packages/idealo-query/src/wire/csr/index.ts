@@ -1,4 +1,8 @@
-export { type EmbeddedSearchResult, readEmbeddedSearchResult } from "./embedded";
+export {
+  EMBEDDED_SEARCH_RESULT_MARKER,
+  type EmbeddedSearchResult,
+  readEmbeddedSearchResult,
+} from "./embedded";
 export {
   type ListingItem,
   type ListingItemKind,

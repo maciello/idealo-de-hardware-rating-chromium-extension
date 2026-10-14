@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 /**
  * Regenerates listing.idealo-ssr.html: real tile markup (idealo-ssr/tiles.html, category 3751) plus
  * the inline script idealo's server render ships, with the trimmed payload (idealo-ssr/payload.json)
- * base64-encoded the way the site does. Run with `pnpm --filter @idealo-hw/extension fixtures`.
+ * base64-encoded the way the site does. Run with `pnpm --filter @idealo-hw/idealo-page fixtures`.
  */
 const here = import.meta.dirname;
 const read = (name: string): string => readFileSync(resolve(here, name), "utf8");

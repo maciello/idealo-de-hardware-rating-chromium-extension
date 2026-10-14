@@ -1,7 +1,7 @@
 import type { FormFactor } from "@idealo-hw/hw-bench";
 import { parseSpecBlock, productContextFromSpecs } from "@idealo-hw/hw-bench";
+import type { ProductInfo } from "@idealo-hw/idealo-page";
 import { filterPageOf } from "../filters/page";
-import type { ProductInfo } from "./adapter";
 
 /**
  * idealo category -> device class of every product in it. The one place that knows which categories

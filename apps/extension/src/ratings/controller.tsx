@@ -1,8 +1,8 @@
 import type { GpuMatchRating } from "@idealo-hw/hw-bench";
+import type { PageAdapter } from "@idealo-hw/idealo-page";
 import type { ReactNode } from "react";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import type { InspectedItem, PageInspection, PageStats } from "../contracts";
-import type { PageAdapter } from "../page/adapter";
 import { listingFormFactor, productFormFactor } from "../page/device-class";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";

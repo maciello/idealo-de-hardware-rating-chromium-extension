@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
+
+import { embeddedStatus, idealoAdapter } from "@idealo-hw/idealo-page";
+import ssrHtml from "@idealo-hw/idealo-page/fixtures/listing.idealo-ssr.html?raw";
 import { describe, expect, it } from "vitest";
 import type { PageInspection } from "../src/contracts";
 import { buildPageReport } from "../src/diagnostics/page-report";
-import { embeddedStatus } from "../src/page/embedded-listing";
-import { idealoAdapter } from "../src/page/idealo-adapter";
-import ssrHtml from "./fixtures/listing.idealo-ssr.html?raw";
 
 const URL_3751 = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 const doc = new DOMParser().parseFromString(ssrHtml, "text/html");

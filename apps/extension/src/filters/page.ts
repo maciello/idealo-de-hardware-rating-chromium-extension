@@ -1,3 +1,4 @@
+import { embeddedListing } from "@idealo-hw/idealo-page";
 import {
   addFilters,
   type CategoryId,
@@ -7,7 +8,6 @@ import {
   parseIdealoUrl,
   toWebUrl,
 } from "@idealo-hw/idealo-query";
-import { embeddedListing } from "../page/embedded-listing";
 
 /** How the filter builder behaves on the current page. */
 export interface FilterPage {

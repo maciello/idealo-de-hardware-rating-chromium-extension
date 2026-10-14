@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseGermanPrice } from "../src/page/german-price";
+import { parseGermanPrice } from "../src/german-price";
 
 describe("parseGermanPrice", () => {
   it.each([

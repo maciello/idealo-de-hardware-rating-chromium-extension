@@ -1,7 +1,8 @@
 import { z } from "zod";
-import type { ListingItem } from "./adapter";
-import { embeddedListing } from "./embedded-listing";
-import { parseGermanPrice } from "./german-price";
+import { parseGermanPrice } from "../german-price";
+import { embeddedListing } from "../listing";
+import type { ListingItem } from "../port";
+import { collapse } from "../text";
 
 export const SSR_ADAPTER_ID = "idealo_ssr";
 
@@ -16,9 +17,6 @@ const HEART = "[data-wishlist-heart]";
 const TITLE = '[class*="sr-productSummary__title_"]';
 const DETAILS = '[class*="sr-productSummary__mainDetails_"]';
 const PRICE = '[class*="sr-detailedPriceInfo__price_"]';
-
-const collapse = (text: string | null | undefined): string =>
-  (text ?? "").replace(/\s+/g, " ").trim();
 
 const HeartSchema = z.object({ id: z.string().min(1), type: z.string() });
 

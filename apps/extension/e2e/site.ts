@@ -1,20 +1,20 @@
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { type BrowserContext, expect, type Page } from "@playwright/test";
 import { ARTIFACTS_DIR } from "./launch";
 
 const here = import.meta.dirname;
+const idealoPageFixture = (name: string): string =>
+  readFileSync(
+    createRequire(import.meta.url).resolve(`@idealo-hw/idealo-page/fixtures/${name}`),
+    "utf8",
+  );
 
-export const LISTING_HTML = readFileSync(resolve(here, "../test/fixtures/listing.html"), "utf8");
-export const PRODUCT_HTML = readFileSync(resolve(here, "../test/fixtures/product.html"), "utf8");
-export const SSR_LISTING_HTML = readFileSync(
-  resolve(here, "../test/fixtures/listing.idealo-ssr.html"),
-  "utf8",
-);
-export const SSR_PRODUCT_HTML = readFileSync(
-  resolve(here, "../test/fixtures/product.idealo-ssr.html"),
-  "utf8",
-);
+export const LISTING_HTML = idealoPageFixture("listing.html");
+export const PRODUCT_HTML = idealoPageFixture("product.html");
+export const SSR_LISTING_HTML = idealoPageFixture("listing.idealo-ssr.html");
+export const SSR_PRODUCT_HTML = idealoPageFixture("product.idealo-ssr.html");
 export const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json");
 /** The CPUs named by the real-markup listing (four) and product page (one). */
 export const SSR_CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.ssr.synthetic.json");

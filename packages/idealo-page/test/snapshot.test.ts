@@ -1,11 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import {
-  capturePageSnapshot,
-  capUtf8,
-  MAX_SNAPSHOT_BYTES,
-  sanitizedClone,
-} from "../src/page/snapshot";
+import { capturePageSnapshot, capUtf8, MAX_SNAPSHOT_BYTES, sanitizedClone } from "../src/snapshot";
 
 const doc = (body: string): Document =>
   new DOMParser().parseFromString(
@@ -43,13 +38,22 @@ describe("sanitizedClone", () => {
     expect(html).not.toContain("idealo-hw-");
     expect(page.querySelectorAll("idealo-hw-badge")).toHaveLength(1);
   });
+
+  it("removes the hosts of the given prefix instead of the default one", () => {
+    const page = doc(`<idealo-hw-badge></idealo-hw-badge><other-overlay></other-overlay>`);
+    const html = sanitizedClone(page.documentElement, "other-").outerHTML;
+    expect(html).toContain("idealo-hw-badge");
+    expect(html).not.toContain("other-overlay");
+  });
 });
 
 describe("capturePageSnapshot", () => {
   const NOW = () => new Date("2026-10-14T13:38:58.000Z");
 
   it("returns url, title, ISO UTC capturedAt and the html", () => {
-    const snap = capturePageSnapshot(doc("<p>hi</p>"), "https://www.idealo.de/x.html", NOW);
+    const snap = capturePageSnapshot(doc("<p>hi</p>"), "https://www.idealo.de/x.html", {
+      now: NOW,
+    });
     expect(snap).toMatchObject({
       url: "https://www.idealo.de/x.html",
       title: "T",
@@ -60,7 +64,10 @@ describe("capturePageSnapshot", () => {
   });
 
   it("caps the size, marking the snapshot as truncated", () => {
-    const snap = capturePageSnapshot(doc(`<p>${"x".repeat(5000)}</p>`), "u", NOW, 1000);
+    const snap = capturePageSnapshot(doc(`<p>${"x".repeat(5000)}</p>`), "u", {
+      now: NOW,
+      maxBytes: 1000,
+    });
     expect(new TextEncoder().encode(snap.html).length).toBeLessThanOrEqual(1000);
     expect(snap.truncated).toBe(true);
   });

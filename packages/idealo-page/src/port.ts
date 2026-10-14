@@ -1,6 +1,7 @@
-import type { PageKind } from "../contracts";
+import { z } from "zod";
 
-export type { PageKind };
+export const PageKindSchema = z.enum(["listing", "product", "other"]);
+export type PageKind = z.infer<typeof PageKindSchema>;
 
 export interface ListingItem {
   /** Element a badge is attached to; stable for as long as the page keeps the item. */

@@ -6,6 +6,9 @@ export interface EmbeddedSearchResult {
   readonly json: unknown;
 }
 
+/** Text that marks an inline script as carrying the embedded search result. */
+export const EMBEDDED_SEARCH_RESULT_MARKER = "window.csr.initialData['searchResult']";
+
 const EMBEDDED_PAYLOAD = /window\.csr\.initialData\['searchResult'\]\s*=\s*"([A-Za-z0-9+/=]+)"/;
 const EMBEDDED_CATEGORY = /window\.csr\.initialData\['categoryId'\]\s*=\s*"(\d+)"/;
 

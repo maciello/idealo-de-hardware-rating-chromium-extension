@@ -21,7 +21,7 @@ const decode = (blob: string): string => Buffer.from(blob, "base64").toString("u
 describe("committed fixtures", () => {
   it("are found", () => {
     expect(files.map((f) => relative(repoRoot, f))).toContain(
-      join("apps", "extension", "test", "fixtures", "listing.idealo-ssr.html"),
+      join("packages", "idealo-page", "test", "fixtures", "listing.idealo-ssr.html"),
     );
   });
 

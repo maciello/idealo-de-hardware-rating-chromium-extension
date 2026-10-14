@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
+
+import listingHtml from "@idealo-hw/idealo-page/fixtures/listing.html?raw";
 import { categoryId, filterId, type IdealoQuery, parseIdealoUrl } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
-import listingHtml from "./fixtures/listing.html?raw";
 
 const queryOf = (url: string): IdealoQuery => {
   const parsed = parseIdealoUrl(url);
