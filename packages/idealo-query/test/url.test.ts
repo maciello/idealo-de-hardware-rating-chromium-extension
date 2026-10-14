@@ -35,7 +35,7 @@ describe("parseIdealoUrl categories", () => {
     const { query } = category(url);
     expect(query.filterIds).toEqual(ids("1309393", "100611441"));
     expect(query.opaqueSuffix).toBe("oE0oJ1");
-    expect(query.price).toEqual({ min: 0, max: 1000 });
+    expect(query.price).toEqual({ max: 1000 });
     expect(toWebUrl(query)).toBe(url);
   });
 
@@ -161,7 +161,10 @@ describe("toWebUrl", () => {
       `${BASE}/ProductCategory/16073.html?p=12.35-99.5`,
     );
     expect(toWebUrl({ ...base, price: { max: 20 } })).toBe(
-      `${BASE}/ProductCategory/16073.html?p=-20.0`,
+      `${BASE}/ProductCategory/16073.html?p=0.0-20.0`,
+    );
+    expect(toWebUrl({ ...base, price: { min: 500 } })).toBe(
+      `${BASE}/ProductCategory/16073.html?p=500.0-`,
     );
   });
 

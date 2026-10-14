@@ -22,8 +22,9 @@ export class UnrepresentableQueryError extends Error {
 
 const formatBound = (n: number): string => (Number.isInteger(n) ? n.toFixed(1) : String(n));
 
+/** idealo answers 404 to an open lower bound (p=-2000.0), so a missing min is written as 0.0. */
 const formatPrice = (price: PriceRange): string =>
-  `${price.min === undefined ? "" : formatBound(price.min)}-${price.max === undefined ? "" : formatBound(price.max)}`;
+  `${formatBound(price.min ?? 0)}-${price.max === undefined ? "" : formatBound(price.max)}`;
 
 /** Throws UnrepresentableQueryError if manufacturerIds remain after folding them via `catalog`. */
 export function toWebUrl(

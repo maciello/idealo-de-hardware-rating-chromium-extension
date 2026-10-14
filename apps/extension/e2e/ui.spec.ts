@@ -322,7 +322,7 @@ test("filter builder: a search page without a category still applies text and pr
   await page.getByTestId("query-text").fill("ultrabook");
   await page.getByTestId("price-max").fill("900");
   await expect(page.getByTestId("target-url")).toHaveText(
-    "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?p=-900.0&q=ultrabook",
+    "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?p=0.0-900.0&q=ultrabook",
   );
   await page.close();
 });

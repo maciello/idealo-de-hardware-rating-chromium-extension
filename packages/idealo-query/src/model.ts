@@ -51,6 +51,8 @@ function normalizePrice(price: PriceRange | undefined): PriceRange | undefined {
   let min = price.min === undefined ? undefined : roundCents(price.min);
   let max = price.max === undefined ? undefined : roundCents(price.max);
   if (min !== undefined && max !== undefined && min > max) [min, max] = [max, min];
+  // Prices are never negative, so min 0 constrains nothing and is dropped (one form per meaning).
+  if (min === 0) min = undefined;
   if (min === undefined && max === undefined) return undefined;
   return {
     ...(min === undefined ? {} : { min }),
@@ -64,7 +66,7 @@ export function emptyQuery(categoryId: IdealoQuery["categoryId"]): IdealoQuery {
 
 /**
  * Canonical form: ids deduplicated (first occurrence wins, order kept), price rounded to cents
- * with min <= max, blank text/sort and offset 0 removed.
+ * with min <= max and min 0 removed, blank text/sort and offset 0 removed.
  */
 export function normalizeQuery(query: IdealoQuery): IdealoQuery {
   const price = normalizePrice(query.price);

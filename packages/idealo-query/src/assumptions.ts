@@ -5,7 +5,7 @@ export const ASSUMPTIONS = {
     "Paging is the literal token I16- followed by a decimal offset, placed after the F-ids and before the opaque suffix: <cat>F<ids>I16-<offset>. Combination with F-ids is a hypothesis; I16 is assumed constant. Offset 0 is the first page and is omitted.",
   "url.filter-ids": "Filter-value ids follow the category id after a literal 'F', joined by '-'.",
   "url.price-param":
-    "p=<min>-<max> with decimals; integers are written with one decimal (0.0); fractional values with up to 2 decimals unpadded; an open end is written p=<min>- or p=-<max>.",
+    "p=<min>-<max> with decimals; integers are written with one decimal (0.0); fractional values with up to 2 decimals unpadded; an open upper end is written p=<min>-; a missing min is written 0.0 because p=-<max> answers 404 (live 2026-10-14: 3751F7612877-7612878-7612879?p=-2000.0 -> 404, p=0.0-2000.0 -> 2305 hits, p=500.0- -> 200).",
   "url.sort-values":
     "sortKey is an open string; only minPrice is known. Unknown sort keys round-trip untouched.",
   "url.text-param":
