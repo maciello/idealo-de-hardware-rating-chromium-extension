@@ -28,7 +28,7 @@ export const ASSUMPTIONS = {
   "csr.search-result":
     "GET /csr/api/v2/modules/searchResult?categoryId&locale=de_DE[&pageIndex][&query] returns items, filterGroups, selectedFilters and metadata (HAR 2026-10-14). Server-rendered listing pages do not call it but inline the same payload as base64 in window.csr.initialData['searchResult'], next to initialData['categoryId'] (5 categories).",
   "csr.filter-ids":
-    "filterGroups[].filters[].id is the web F-id: filters=953430 maps to ProductCategory/3020F953430.html via /mvc/metadata browserUrl (HAR 2026-10-14). Multi-filter encoding is unobserved.",
+    "filterGroups[].filters[].id is the web F-id: filters=953430 maps to ProductCategory/3020F953430.html via /mvc/metadata browserUrl (HAR 2026-10-14). Live 2026-10-14: ids of one group OR (3751F7612877-7612879 = 4319 + 1737 = 6056 hits), ids of different groups AND (RAM 32 GB + Gaming Notebook = 1114); idealo redirects F<a>-F<b> to canonical F<a>-<b> with ids sorted.",
   "csr.manufacturer-group":
     "Manufacturers arrive as filter group id 'manufacturer' whose filter ids work in filters=; they carry no manufacturerId, so catalog.manufacturers stays empty.",
 } as const;
