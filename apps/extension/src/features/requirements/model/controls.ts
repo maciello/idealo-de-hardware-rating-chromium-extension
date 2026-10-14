@@ -2,7 +2,8 @@ import type { FacetOption, NumericFacet } from "@idealo-hw/idealo-query";
 
 /** "min": at least; "max": at most; "range": both ends. */
 export type Direction = "min" | "max" | "range";
-export type Unit = "GB" | "Hz" | "cd/m²" | "kg" | "h" | "Zoll" | "";
+/** What a slider value counts; `plain` is a bare number (the release year). */
+export type Unit = "gigabyte" | "hertz" | "nits" | "kilogram" | "hours" | "inch" | "plain";
 
 export interface NumericControl {
   readonly facet: NumericFacet;

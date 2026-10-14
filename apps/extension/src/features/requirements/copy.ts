@@ -1,4 +1,5 @@
 import type { Combine, NumericFacet } from "@idealo-hw/idealo-query";
+import type { Unit } from "./model";
 
 /** Looked up by the facet name of a plan; a facet without an entry has no noun. */
 interface NounTable {
@@ -50,6 +51,17 @@ export const REQUIREMENTS_COPY = {
   between: (low: string, high: string): string => `${low} – ${high}`,
 
   numericLabels: NUMERIC_LABELS,
+  /** The unit after a slider value, as idealo labels write it. */
+  units: {
+    gigabyte: "GB",
+    hertz: "Hz",
+    nits: "cd/m²",
+    kilogram: "kg",
+    hours: "h",
+    inch: "Zoll",
+    plain: "",
+  } satisfies Readonly<Record<Unit, string>>,
+  terabyte: "TB",
 
   price: {
     label: "Price",

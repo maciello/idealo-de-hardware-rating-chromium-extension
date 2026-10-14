@@ -6,10 +6,10 @@ import {
 
 describe("measure text and marks", () => {
   it("formats measures the way idealo writes them", () => {
-    expect(formatMeasure(16, "GB")).toBe("16 GB");
-    expect(formatMeasure(1000, "GB")).toBe("1 TB");
-    expect(formatMeasure(1.4, "kg")).toBe("1,4 kg");
-    expect(formatMeasure(2025, "")).toBe("2025");
+    expect(formatMeasure(16, "gigabyte")).toBe("16 GB");
+    expect(formatMeasure(1000, "gigabyte")).toBe("1 TB");
+    expect(formatMeasure(1.4, "kilogram")).toBe("1,4 kg");
+    expect(formatMeasure(2025, "plain")).toBe("2025");
   });
 
   it("labels the ends and only the marks that keep their distance", () => {

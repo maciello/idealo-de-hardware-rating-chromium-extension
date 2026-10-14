@@ -1,12 +1,15 @@
 import { formatTrimmed } from "../../../../ui/format";
-import { MARK_LABEL_GAP } from "../../config";
+import { GB_PER_TB, MARK_LABEL_GAP } from "../../config";
+import { REQUIREMENTS_COPY } from "../../copy";
 import type { Unit } from "../../model";
 
 /** "16 GB", "1 TB", "1,4 kg", "2025": value text in the units idealo labels use. */
 export function formatMeasure(value: number, unit: Unit): string {
-  if (unit === "GB" && value >= 1000) return `${formatTrimmed(value / 1000)} TB`;
-  if (unit === "") return String(value);
-  return `${formatTrimmed(value)} ${unit}`;
+  if (unit === "gigabyte" && value >= GB_PER_TB) {
+    return `${formatTrimmed(value / GB_PER_TB)} ${REQUIREMENTS_COPY.terabyte}`;
+  }
+  if (unit === "plain") return String(value);
+  return `${formatTrimmed(value)} ${REQUIREMENTS_COPY.units[unit]}`;
 }
 
 /**
