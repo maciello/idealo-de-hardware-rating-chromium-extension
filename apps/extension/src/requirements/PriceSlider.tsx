@@ -1,6 +1,6 @@
 import type { PriceRange } from "@idealo-hw/idealo-query";
 import { RangeSlider } from "@mantine/core";
-import { formatInteger } from "../ratings/present";
+import { formatInteger } from "../ui/format";
 import { SliderField } from "./SliderField";
 
 export interface PriceSliderProps {

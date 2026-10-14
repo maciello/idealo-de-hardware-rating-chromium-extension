@@ -18,7 +18,7 @@ import {
   settingsItem,
 } from "../storage/items";
 import { type ChipHost, type ChipPlacement, mountChipHost } from "../ui/chip-host";
-import type { Overlay } from "../ui/overlay";
+import type { Overlay } from "../ui/host";
 import {
   createRatingEngine,
   type ItemRating,

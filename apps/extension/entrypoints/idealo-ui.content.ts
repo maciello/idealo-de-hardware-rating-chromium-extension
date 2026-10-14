@@ -11,7 +11,7 @@ import { embeddedStatus } from "../src/page/embedded-listing";
 import { idealoAdapter } from "../src/page/idealo-adapter";
 import { capturePageSnapshot } from "../src/page/snapshot";
 import { startRatings } from "../src/ratings/controller";
-import { mountOverlay, type Overlay } from "../src/ui/overlay";
+import { mountOverlay, type Overlay } from "../src/ui/host";
 
 export default defineContentScript({
   matches: ["https://www.idealo.de/*"],

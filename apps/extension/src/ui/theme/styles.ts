@@ -1,3 +1,4 @@
+import { OVERLAY_HOST_Z_INDEX } from "./layers";
 import { tokenCss } from "./tokens";
 
 /** Typographic baseline for our shadow content: the page's font, our sizes. */
@@ -84,7 +85,7 @@ export const chipHostStyles = (placement: "corner" | "inline"): string =>
  * Mantine's popover dropdowns and drawer root, and anything marked data-hw-interactive.
  */
 export const OVERLAY_HOST_STYLES = `${tokenCss(":host")}
-  :host{all:initial;position:fixed;inset:0;z-index:2147483647;pointer-events:none;display:block;font-family:inherit;background:transparent!important;}
+  :host{all:initial;position:fixed;inset:0;z-index:${OVERLAY_HOST_Z_INDEX};pointer-events:none;display:block;font-family:inherit;background:transparent!important;}
   .hw-root{${BASE}}
   ${COMPONENTS}
   .mantine-Popover-dropdown, .mantine-Drawer-root, [data-hw-interactive] { pointer-events: auto; }

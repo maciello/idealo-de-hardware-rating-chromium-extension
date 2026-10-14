@@ -6,14 +6,14 @@ import {
   IconDownload,
   IconFileExport,
 } from "@tabler/icons-react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { captureRing } from "../capture/ring";
 import { recordError } from "../diagnostics/error-log";
 import { exportDebugReport } from "../diagnostics/export";
 import { type PageStats, sendMessage } from "../messaging";
 import { useStorageItem } from "../options/use-storage-item";
 import { resolveEnabledStrategyIds } from "../ratings/engine";
-import { DEFAULT_PRIMARY_ID, formatInteger, PRIMARY_CHOICES } from "../ratings/present";
+import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
 import { captureModeItem, cpuSnapshotItem, gpuSnapshotItem, settingsItem } from "../storage/items";
 import {
   NOT_CONNECTED,
@@ -21,49 +21,16 @@ import {
   openrouterStatusItem,
 } from "../storage/openrouter-status";
 import { CpuSnapshotSchema, GpuSnapshotSchema, SettingsSchema } from "../storage/schemas";
+import {
+  formatInteger,
+  formatMegabytes,
+  formatShortDate,
+  LabeledRow,
+  MutedText,
+  StatusNote,
+} from "../ui";
 import { downloadJson } from "../ui/download";
 import { findTargetTab, type TargetTab } from "./target-tab";
-
-const SHORT_DATE = new Intl.DateTimeFormat("de-DE", {
-  day: "2-digit",
-  month: "2-digit",
-  timeZone: "UTC",
-});
-
-const shortDate = (iso: string | null | undefined): string | null => {
-  const time = iso ? Date.parse(iso) : Number.NaN;
-  return Number.isNaN(time) ? null : SHORT_DATE.format(new Date(time));
-};
-
-/** Label left for short content; `stacked` puts the label above, for content that needs the width. */
-function Row({
-  label,
-  stacked = false,
-  children,
-}: {
-  label: string;
-  stacked?: boolean;
-  children: ReactNode;
-}) {
-  if (stacked) {
-    return (
-      <Stack gap={6}>
-        <Text fz="xs" c="var(--hw-ink-muted)">
-          {label}
-        </Text>
-        {children}
-      </Stack>
-    );
-  }
-  return (
-    <Group wrap="nowrap" align="flex-start" gap="sm">
-      <Text fz="xs" c="var(--hw-ink-muted)" w={104} pt={2} style={{ flex: "none" }}>
-        {label}
-      </Text>
-      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
-    </Group>
-  );
-}
 
 const openOptions = (): void => void browser.runtime.openOptionsPage();
 
@@ -82,13 +49,13 @@ function BenchmarkData() {
   const [gpuRaw] = useStorageItem(gpuSnapshotItem);
   const cpu = useRecord(cpuRaw, CpuSnapshotSchema);
   const gpu = useRecord(gpuRaw, GpuSnapshotSchema);
-  const imported = shortDate(cpu?.importedAt ?? gpu?.importedAt);
+  const imported = formatShortDate(cpu?.importedAt ?? gpu?.importedAt);
   const parts = [
     cpu ? `CPU ${formatInteger(cpu.records.length)}` : null,
     gpu ? `GPU ${formatInteger(gpu.records.length)}` : null,
   ].filter((part) => part !== null);
   return (
-    <Row label="Benchmark data" stacked>
+    <LabeledRow label="Benchmark data" stacked>
       <Group justify="space-between" wrap="nowrap" gap="xs">
         <Text fz="sm" data-testid="popup-data">
           {parts.length === 0 ? "Nothing imported yet" : parts.join(" · ")}
@@ -103,7 +70,7 @@ function BenchmarkData() {
           Import
         </Button>
       </Group>
-    </Row>
+    </LabeledRow>
   );
 }
 
@@ -125,7 +92,7 @@ function PrimaryNumber() {
     return parsed.success ? parsed.data : null;
   }, [stored]);
   return (
-    <Row label="Primary number" stacked>
+    <LabeledRow label="Primary number" stacked>
       <SegmentedControl
         fullWidth
         size="xs"
@@ -140,7 +107,7 @@ function PrimaryNumber() {
         }
         data-testid="popup-primary"
       />
-    </Row>
+    </LabeledRow>
   );
 }
 
@@ -170,7 +137,7 @@ function AiMatching() {
   };
 
   return (
-    <Row label="AI matching" stacked>
+    <LabeledRow label="AI matching" stacked>
       <Group justify="space-between" wrap="nowrap" gap="xs">
         {status.connected ? (
           <>
@@ -188,9 +155,9 @@ function AiMatching() {
           </>
         ) : (
           <>
-            <Text fz="sm" c="var(--hw-ink-muted)" data-testid="popup-ai">
+            <MutedText fz="sm" data-testid="popup-ai">
               Not connected
-            </Text>
+            </MutedText>
             <Button
               size="compact-sm"
               loading={busy}
@@ -203,11 +170,11 @@ function AiMatching() {
         )}
       </Group>
       {error && (
-        <Text fz="xs" c="red" mt={4} role="alert">
+        <StatusNote tone="error" mt={4}>
           {error}
-        </Text>
+        </StatusNote>
       )}
-    </Row>
+    </LabeledRow>
   );
 }
 
@@ -233,9 +200,7 @@ function Capture({ tab }: { tab: TargetTab | null }) {
     try {
       const snapshot = await sendMessage("getPageSnapshot", undefined, tab.id);
       downloadJson("page-snapshot", { ...snapshot });
-      const mb = (snapshot.html.length / 1_000_000).toLocaleString("de-DE", {
-        maximumFractionDigits: 1,
-      });
+      const mb = formatMegabytes(snapshot.html.length);
       setNote(`Snapshot saved (${mb} MB${snapshot.truncated ? ", cut at 5 MB" : ""})`);
     } catch (cause) {
       void recordError("popup", cause);
@@ -244,7 +209,7 @@ function Capture({ tab }: { tab: TargetTab | null }) {
   };
 
   return (
-    <Row label="Capture" stacked>
+    <LabeledRow label="Capture" stacked>
       <Stack gap={8}>
         <Group justify="space-between" wrap="nowrap">
           <Switch
@@ -278,12 +243,12 @@ function Capture({ tab }: { tab: TargetTab | null }) {
           </Button>
         </Group>
         {note && (
-          <Text fz="xs" c="var(--hw-ink-muted)" role="status" data-testid="popup-note">
+          <StatusNote tone="muted" testId="popup-note">
             {note}
-          </Text>
+          </StatusNote>
         )}
       </Stack>
-    </Row>
+    </LabeledRow>
   );
 }
 
@@ -301,7 +266,7 @@ function Diagnostics({ tab }: { tab: TargetTab | null }) {
   };
 
   return (
-    <Row label="Diagnostics" stacked>
+    <LabeledRow label="Diagnostics" stacked>
       <Stack gap={8}>
         <Group>
           <Button
@@ -315,12 +280,12 @@ function Diagnostics({ tab }: { tab: TargetTab | null }) {
           </Button>
         </Group>
         {note && (
-          <Text fz="xs" c="var(--hw-ink-muted)" role="status" data-testid="popup-debug-note">
+          <StatusNote tone="muted" testId="popup-debug-note">
             {note}
-          </Text>
+          </StatusNote>
         )}
       </Stack>
-    </Row>
+    </LabeledRow>
   );
 }
 
@@ -365,11 +330,11 @@ export function PopupApp() {
         idealo Hardware Rating
       </Text>
       <BenchmarkData />
-      <Row label="This page">
+      <LabeledRow label="This page">
         <Text fz="sm" data-testid="popup-page">
           {pageSummary(tab, stats)}
         </Text>
-      </Row>
+      </LabeledRow>
       <PrimaryNumber />
       <Button
         variant="default"

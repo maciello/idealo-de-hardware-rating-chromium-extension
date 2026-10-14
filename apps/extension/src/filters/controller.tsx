@@ -5,7 +5,7 @@ import { formFactorOfCategory } from "../page/device-class";
 import { createModelScorer } from "../requirements/scorer";
 import { loadRequirements, saveRequirements } from "../requirements/storage";
 import { loadCpuSnapshot, loadGpuSnapshot } from "../storage/items";
-import type { Overlay } from "../ui/overlay";
+import type { Overlay } from "../ui/host";
 import type { FilterCatalogSource } from "./catalog-source";
 import { embeddedPriceBounds } from "./embedded-catalog";
 import { FilterPanel, type RequirementsContext, type RequirementsStore } from "./FilterPanel";

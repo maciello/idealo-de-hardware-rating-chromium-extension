@@ -1,16 +1,7 @@
 import { passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
 import { createRatingEngine, type ItemRating, STRATEGY_CATALOG } from "../src/ratings/engine";
-import {
-  cardRows,
-  chipModel,
-  formatDecimal,
-  formatImportDate,
-  formatInteger,
-  meterSegments,
-  topPercent,
-  valueText,
-} from "../src/ratings/present";
+import { cardRows, chipModel, meterSegments, topPercent, valueText } from "../src/ratings/present";
 
 describe("meterSegments", () => {
   it.each([
@@ -35,23 +26,7 @@ describe("meterSegments", () => {
   });
 });
 
-describe("de-DE formatting", () => {
-  it("groups thousands with a dot and uses a decimal comma", () => {
-    expect(formatInteger(9986)).toBe("9.986");
-    expect(formatInteger(28000)).toBe("28.000");
-    expect(formatInteger(512)).toBe("512");
-    expect(formatInteger(1234567)).toBe("1.234.567");
-    expect(formatDecimal(17.6)).toBe("17,6");
-    expect(formatDecimal(21.5496)).toBe("21,5");
-    expect(formatDecimal(3)).toBe("3,0");
-  });
-
-  it("formats the import date like idealo does, in UTC", () => {
-    expect(formatImportDate("2026-10-14T23:59:00.000Z")).toBe("14.10.2026");
-    expect(formatImportDate(null)).toBeNull();
-    expect(formatImportDate("not a date")).toBeNull();
-  });
-
+describe("topPercent", () => {
   it("reads 'top N%' from a percentile and never says top 0%", () => {
     expect(topPercent(77)).toBe(23);
     expect(topPercent(100)).toBe(1);

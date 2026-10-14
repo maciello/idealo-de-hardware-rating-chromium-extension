@@ -1,63 +1,14 @@
 import { MantineProvider } from "@mantine/core";
-import mantineCss from "@mantine/core/styles.css?inline";
 import { Fragment, type ReactNode, useMemo, useSyncExternalStore } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
-import { OVERLAY_HOST_STYLES } from "./styles";
-import { createHwTheme } from "./theme";
+import { createHwTheme, HOST_TAG_PREFIX, OVERLAY_HOST_STYLES, Z_INDEX } from "../theme";
+import { mantineSheet } from "./mantine-sheet";
+import { createOverlayStore, type OverlayStore } from "./overlay-store";
 
-/** Above everything else inside the overlay; the overlay itself is the topmost layer of the page. */
-const Z_INDEX = 2_147_483_000;
-
-/** Parsed once; the overlay is a single shadow root, but a constructed sheet keeps it off the DOM. */
-const mantineSheet = ((): CSSStyleSheet | null => {
-  try {
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(mantineCss);
-    return sheet;
-  } catch {
-    return null;
-  }
-})();
-
-interface Entry {
-  id: string;
-  node: ReactNode;
-  /** Render into this element (a chip host in a tile) instead of directly in the overlay. */
-  into: HTMLElement | undefined;
-}
-
-function createStore() {
-  let entries: readonly Entry[] = [];
-  const listeners = new Set<() => void>();
-  const emit = (): void => {
-    for (const listener of listeners) listener();
-  };
-  return {
-    subscribe(listener: () => void) {
-      listeners.add(listener);
-      return () => void listeners.delete(listener);
-    },
-    snapshot: () => entries,
-    set(entry: Entry): void {
-      entries = entries.some((e) => e.id === entry.id)
-        ? entries.map((e) => (e.id === entry.id ? entry : e))
-        : [...entries, entry];
-      emit();
-    },
-    remove(id: string): void {
-      if (!entries.some((e) => e.id === id)) return;
-      entries = entries.filter((e) => e.id !== id);
-      emit();
-    },
-  };
-}
-
-type Store = ReturnType<typeof createStore>;
-
-function EntriesView({ store }: { store: Store }) {
+function EntriesView({ store }: { store: OverlayStore }) {
   const entries = useSyncExternalStore(store.subscribe, store.snapshot);
   return (
     <>
@@ -129,13 +80,13 @@ export interface Overlay {
  * dropdown share one provider and one open-state, while the dropdown lands in this layer.
  */
 export async function mountOverlay(ctx: ContentScriptContext): Promise<Overlay> {
-  const store = createStore();
+  const store = createOverlayStore();
   let root: Root | undefined;
   let hostElement: HTMLElement | undefined;
   let containerElement: HTMLElement | undefined;
 
   const ui = await createShadowRootUi(ctx, {
-    name: "idealo-hw-overlay",
+    name: `${HOST_TAG_PREFIX}overlay`,
     position: "inline",
     anchor: document.documentElement,
     append: "last",
