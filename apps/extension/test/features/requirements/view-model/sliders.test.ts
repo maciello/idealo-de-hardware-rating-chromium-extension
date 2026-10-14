@@ -46,7 +46,13 @@ describe("numericSliderModel", () => {
 });
 
 describe("scoreSliderModel", () => {
-  const input = { id: "cpu_mark", label: "CPU", span: { min: 1200, max: 5100 }, step: 500 };
+  const input = {
+    id: "cpu_mark",
+    metric: "cpu_mark",
+    label: "CPU",
+    span: { min: 1200, max: 5100 },
+    step: 500,
+  } as const;
 
   it("rounds the span out to the step and treats the lowest end as no minimum", () => {
     const model = scoreSliderModel({ ...input, value: undefined, status: null });

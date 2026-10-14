@@ -56,6 +56,7 @@ export function cpuBlockModel(
   const slider = (id: string, label: string, span: typeof markSpan, metric: Metric) =>
     scoreSliderModel({
       id,
+      metric,
       label,
       span,
       step: MIN_STEPS[metric],
@@ -87,6 +88,7 @@ export function gpuBlockModel(
     state: "ready",
     g3d: scoreSliderModel({
       id: "g3d",
+      metric: METRIC.g3d,
       label: COPY.g3dLabel,
       span,
       step: MIN_STEPS[METRIC.g3d],

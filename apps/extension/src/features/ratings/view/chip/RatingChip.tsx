@@ -1,5 +1,5 @@
 import { Popover } from "@mantine/core";
-import { CARD_OFFSET_PX, CARD_TRANSITION_MS, CARD_WIDTH_PX } from "../../config";
+import { CARD_OFFSET_PX, CARD_POSITION, CARD_TRANSITION_MS, CARD_WIDTH_PX } from "../../config";
 import type { CardView, ChipView, PopoverControl } from "../../view-model";
 import { RatingCard } from "../card/RatingCard";
 import { CpuChipLine } from "./CpuChipLine";
@@ -20,12 +20,13 @@ export interface RatingChipProps {
 export function RatingChip({ chip, card, popover, onOpenSettings }: RatingChipProps) {
   const { target, dropdown } = popover;
   const signals = chip.signals && <SignalsChip model={chip.signals} />;
+  const trailing = (line: ChipView["signalsLine"]) => (chip.signalsLine === line ? signals : null);
   return (
     <Popover
       opened={popover.opened}
       onChange={popover.setOpened}
       width={CARD_WIDTH_PX}
-      position="bottom-start"
+      position={CARD_POSITION}
       offset={CARD_OFFSET_PX}
       withinPortal
       closeOnClickOutside
@@ -47,11 +48,9 @@ export function RatingChip({ chip, card, popover, onOpenSettings }: RatingChipPr
           onKeyDown={target.onKeyDown}
           onClick={target.onClick}
         >
-          {chip.cpu && <CpuChipLine model={chip.model} trailing={signals} />}
-          {chip.gpuModel && (
-            <GpuChipLine model={chip.gpuModel} trailing={chip.cpu ? undefined : signals} />
-          )}
-          {!(chip.cpu || chip.gpuModel) && <span className="hw-chip__line">{signals}</span>}
+          {chip.cpu && <CpuChipLine model={chip.model} trailing={trailing("cpu")} />}
+          {chip.gpuModel && <GpuChipLine model={chip.gpuModel} trailing={trailing("gpu")} />}
+          {chip.signalsLine === "own" && <span className="hw-chip__line">{signals}</span>}
         </button>
       </Popover.Target>
       <Popover.Dropdown

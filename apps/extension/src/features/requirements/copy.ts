@@ -1,4 +1,4 @@
-import type { NumericFacet } from "@idealo-hw/idealo-query";
+import type { Combine, NumericFacet } from "@idealo-hw/idealo-query";
 
 /** Looked up by the facet name of a plan; a facet without an entry has no noun. */
 interface NounTable {
@@ -27,8 +27,11 @@ export const REQUIREMENTS_COPY = {
   cpuMarkLabel: "Multi-thread (CPU Mark)",
   cpuSingleLabel: "Single-thread",
   g3dLabel: "3D (G3D Mark)",
-  combineAnd: "and",
-  combineOr: "or",
+  /** The two ways the CPU minimums combine, in control order. */
+  combineOptions: [
+    { value: "all", label: "and" },
+    { value: "any", label: "or" },
+  ] satisfies readonly { value: Combine; label: string }[],
   combineAria: "Combine CPU minimums",
   noCpuData: "Import PassMark CPU data in the settings to filter by CPU score.",
   noGpuData: "Import PassMark GPU data in the settings to filter by 3D score.",

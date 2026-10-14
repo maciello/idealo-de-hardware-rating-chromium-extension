@@ -23,8 +23,23 @@ const DERIVED = {
   "font-s": "12px",
   "font-m": "13px",
   "font-l": "15px",
+  "radius-xs": "3px",
   "radius-s": "6px",
   "radius-m": "8px",
+  /** Spacing scale of the injected chips and cards; the name is the step in pixels. */
+  "space-2": "2px",
+  "space-3": "3px",
+  "space-4": "4px",
+  "space-6": "6px",
+  "space-8": "8px",
+  "space-10": "10px",
+  "space-12": "12px",
+  "space-14": "14px",
+  "icon-s": "12px",
+  "icon-m": "14px",
+  /** The chip's frame and the height of each of its lines. */
+  "chip-height": "24px",
+  "chip-line": "22px",
 } as const;
 
 /** CSS custom properties for `selector` (`:host` in shadow roots, `:root` in extension pages). */

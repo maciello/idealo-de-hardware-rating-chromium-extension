@@ -1,5 +1,6 @@
 import { RATINGS_COPY } from "../../copy";
 import type { SignalsCardView } from "../../view-model";
+import { CardHead } from "./CardHead";
 
 /** The card's product sections: the flags worst first, then the features; an empty one is absent. */
 export function SignalsCardSections({ signals }: { signals: SignalsCardView }) {
@@ -8,9 +9,7 @@ export function SignalsCardSections({ signals }: { signals: SignalsCardView }) {
     <>
       {flags.length > 0 && (
         <div data-testid="card-flags">
-          <div className="hw-card__head">
-            <div className="hw-card__title">{RATINGS_COPY.flagsHeading}</div>
-          </div>
+          <CardHead title={RATINGS_COPY.flagsHeading} />
           <ul className="hw-card__rows hw-flags">
             {flags.map((flag) => (
               <li

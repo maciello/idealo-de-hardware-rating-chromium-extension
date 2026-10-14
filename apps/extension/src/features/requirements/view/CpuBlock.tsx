@@ -1,5 +1,6 @@
-import { type Combine, METRIC, type Metric } from "@idealo-hw/idealo-query";
+import type { Combine, Metric } from "@idealo-hw/idealo-query";
 import { SegmentedControl, Stack, Text } from "@mantine/core";
+import { GAP } from "../../../ui";
 import { REQUIREMENTS_COPY } from "../copy";
 import type { CpuBlockModel } from "../view-model";
 import { ImportHint } from "./ImportHint";
@@ -21,29 +22,22 @@ export function CpuBlock({ model, onMinimum, onCombine, onOpenSettings }: CpuBlo
       <ImportHint text={COPY.noCpuData} testId="req-no-cpu-data" onOpenSettings={onOpenSettings} />
     );
   }
+  const { mark, single } = model;
   return (
-    <Stack gap={4}>
-      {model.mark && (
-        <ScoreSlider model={model.mark} onChange={(value) => onMinimum(METRIC.cpuMark, value)} />
-      )}
+    <Stack gap={GAP.tight}>
+      {mark && <ScoreSlider model={mark} onChange={(value) => onMinimum(mark.metric, value)} />}
       <SegmentedControl
         size="xs"
         w="fit-content"
-        data={[
-          { value: "all", label: COPY.combineAnd },
-          { value: "any", label: COPY.combineOr },
-        ]}
+        data={COPY.combineOptions}
         value={model.combine}
         disabled={model.combineDisabled}
         onChange={onCombine}
         data-testid="req-combine"
         aria-label={COPY.combineAria}
       />
-      {model.single && (
-        <ScoreSlider
-          model={model.single}
-          onChange={(value) => onMinimum(METRIC.cpuSingle, value)}
-        />
+      {single && (
+        <ScoreSlider model={single} onChange={(value) => onMinimum(single.metric, value)} />
       )}
       {model.status && (
         <Text size="xs" c="dimmed" data-testid="req-status-cpu_model">

@@ -13,11 +13,23 @@ export interface ChipView {
   gpuModel: GpuLineModel | null;
   /** The older-memory tag and the flags indicator; null when the product has no red or amber flag. */
   signals: SignalsChipModel | null;
+  /** Where the signals sit: after the CPU line, else after the GPU line, else on a line of their own. */
+  signalsLine: "cpu" | "gpu" | "own" | null;
   /** Accessible name of the chip button. */
   aria: string;
   /** "matched", "ambiguous", "gpu" when the chip is the GPU line alone, "signals" when it only carries flags. */
   status: string;
 }
+
+const signalsLineOf = (
+  signals: SignalsChipModel | null,
+  cpu: ChipView["cpu"],
+  gpuModel: GpuLineModel | null,
+): ChipView["signalsLine"] => {
+  if (signals === null) return null;
+  if (cpu !== null) return "cpu";
+  return gpuModel === null ? "own" : "gpu";
+};
 
 const statusOf = (cpu: ChipView["cpu"], gpuModel: GpuLineModel | null): string => {
   if (cpu !== null) return cpu.status;
@@ -44,5 +56,13 @@ export function chipViewOf(
     ...(gpuModel ? [gpuModel.aria] : []),
     ...(signalsModel?.aria ?? []),
   ]);
-  return { cpu, model, gpuModel, signals: signalsModel, aria, status: statusOf(cpu, gpuModel) };
+  return {
+    cpu,
+    model,
+    gpuModel,
+    signals: signalsModel,
+    signalsLine: signalsLineOf(signalsModel, cpu, gpuModel),
+    aria,
+    status: statusOf(cpu, gpuModel),
+  };
 }

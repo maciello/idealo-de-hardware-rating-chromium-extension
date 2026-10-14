@@ -1,7 +1,13 @@
 import { passmarkCpuSource } from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
-import { createRatingEngine, STRATEGY_CATALOG } from "../../../../src/features/ratings/model";
+import {
+  createGpuEngine,
+  createRatingEngine,
+  STRATEGY_CATALOG,
+  signalsOf,
+} from "../../../../src/features/ratings/model";
 import { cardViewOf, chipViewOf } from "../../../../src/features/ratings/view-model";
+import { GPU_SPECS, gpuSnapshotOf } from "../gpu-snapshot";
 
 const snapshot = passmarkCpuSource.parse(
   JSON.stringify({
@@ -45,6 +51,34 @@ describe("chipViewOf", () => {
     const view = chipViewOf(ambiguous, null, "raw_multithread_score", []);
     expect(view).toMatchObject({ status: "ambiguous", model: null });
     expect(view?.aria).toBe("CPU: several PassMark matches. Show details");
+  });
+});
+
+describe("chipViewOf signals line", () => {
+  const flags = signalsOf(
+    { title: "Notebook", text: "", formFactor: "laptop", datasheet: "RAM\t4 GB" },
+    { status: "no_match" },
+    { year: 2026 },
+  );
+  const [igpu] = createGpuEngine(gpuSnapshotOf(...GPU_SPECS)).rate([
+    { title: "Notebook", text: "Intel Core Ultra 7 258V", formFactor: "laptop" },
+  ]);
+  if (igpu === undefined || igpu === null) throw new Error("expected an iGPU line");
+
+  it("trails the flags after the CPU line", () => {
+    expect(chipViewOf(rating, null, "raw_multithread_score", flags)?.signalsLine).toBe("cpu");
+  });
+
+  it("trails them after the GPU line when there is no CPU line", () => {
+    expect(chipViewOf(null, igpu, "raw_multithread_score", flags)?.signalsLine).toBe("gpu");
+  });
+
+  it("gives them a line of their own when nothing else is drawn", () => {
+    expect(chipViewOf(null, null, "raw_multithread_score", flags)?.signalsLine).toBe("own");
+  });
+
+  it("has no place for signals the chip does not draw", () => {
+    expect(chipViewOf(rating, null, "raw_multithread_score", [])?.signalsLine).toBeNull();
   });
 });
 

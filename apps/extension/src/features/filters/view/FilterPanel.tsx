@@ -1,5 +1,6 @@
 import { Accordion, Alert, Drawer, Stack, TextInput, Title } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
+import { ICON_SIZE } from "../../../ui";
 import { RequirementsSection } from "../../requirements";
 import { DRAWER_SIZE } from "../config";
 import { FILTERS_COPY } from "../copy";
@@ -45,7 +46,7 @@ export function FilterPanel({ opened, model, actions }: FilterPanelProps) {
             <Alert
               variant="light"
               color="gray"
-              icon={<IconInfoCircle size={16} />}
+              icon={<IconInfoCircle size={ICON_SIZE.s} />}
               data-testid={note.testId}
             >
               {note.text}

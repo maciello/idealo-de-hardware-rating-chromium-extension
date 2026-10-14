@@ -1,5 +1,6 @@
 import { RATINGS_COPY } from "../../copy";
 import type { CardView } from "../../view-model";
+import { CardHead } from "./CardHead";
 import { CardRow } from "./CardRow";
 import { GpuCardSections } from "./GpuCardSections";
 import { SignalsCardSections } from "./SignalsCardSections";
@@ -15,12 +16,7 @@ export function RatingCard({
   const { cpu } = card;
   return (
     <div className="hw-card" data-testid="rating-card">
-      {cpu && (
-        <div className="hw-card__head">
-          <div className="hw-card__title">{cpu.title}</div>
-          <div className="hw-card__sub">{cpu.sub}</div>
-        </div>
-      )}
+      {cpu && <CardHead title={cpu.title} sub={cpu.sub} />}
       {cpu?.kind === "ambiguous" && (
         <ul className="hw-card__list">
           {cpu.candidates.map((c) => (

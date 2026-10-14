@@ -1,9 +1,12 @@
+import type { Metric } from "@idealo-hw/idealo-query";
 import { formatInteger } from "../../../ui/format";
 import { REQUIREMENTS_COPY } from "../copy";
 import type { ScoreSpan } from "../model";
 
 export interface ScoreSliderInput {
   id: string;
+  /** The benchmark metric the minimum is set for. */
+  metric: Metric;
   label: string;
   /** Lowest and highest score among the CPUs/GPUs the category lists. */
   span: ScoreSpan;
@@ -15,6 +18,7 @@ export interface ScoreSliderInput {
 
 export interface ScoreSliderModel {
   id: string;
+  metric: Metric;
   /** Field label, "<label> ≥". */
   fieldLabel: string;
   thumbLabel: string;
@@ -31,13 +35,14 @@ export interface ScoreSliderModel {
 
 /** A benchmark-minimum slider over the scores of the listed models; null when the span is flat. */
 export function scoreSliderModel(input: ScoreSliderInput): ScoreSliderModel | null {
-  const { id, label, span, step, value, status } = input;
+  const { id, metric, label, span, step, value, status } = input;
   const min = Math.floor(span.min / step) * step;
   const max = Math.ceil(span.max / step) * step;
   if (min >= max) return null;
   const current = value === undefined ? min : Math.min(max, Math.max(min, value));
   return {
     id,
+    metric,
     fieldLabel: REQUIREMENTS_COPY.atLeast(label),
     thumbLabel: label,
     min,

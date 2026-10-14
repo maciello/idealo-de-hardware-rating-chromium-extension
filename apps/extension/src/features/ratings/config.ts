@@ -5,6 +5,8 @@ export const DEBOUNCE_MS = 250;
 export const OPEN_DELAY_MS = 80;
 export const CLOSE_DELAY_MS = 150;
 
+/** Where the card opens relative to its chip. */
+export const CARD_POSITION = "bottom-start";
 export const CARD_WIDTH_PX = 300;
 export const CARD_OFFSET_PX = 6;
 export const CARD_TRANSITION_MS = 100;
