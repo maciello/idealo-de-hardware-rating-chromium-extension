@@ -1,5 +1,4 @@
-import type { CpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
+import type { BenchmarkSnapshot, CpuBenchmarkRecord } from "../benchmark";
 import type { CohortPolicy } from "./cohort";
 import { segmentPercentile } from "./segment-percentile";
 import { multiThreadScore, peerPercentile, singleThreadScore, valuePerEuro } from "./strategies";

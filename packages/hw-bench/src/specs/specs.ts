@@ -1,4 +1,4 @@
-import type { FormFactor } from "../identity/form-factor";
+import type { FormFactor } from "../identity";
 
 /**
  * German idealo spec labels (compared case-insensitively, ignoring spaces, hyphens and a trailing colon).

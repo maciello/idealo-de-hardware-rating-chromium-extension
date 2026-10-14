@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createCanonicalKeyMatcher, extractCpuIdentity, passmarkCpuSource } from "../src";
-import { asJson, cpuRow, cpuSnapshotOf, namedCpus } from "./fixtures";
+import { passmarkCpuSource } from "../../src/benchmark";
+import { extractCpuIdentity } from "../../src/identity";
+import { createCanonicalKeyMatcher } from "../../src/matcher";
+import { asJson, cpuRow, cpuSnapshotOf, namedCpus } from "../fixtures";
 
 const nameOf = (result: ReturnType<ReturnType<typeof createCanonicalKeyMatcher>["match"]>) =>
   result.status === "matched" ? result.record.name : result.status;

@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { extractCpuIdentity, normalizeCpuName } from "../src";
+import { extractCpuIdentity, normalizeCpuName } from "../../../src/identity";
 
 const keyOf = (text: string) => extractCpuIdentity(text)?.key ?? null;
 

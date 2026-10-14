@@ -1,4 +1,4 @@
-import { cleanText } from "../identity/text";
+import { cleanText } from "../identity";
 
 /** "3.40 GHz" style clock speeds, with or without the PassMark "@" prefix. */
 const CLOCK = /(?:@\s*)?\d+(?:[.,]\d+)?\s*ghz\b/g;

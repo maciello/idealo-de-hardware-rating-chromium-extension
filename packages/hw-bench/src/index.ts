@@ -1,24 +1,26 @@
-export { CpuRowSchema } from "./benchmark/cpu-row";
-export { GpuRowSchema } from "./benchmark/gpu-row";
-export { coerceNumeric } from "./benchmark/numeric";
 export type {
   BenchmarkKind,
+  BenchmarkSnapshot,
   CpuBenchmarkRecord,
   CpuSegment,
   GpuBenchmarkRecord,
   GpuSegment,
+  RejectedRow,
   ReleaseDate,
-} from "./benchmark/records";
-export { totalCores, totalThreads } from "./benchmark/records";
-export type { BenchmarkSnapshot, RejectedRow } from "./benchmark/snapshot";
+} from "./benchmark";
 export {
   BenchmarkFormatError,
   type BenchmarkSource,
+  CpuRowSchema,
+  coerceNumeric,
+  GpuRowSchema,
   type ParseOptions,
   passmarkCpuSource,
   passmarkGpuSource,
   readRows,
-} from "./benchmark/source";
+  totalCores,
+  totalThreads,
+} from "./benchmark";
 export {
   type Candidate,
   type CandidateIndex,
@@ -35,26 +37,26 @@ export {
   normalizeGpuName,
 } from "./gpu/identity";
 export { createGpuMatcher, type GpuMatcher, type GpuMatchOptions } from "./gpu/matcher";
+export type { FormFactor } from "./identity";
 export {
   type CpuIdentity,
   extractCpuIdentity,
   normalizeCpuName,
-} from "./identity/cpu-identity";
-export type { FormFactor } from "./identity/form-factor";
-export {
-  type CpuScoreBounds,
-  cpuScoreBounds,
-  type GpuScoreBounds,
-  gpuScoreBounds,
-  type ScoreRange,
-} from "./matcher/bounds";
-export { createCanonicalKeyMatcher } from "./matcher/canonical-key";
+} from "./identity";
 export type {
   FreeTextMatcher,
   FreeTextMatchResult,
   Matcher,
   MatchResult,
-} from "./matcher/matcher";
+} from "./matcher";
+export {
+  type CpuScoreBounds,
+  cpuScoreBounds,
+  createCanonicalKeyMatcher,
+  type GpuScoreBounds,
+  gpuScoreBounds,
+  type ScoreRange,
+} from "./matcher";
 export {
   type Cohort,
   type CohortPolicy,

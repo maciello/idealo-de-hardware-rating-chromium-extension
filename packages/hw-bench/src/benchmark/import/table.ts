@@ -1,21 +1,7 @@
 import Papa from "papaparse";
 import type { z } from "zod";
-import { CpuRowSchema, cpuRecordKey } from "./cpu-row";
-import { GpuRowSchema, gpuRecordKey } from "./gpu-row";
-import type { BenchmarkKind, CpuBenchmarkRecord, GpuBenchmarkRecord } from "./records";
-import { type BenchmarkSnapshot, buildSnapshot } from "./snapshot";
-
-export interface ParseOptions {
-  /** ISO-8601 import time, supplied by the caller (the core never reads the clock). */
-  readonly importedAt?: string;
-}
-
-/** Port: turns an external benchmark file into a typed snapshot. */
-export interface BenchmarkSource<R> {
-  readonly id: string;
-  readonly kind: BenchmarkKind;
-  parse(text: string, options?: ParseOptions): BenchmarkSnapshot<R>;
-}
+import type { BenchmarkSnapshot, RejectedRow } from "../model";
+import type { BenchmarkKind } from "../records";
 
 /** Thrown when the whole input is unrecognisable (not when single rows are bad). */
 export class BenchmarkFormatError extends Error {
@@ -77,44 +63,48 @@ export function readRows(text: string, requiredColumns: readonly string[]): Tabl
   return rows;
 }
 
-interface TableSourceConfig<R> {
-  readonly id: string;
+export interface SnapshotInput<R> {
+  readonly sourceId: string;
   readonly kind: BenchmarkKind;
-  readonly requiredColumns: readonly string[];
+  readonly importedAt: string | null;
+  readonly rows: readonly unknown[];
   readonly schema: z.ZodType<R>;
   readonly dedupeKey: (record: R) => string;
 }
 
-export function createTableSource<R>(config: TableSourceConfig<R>): BenchmarkSource<R> {
+const describeIssues = (error: z.ZodError): string =>
+  error.issues
+    .slice(0, 3)
+    .map((issue) => {
+      const path = issue.path.join(".");
+      return path === "" ? issue.message : `${path}: ${issue.message}`;
+    })
+    .join("; ");
+
+/** Parses every row; rows that fail the schema or duplicate an earlier key are rejected, never thrown. */
+export function buildSnapshot<R>(input: SnapshotInput<R>): BenchmarkSnapshot<R> {
+  const records: R[] = [];
+  const rejected: RejectedRow[] = [];
+  const seen = new Set<string>();
+  input.rows.forEach((row, index) => {
+    const parsed = input.schema.safeParse(row);
+    if (!parsed.success) {
+      rejected.push({ index, reason: describeIssues(parsed.error) });
+      return;
+    }
+    const key = input.dedupeKey(parsed.data);
+    if (seen.has(key)) {
+      rejected.push({ index, reason: `duplicate record ${key}` });
+      return;
+    }
+    seen.add(key);
+    records.push(parsed.data);
+  });
   return {
-    id: config.id,
-    kind: config.kind,
-    parse: (text, options) =>
-      buildSnapshot({
-        sourceId: config.id,
-        kind: config.kind,
-        importedAt: options?.importedAt ?? null,
-        rows: readRows(text, config.requiredColumns),
-        schema: config.schema,
-        dedupeKey: config.dedupeKey,
-      }),
+    sourceId: input.sourceId,
+    kind: input.kind,
+    importedAt: input.importedAt,
+    records,
+    rejected,
   };
 }
-
-/** PassMark CPU list, JSON (`{data: []}`) or CSV. Duplicates are keyed by (id, cpuCount). */
-export const passmarkCpuSource: BenchmarkSource<CpuBenchmarkRecord> = createTableSource({
-  id: "passmark_cpu",
-  kind: "cpu",
-  requiredColumns: ["id", "name", "cpumark"],
-  schema: CpuRowSchema,
-  dedupeKey: cpuRecordKey,
-});
-
-/** PassMark GPU list, JSON or CSV. */
-export const passmarkGpuSource: BenchmarkSource<GpuBenchmarkRecord> = createTableSource({
-  id: "passmark_gpu",
-  kind: "gpu",
-  requiredColumns: ["id", "name", "g3d"],
-  schema: GpuRowSchema,
-  dedupeKey: gpuRecordKey,
-});

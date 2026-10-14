@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { cpuSegments, releaseDate } from "./fields";
 import {
   integerOrNull,
   numberOrNull,
@@ -8,8 +7,10 @@ import {
   requiredNumber,
   requiredText,
   textOrNull,
-} from "./numeric";
-import type { CpuBenchmarkRecord } from "./records";
+} from "../../numeric";
+import type { CpuBenchmarkRecord } from "../../records";
+import { type BenchmarkSource, createTableSource } from "../source";
+import { cpuSegments, releaseDate } from "./columns";
 
 /** One row of PassMark's CPU list (JSON or CSV). Parses cells into typed values; unknown columns are ignored. */
 export const CpuRowSchema: z.ZodType<CpuBenchmarkRecord> = z
@@ -58,3 +59,12 @@ export const CpuRowSchema: z.ZodType<CpuBenchmarkRecord> = z
 
 export const cpuRecordKey = (record: CpuBenchmarkRecord): string =>
   `${record.id}x${record.socketCount}`;
+
+/** PassMark CPU list, JSON (`{data: []}`) or CSV. Duplicates are keyed by (id, cpuCount). */
+export const passmarkCpuSource: BenchmarkSource<CpuBenchmarkRecord> = createTableSource({
+  id: "passmark_cpu",
+  kind: "cpu",
+  requiredColumns: ["id", "name", "cpumark"],
+  schema: CpuRowSchema,
+  dedupeKey: cpuRecordKey,
+});

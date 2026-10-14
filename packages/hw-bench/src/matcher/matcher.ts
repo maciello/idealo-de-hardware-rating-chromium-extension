@@ -1,4 +1,4 @@
-import type { CpuIdentity } from "../identity/cpu-identity";
+import type { CpuIdentity } from "../identity";
 
 export type MatchResult<R> =
   | { readonly status: "matched"; readonly record: R; readonly via: "exact" | "normalized" }

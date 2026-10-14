@@ -1,5 +1,4 @@
-import type { GpuBenchmarkRecord } from "../benchmark/records";
-import type { BenchmarkSnapshot } from "../benchmark/snapshot";
+import type { BenchmarkSnapshot, GpuBenchmarkRecord } from "../benchmark";
 import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY, describeCohort } from "./cohort";
 import { classifyGpu } from "./device-class";
 import { formatInteger } from "./format";

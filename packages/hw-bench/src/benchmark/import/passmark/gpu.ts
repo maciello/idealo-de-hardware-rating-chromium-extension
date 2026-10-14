@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { gpuSegments, releaseDate } from "./fields";
 import {
   coerceNumeric,
   integerOrNull,
@@ -10,8 +9,10 @@ import {
   requiredNumber,
   requiredText,
   textOrNull,
-} from "./numeric";
-import type { GpuBenchmarkRecord } from "./records";
+} from "../../numeric";
+import type { GpuBenchmarkRecord } from "../../records";
+import { type BenchmarkSource, createTableSource } from "../source";
+import { gpuSegments, releaseDate } from "./columns";
 
 /** PassMark writes "Insufficient data" instead of a rank for some cards. */
 const rankOrNull = z.preprocess((raw) => {
@@ -57,3 +58,12 @@ export const GpuRowSchema: z.ZodType<GpuBenchmarkRecord> = z
   );
 
 export const gpuRecordKey = (record: GpuBenchmarkRecord): string => String(record.id);
+
+/** PassMark GPU list, JSON or CSV. */
+export const passmarkGpuSource: BenchmarkSource<GpuBenchmarkRecord> = createTableSource({
+  id: "passmark_gpu",
+  kind: "gpu",
+  requiredColumns: ["id", "name", "g3d"],
+  schema: GpuRowSchema,
+  dedupeKey: gpuRecordKey,
+});

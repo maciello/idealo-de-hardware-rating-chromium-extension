@@ -1,5 +1,5 @@
-import type { CpuBenchmarkRecord, GpuBenchmarkRecord } from "../benchmark/records";
-import type { FormFactor } from "../identity/form-factor";
+import type { CpuBenchmarkRecord, GpuBenchmarkRecord } from "../benchmark";
+import type { FormFactor } from "../identity";
 
 /** Another listing's CPU, supplied by the caller as comparison context. */
 export interface PeerSample {

@@ -1,7 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { coerceNumeric } from "../src";
-import { numberOrNull, requiredInteger } from "../src/benchmark/numeric";
+import { coerceNumeric } from "../../src/benchmark";
+import { numberOrNull, requiredInteger } from "../../src/benchmark/numeric";
 
 describe("coerceNumeric", () => {
   it.each([

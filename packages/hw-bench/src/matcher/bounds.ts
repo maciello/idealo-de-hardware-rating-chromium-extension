@@ -1,4 +1,4 @@
-import type { CpuBenchmarkRecord, GpuBenchmarkRecord } from "../benchmark/records";
+import type { CpuBenchmarkRecord, GpuBenchmarkRecord } from "../benchmark";
 import type { FreeTextMatchResult, MatchResult } from "./matcher";
 
 export interface ScoreRange {
