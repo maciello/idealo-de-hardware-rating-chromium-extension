@@ -85,3 +85,4 @@ export {
   toWebUrl,
   UnrepresentableQueryError,
 } from "./url";
+export { mergeCatalogs, vocabularyOf } from "./vocabulary";

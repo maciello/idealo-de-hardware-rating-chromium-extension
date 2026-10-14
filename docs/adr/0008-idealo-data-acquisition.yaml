@@ -67,15 +67,21 @@ adr.0008:
         - "3751 lists 14 groups the web payload omits (Prozessortyp, Prozessor Codename, Display-Technologie, Betriebssystem, ...); still no RAM Typ group for notebooks"
         - "results are variant products (name + nameDelta, productRef token, OffersOfProduct url); get_product_details.productSpecification.groups[].attributes[] carries Prozessor, Grafikkarte, RAM Typ (e.g. DDR5 on a notebook), Grafikspeichertyp as structured values"
       conclusion: the MCP is the complete label source per category (dev-time vocabulary and blind tests); trial terms forbid storage and productive use, so MCP-derived label lists stay out of the repository (local scratch only) and the extension does not call it
+    - id: live-2026-10-14-option-cap
+      source: headless Chromium (regular UA), 3751F101654343-103705794-104383628-106585393-107023800 (5 Prozessor F-ids, 3 ranked beyond 100 by MCP hit count)
+      observed:
+        - "embedded Prozessor group lists 100 options (sorted by position, plus popularFilters top 5); only 106585393 of the 5 url F-ids is listed"
+        - "selectedFilters names only the listed one; the h1 and the listed option's disable link carry all 5, and the results include the unlisted CPUs"
+      conclusion: idealo applies every F-id in the url, listed or not; which options are listed depends on the filter state, so an F-id selected under one state can be invisible under the next
   decision_update:
     product_page: datasheet table rows as "Label\tValue" spec text (hw-bench parseSpecBlock); title from h1#oopStage-title
     listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
     filter_catalog: parseSearchResult over readEmbeddedSearchResult (packages/idealo-query) of the current document, then the DOM link catalog; after client-side filter changes the payload is stale but its F-ids stay valid
+    filter_vocabulary: every catalog served is merged (mergeCatalogs) into a per-category union of options in extension storage (local:filterVocabulary, labels and F-ids only); the planner sees the union so it can replace and select options the current state does not list (finding live-2026-10-14-option-cap)
     no_extra_requests_to_idealo: true (the embedded payload makes the planned page-0 GET unnecessary)
     capture_tap: debug only; records idealo hosts only so the 300-entry ring spans more pages
   unknowns:
     - filter-definition endpoint URL/shape (unobserved)
-    - whether F-ids of options beyond the web's 100-per-group cap (listed only by the MCP) work in web URLs (unverified; ids share one space)
     - meaning of opaque URL suffix like "oE0oJ1"
   consequences:
     - FilterCatalog and spec extraction are ports; first real adapters written from capture-mode exports.

@@ -4,6 +4,8 @@ import { firstCatalog } from "../src/filters/catalog-source";
 import { startFilterBuilder } from "../src/filters/controller";
 import { domLinkCatalog } from "../src/filters/dom-link-catalog";
 import { embeddedCatalog } from "../src/filters/embedded-catalog";
+import { rememberingCatalog } from "../src/filters/remembering-catalog";
+import { vocabularyStorage } from "../src/filters/vocabulary-storage";
 import { onMessage } from "../src/messaging";
 import { embeddedStatus } from "../src/page/embedded-listing";
 import { idealoAdapter } from "../src/page/idealo-adapter";
@@ -25,7 +27,7 @@ export default defineContentScript({
     const ratings = startRatings(ctx, idealoAdapter, getOverlay);
     const filters = startFilterBuilder(
       ctx,
-      firstCatalog([embeddedCatalog, domLinkCatalog]),
+      rememberingCatalog(firstCatalog([embeddedCatalog, domLinkCatalog]), vocabularyStorage),
       getOverlay,
     );
 
