@@ -103,6 +103,22 @@ describe("extractCpuIdentity", () => {
     expect(keyOf("Qualcomm Snapdragon X Elite - X1E78100")).toBe("qualcomm-snapdragon-x1e-78-100");
   });
 
+  it("reads Celeron/Pentium N-series marketing names as the plain Intel N silicon", () => {
+    expect(keyOf("Intel Celeron N150")).toBe("intel-n150");
+    expect(keyOf("Intel Pentium N100")).toBe("intel-n100");
+    expect(keyOf("Celeron N100, 8GB RAM")).toBe("intel-n100");
+    expect(keyOf("Intel Celeron N150")).toBe(keyOf("Intel Processor N150"));
+    expect(keyOf("Intel Celeron N5095")).toBe("intel-celeron-n5095");
+    expect(keyOf("Intel Pentium Silver N6000")).toBe("intel-pentium-silver-n6000");
+    expect(keyOf("Intel Pentium N3710")).toBe("intel-pentium-n3710");
+  });
+
+  it("reads 'Intel Core N355' without the tier digit", () => {
+    expect(keyOf("Intel Core N355")).toBe("intel-core-n355");
+    expect(keyOf("Intel Core 3 N355")).toBe("intel-core-3-n355");
+    expect(keyOf("Intel Core i3-N305")).toBe("intel-core-i3-n305");
+  });
+
   it("accepts a bare i-series model and space or odd-dash separators", () => {
     expect(keyOf("Notebook i7-13700H 16GB")).toBe("intel-core-i7-13700h");
     expect(keyOf("Intel Core i7 13700H")).toBe("intel-core-i7-13700h");

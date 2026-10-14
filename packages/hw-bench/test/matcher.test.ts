@@ -144,3 +144,170 @@ describe("duplicate handling", () => {
     expect(nameOf(matcher.match("AMD Ryzen 9 6900H"))).toBe("no_match");
   });
 });
+
+describe("Intel N-series names", () => {
+  const matcher = createCanonicalKeyMatcher(
+    namedCpus(
+      "Intel N150",
+      "Intel N100",
+      "Intel Celeron N5095 @ 2.00GHz",
+      "Intel Celeron N5095A @ 2.00GHz",
+      "Intel Pentium Silver N6000 @ 1.10GHz",
+      "Intel Core 3 N355",
+      "Intel Core i3-N305",
+    ),
+  );
+
+  it("resolves marketing Celeron/Pentium N names to PassMark's plain Intel N record", () => {
+    expect(nameOf(matcher.match("Intel Celeron N150"))).toBe("Intel N150");
+    expect(nameOf(matcher.match("Intel Pentium N100"))).toBe("Intel N100");
+    expect(nameOf(matcher.match('Lenovo V15 15,6" Intel Celeron N150, 32GB RAM'))).toBe(
+      "Intel N150",
+    );
+  });
+
+  it("keeps the brand for older N-series parts that PassMark names with it", () => {
+    expect(nameOf(matcher.match("Intel Celeron N5095"))).toBe("Intel Celeron N5095 @ 2.00GHz");
+    expect(nameOf(matcher.match("Intel Celeron N5095A"))).toBe("Intel Celeron N5095A @ 2.00GHz");
+    expect(nameOf(matcher.match("Intel Pentium Silver N6000"))).toBe(
+      "Intel Pentium Silver N6000 @ 1.10GHz",
+    );
+  });
+
+  it("does not turn a missing N-series model into a neighbour", () => {
+    expect(matcher.match("Intel Celeron N200").status).toBe("no_match");
+    expect(matcher.match("Intel Celeron N15").status).toBe("no_match");
+    expect(matcher.match("Intel Celeron").status).toBe("no_match");
+  });
+
+  it("matches 'Intel Core N355' to PassMark's 'Intel Core 3 N355' only", () => {
+    expect(nameOf(matcher.match("Intel Core N355"))).toBe("Intel Core 3 N355");
+    expect(nameOf(matcher.match("Intel Core 3 N355"))).toBe("Intel Core 3 N355");
+    expect(matcher.match("Intel Core N350").status).toBe("no_match");
+  });
+
+  it("leaves the alias ambiguous when two tiers carry the same N model", () => {
+    const twin = createCanonicalKeyMatcher(namedCpus("Intel Core 3 N355", "Intel Core 5 N355"));
+    expect(twin.match("Intel Core N355").status).toBe("ambiguous");
+  });
+});
+
+describe("matchText with brandless model tokens", () => {
+  const matcher = createCanonicalKeyMatcher(
+    namedCpus(
+      "Intel Celeron N5095 @ 2.00GHz",
+      "Intel Celeron N5095A @ 2.00GHz",
+      "Intel Core i7-13700H",
+      "Intel Core i7-13700HX",
+      "AMD Ryzen 7 7840HS",
+      "AMD Ryzen 7 7840HS with Radeon 780M Graphics",
+      "AMD Ryzen 5 5600X",
+      "AMD Ryzen 5 5600G",
+      "Intel Core i5-1235U",
+      "Testcorp Alpha 4821V",
+      "Othercorp Beta 4821V",
+      "AMD Ryzen 7 6800U",
+      "Intel Xeon W-3175X",
+    ),
+  );
+
+  it("finds a CPU named by its model token alone and labels the method", () => {
+    expect(
+      matcher.matchText(
+        "15,6-Zoll-Laptop, 1920 X 1080 HD-Touchscreen, N5095-CPU, 32 GB RAM, 1TB SSD",
+      ),
+    ).toMatchObject({
+      status: "matched",
+      via: "model_token",
+      record: { name: "Intel Celeron N5095 @ 2.00GHz" },
+    });
+    expect(matcher.matchText("Laptop 13700H 16GB")).toMatchObject({
+      via: "model_token",
+      record: { name: "Intel Core i7-13700H" },
+    });
+    expect(matcher.matchText("Notebook 1235U, 16 GB")).toMatchObject({
+      record: { name: "Intel Core i5-1235U" },
+    });
+  });
+
+  it("prefers the undecorated PassMark name when the token occurs in both", () => {
+    expect(matcher.matchText("Mini PC 7840HS 32GB")).toMatchObject({
+      via: "model_token",
+      record: { name: "AMD Ryzen 7 7840HS" },
+    });
+  });
+
+  it("does the same as match for text that names a CPU in full", () => {
+    expect(matcher.matchText("Intel Core i7-13700H")).toMatchObject({ via: "exact" });
+    expect(matcher.matchText("Intel Core i7-13700H, 14x 2.40GHz")).toMatchObject({
+      via: "normalized",
+    });
+    expect(matcher.matchText("Intel Core i7-13700H")).toEqual(
+      matcher.match("Intel Core i7-13700H"),
+    );
+  });
+
+  it("does not use tokens when text names a CPU identity that PassMark lacks", () => {
+    expect(matcher.matchText("Intel Core i7-13700F 5600X").status).toBe("no_match");
+  });
+
+  it("never reads numbers, capacities, resolutions or graphics chips as a CPU", () => {
+    const texts = [
+      "NVIDIA GeForce RTX 4060, 8GB",
+      "RTX 4060Ti 16 GB",
+      "Laptop 1920 X 1080, 512GB SSD, 32GB RAM",
+      "1920x1080 120Hz 1000nits",
+      "RTX 5070 Ti, 2560x1440",
+      "16 GB DDR5-5600, 1TB",
+    ];
+    for (const text of texts) expect(matcher.matchText(text).status).toBe("no_match");
+  });
+
+  it("skips a token that names a graphics chip, but not the same token elsewhere", () => {
+    const clash = createCanonicalKeyMatcher(
+      namedCpus("Testcorp Delta 6800M", "Testcorp Delta 7700S"),
+    );
+    expect(clash.matchText("Laptop Radeon RX 6800M, 16 GB").status).toBe("no_match");
+    expect(clash.matchText("Laptop NVIDIA 6800M").status).toBe("no_match");
+    expect(clash.matchText("Laptop Intel UHD Graphics, 7700S CPU")).toMatchObject({
+      record: { name: "Testcorp Delta 7700S" },
+    });
+    expect(clash.matchText("Laptop Intel UHD Graphics 7700S")).toMatchObject({
+      status: "no_match",
+    });
+    expect(clash.matchText("Laptop 6800M, 16 GB")).toMatchObject({
+      record: { name: "Testcorp Delta 6800M" },
+    });
+    expect(clash.matchText("HD-Touchscreen Laptop 6800M")).toMatchObject({ status: "matched" });
+  });
+
+  it("returns no_match when the token belongs to several records", () => {
+    expect(matcher.matchText("Notebook 4821V")).toEqual({ status: "no_match" });
+  });
+
+  it("returns no_match when different tokens name different CPUs", () => {
+    expect(matcher.matchText("Notebook 5600X 5600G")).toEqual({ status: "no_match" });
+    expect(matcher.matchText("Notebook 5600X 5600X")).toMatchObject({
+      record: { name: "AMD Ryzen 5 5600X" },
+    });
+  });
+
+  it("requires the whole token: a prefix of a longer model matches nothing", () => {
+    expect(matcher.matchText("Laptop 13700 H").status).toBe("no_match");
+    expect(matcher.matchText("Laptop 1370").status).toBe("no_match");
+    expect(matcher.matchText("Laptop N509").status).toBe("no_match");
+  });
+
+  it("ignores pure-digit models and tokens with fewer than three digits", () => {
+    const digits = createCanonicalKeyMatcher(
+      namedCpus("AMD Athlon II X4 640", "Intel Core2 Duo T7"),
+    );
+    expect(digits.matchText("Desktop 640").status).toBe("no_match");
+    expect(digits.matchText("Core2 Duo T7").status).toBe("no_match");
+  });
+
+  it("skips multi-socket records", () => {
+    const snapshot = cpuSnapshotOf(cpuRow({ id: "50", name: "Testcorp EPYC 7R32", cpuCount: "2" }));
+    expect(createCanonicalKeyMatcher(snapshot).matchText("Server 7R32").status).toBe("no_match");
+  });
+});

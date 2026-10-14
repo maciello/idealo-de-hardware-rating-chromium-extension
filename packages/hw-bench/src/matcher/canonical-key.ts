@@ -6,7 +6,8 @@ import {
   extractCpuIdentity,
   normalizeCpuName,
 } from "../identity/cpu-identity";
-import type { Matcher, MatchResult } from "./matcher";
+import type { FreeTextMatcher, FreeTextMatchResult, MatchResult } from "./matcher";
+import { bareModelTokens } from "./model-token";
 
 interface Entry {
   readonly record: CpuBenchmarkRecord;
@@ -43,25 +44,50 @@ function resolve(
  */
 export function createCanonicalKeyMatcher(
   snapshot: BenchmarkSnapshot<CpuBenchmarkRecord>,
-): Matcher<CpuBenchmarkRecord> {
+): FreeTextMatcher<CpuBenchmarkRecord> {
   const byName = new Map<string, Entry[]>();
   const byKey = new Map<string, Entry[]>();
+  const byToken = new Map<string, Entry[]>();
   for (const record of snapshot.records) {
     push(byName, record.name.trim(), { record, penalty: 0 });
     for (const { key, penalty } of cpuNameKeys(record.name)) push(byKey, key, { record, penalty });
+    if (record.socketCount !== 1) continue;
+    const { tokens, decorated } = bareModelTokens(record.name);
+    for (const token of tokens) push(byToken, token, { record, penalty: decorated ? 1 : 0 });
   }
 
   const matchKey = (identity: CpuIdentity): MatchResult<CpuBenchmarkRecord> =>
     resolve(byKey.get(identity.key), "normalized");
 
+  const matchWhole = (query: string): MatchResult<CpuBenchmarkRecord> => {
+    const exact = resolve(byName.get(query.trim()), "exact");
+    if (exact.status !== "no_match") return exact;
+    const identity = extractCpuIdentity(query);
+    if (identity !== null) return matchKey(identity);
+    return resolve(byKey.get(normalizeCpuName(query)), "normalized");
+  };
+
+  const matchToken = (text: string): FreeTextMatchResult<CpuBenchmarkRecord> => {
+    const found = new Map<number, CpuBenchmarkRecord>();
+    for (const token of bareModelTokens(text).tokens) {
+      const result = resolve(byToken.get(token), "normalized");
+      if (result.status === "ambiguous") return { status: "no_match" };
+      if (result.status === "matched") found.set(result.record.id, result.record);
+    }
+    const [only, ...others] = found.values();
+    return only !== undefined && others.length === 0
+      ? { status: "matched", record: only, via: "model_token" }
+      : { status: "no_match" };
+  };
+
   return {
     match(query) {
-      if (typeof query !== "string") return matchKey(query);
-      const exact = resolve(byName.get(query.trim()), "exact");
-      if (exact.status !== "no_match") return exact;
-      const identity = extractCpuIdentity(query);
-      if (identity !== null) return matchKey(identity);
-      return resolve(byKey.get(normalizeCpuName(query)), "normalized");
+      return typeof query === "string" ? matchWhole(query) : matchKey(query);
+    },
+    matchText(text) {
+      const whole = matchWhole(text);
+      if (whole.status !== "no_match" || extractCpuIdentity(text) !== null) return whole;
+      return matchToken(text);
     },
   };
 }

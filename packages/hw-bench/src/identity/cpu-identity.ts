@@ -92,6 +92,17 @@ const intelN = regexExtractor(
   (m) => make(m, "Intel", "", upper(m[1])),
 );
 
+/** Marketing "Intel Celeron N150" / "Intel Pentium N100" are the silicon PassMark lists as "Intel N150" (older N-series parts keep the brand). */
+const intelBrandedN = regexExtractor(
+  /(?<![a-z0-9])(?:intel\s+)?(?:celeron|pentium)\s+(n\d{2,3})(?![a-z0-9+])/,
+  (m) => make(m, "Intel", "", upper(m[1])),
+);
+
+/** "Intel Core N355": PassMark names it "Intel Core 3 N355"; see `cpuNameKeys`. */
+const intelCoreN = regexExtractor(/(?<![a-z0-9])(?:intel\s+)?core\s+(n\d{3})(?![a-z0-9+])/, (m) =>
+  make(m, "Intel", "Core", upper(m[1])),
+);
+
 const intelEntry = regexExtractor(
   /(?<![a-z0-9])(?:intel\s+)?(celeron|pentium(?:\s+(?:gold|silver))?)\s+([a-z]{0,2}\d{3,5}[a-z]{0,2}\d?)(?![a-z0-9+])/,
   (m) => {
@@ -148,6 +159,8 @@ const EXTRACTORS: readonly Extractor[] = [
   intelBareI,
   intelCoreNumbered,
   intelN,
+  intelBrandedN,
+  intelCoreN,
   intelEntry,
   ryzenThreadripper,
   ryzen,
@@ -214,6 +227,9 @@ export function cpuNameKeys(name: string): readonly CpuNameKey[] {
   if (whole !== null) {
     add(whole.key, base);
     if (whole.coreAgnosticKey !== null) add(whole.coreAgnosticKey, base);
+    if (/^Core [357]$/.test(whole.family) && /^N\d{3}$/.test(whole.model)) {
+      add(slugify(`Intel Core ${whole.model}`), base);
+    }
   } else {
     const prefix = findIdentity(stripped.text, "prefix");
     if (prefix !== null) add(prefix.key, base + 2);

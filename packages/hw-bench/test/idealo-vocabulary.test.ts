@@ -39,7 +39,7 @@ const formFactorOf = (tile: Tile): FormFactor =>
  *
  * Floors at the time the yardstick was introduced: CPU labels 231/250, GPU labels 121/195, tile CPUs 52/106, tile GPUs 44/106.
  */
-const FLOOR = { cpuLabels: 231, gpuLabels: 121, tileCpus: 52, tileGpus: 44 } as const;
+const FLOOR = { cpuLabels: 232, gpuLabels: 121, tileCpus: 53, tileGpus: 44 } as const;
 
 describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
   "idealo vocabulary against PassMark data",
@@ -53,7 +53,7 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
       );
       const gpus = createGpuMatcher(passmarkGpuSource.parse(readFileSync(gpuPath, "utf8")));
       cpuRecordFor = (text) => {
-        const result = cpus.match(text);
+        const result = cpus.matchText(text);
         return result.status === "matched" ? result.record : null;
       };
       gpuRecordFor = (text, formFactor) => {

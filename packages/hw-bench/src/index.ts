@@ -42,7 +42,12 @@ export {
 } from "./identity/cpu-identity";
 export type { FormFactor } from "./identity/form-factor";
 export { createCanonicalKeyMatcher } from "./matcher/canonical-key";
-export type { Matcher, MatchResult } from "./matcher/matcher";
+export type {
+  FreeTextMatcher,
+  FreeTextMatchResult,
+  Matcher,
+  MatchResult,
+} from "./matcher/matcher";
 export {
   type Cohort,
   type CohortPolicy,
