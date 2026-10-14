@@ -69,6 +69,7 @@ export {
   DEFAULT_ORIGIN,
   type ParsedIdealoUrl,
   parseIdealoUrl,
+  SEARCH_PATHNAME,
   toWebUrl,
   UnrepresentableQueryError,
 } from "./url";

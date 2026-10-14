@@ -1,13 +1,16 @@
 // @vitest-environment jsdom
 
-import listingHtml from "@idealo-hw/idealo-page/fixtures/listing.html?raw";
-import ssrHtml from "@idealo-hw/idealo-page/fixtures/listing.idealo-ssr.html?raw";
 import { categoryId, emptyQuery, filterId } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { firstCatalog } from "../src/filters/catalog-source";
-import { domLinkCatalog } from "../src/filters/dom-link-catalog";
-import { embeddedCatalog, embeddedPriceBounds } from "../src/filters/embedded-catalog";
-import { filterPageOf } from "../src/filters/page";
+import {
+  domLinkCatalog,
+  embeddedCatalog,
+  embeddedPriceBounds,
+  firstCatalog,
+} from "../../src/catalog-source";
+import { filterPageOf } from "../../src/listing";
+import listingHtml from "../fixtures/listing.html?raw";
+import ssrHtml from "../fixtures/listing.idealo-ssr.html?raw";
 
 const SSR_URL = "https://www.idealo.de/preisvergleich/ProductCategory/3751.html";
 const SEARCH_URL = "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=notebook";

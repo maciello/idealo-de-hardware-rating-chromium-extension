@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
+import type { FilterCatalogSource } from "@idealo-hw/idealo-page";
 import { categoryId, emptyQuery, type FilterCatalog, filterId } from "@idealo-hw/idealo-query";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import type { FilterCatalogSource } from "../src/filters/catalog-source";
 import { rememberingCatalog } from "../src/filters/remembering-catalog";
 import { vocabularyStorage } from "../src/filters/vocabulary-storage";
 

@@ -5,14 +5,13 @@ import {
   filterId,
   parseIdealoUrl,
 } from "@idealo-hw/idealo-query";
-import type { FilterCatalogSource } from "./catalog-source";
+import { collapse } from "../text";
+import type { FilterCatalogSource } from "./port";
 
 const OTHER_GROUP = "Other";
 const HEADING = "legend, h1, h2, h3, h4, h5, h6, [role='heading']";
 const MAX_CLIMB = 8;
 
-const collapse = (text: string | null | undefined): string =>
-  (text ?? "").replace(/\s+/g, " ").trim();
 /** Result counts such as "(1.234)" are not part of the label. */
 const stripCount = (label: string): string => label.replace(/\s*\(\d[\d.]*\)\s*$/, "").trim();
 const slug = (name: string): string =>

@@ -1,5 +1,5 @@
-import { embeddedListing } from "@idealo-hw/idealo-page";
-import type { FilterCatalogSource } from "./catalog-source";
+import { embeddedListing } from "../listing";
+import type { FilterCatalogSource } from "./port";
 
 /**
  * The filter catalog idealo inlines into every server-rendered listing. After client-side filter

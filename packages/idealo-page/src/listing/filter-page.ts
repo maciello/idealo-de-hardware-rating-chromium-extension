@@ -1,4 +1,3 @@
-import { embeddedListing } from "@idealo-hw/idealo-page";
 import {
   addFilters,
   type CategoryId,
@@ -6,8 +5,10 @@ import {
   emptyQuery,
   type IdealoQuery,
   parseIdealoUrl,
+  SEARCH_PATHNAME,
   toWebUrl,
 } from "@idealo-hw/idealo-query";
+import { embeddedListing } from "./embedded";
 
 /** How the filter builder behaves on the current page. */
 export interface FilterPage {
@@ -41,12 +42,11 @@ export function guessCategoryId(doc: ParentNode): CategoryId | null {
 }
 
 const PLACEHOLDER_CATEGORY = categoryId("0");
-const SEARCH_PATH = "/preisvergleich/MainSearchProductCategory.html";
 
 /** Search-page url from the text, price and sort of a query (filters and category are dropped). */
 export function toSearchUrl(query: IdealoQuery): string {
   const url = new URL(toWebUrl({ ...emptyQuery(PLACEHOLDER_CATEGORY), ...pick(query) }));
-  url.pathname = SEARCH_PATH;
+  url.pathname = SEARCH_PATHNAME;
   return url.toString();
 }
 

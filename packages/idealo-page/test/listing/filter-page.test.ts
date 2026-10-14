@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { categoryId, filterId } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { filterPageOf, guessCategoryId, toSearchUrl } from "../src/filters/page";
+import { filterPageOf, guessCategoryId, toSearchUrl } from "../../src/listing/filter-page";
 
 const doc = (links: string[]): Document =>
   new DOMParser().parseFromString(

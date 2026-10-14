@@ -1,9 +1,13 @@
-import { capturePageSnapshot, embeddedStatus, idealoAdapter } from "@idealo-hw/idealo-page";
+import {
+  capturePageSnapshot,
+  domLinkCatalog,
+  embeddedCatalog,
+  embeddedStatus,
+  firstCatalog,
+  idealoAdapter,
+} from "@idealo-hw/idealo-page";
 import { buildPageReport } from "../src/diagnostics/page-report";
-import { firstCatalog } from "../src/filters/catalog-source";
 import { startFilterBuilder } from "../src/filters/controller";
-import { domLinkCatalog } from "../src/filters/dom-link-catalog";
-import { embeddedCatalog } from "../src/filters/embedded-catalog";
 import { rememberingCatalog } from "../src/filters/remembering-catalog";
 import { vocabularyStorage } from "../src/filters/vocabulary-storage";
 import { installGlobalErrorReporting } from "../src/platform/errors";
