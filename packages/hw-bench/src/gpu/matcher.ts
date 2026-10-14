@@ -71,6 +71,7 @@ function collapseByExactName(entries: readonly Entry[], query: string | GpuIdent
  * Builds the lookup tables once. Records are grouped by identity key (model without "Laptop GPU",
  * "(Mobile)", "with Max-Q Design"); a group splits into laptop and desktop variants. Lookup order:
  * identity key with memory ("rtx-3050-6gb"), identity key, then the whole normalized name. Never fuzzy.
+ * A text without memory whose model only exists per memory size ("RTX 5060 Ti" -> 8GB, 16GB) yields all of them, so it is ambiguous.
  *
  * Variant policy per group (L = laptop records, D = other records):
  * - laptop: L when it exists, else D (desktop-only GPUs such as integrated "Radeon 8060S" are kept).
@@ -79,6 +80,8 @@ function collapseByExactName(entries: readonly Entry[], query: string | GpuIdent
  */
 export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>): GpuMatcher {
   const withMemory = new Map<string, Group>();
+  /** Memory-qualified groups of a model, for texts that give no memory ("RTX 5060 Ti" -> its 8GB and 16GB cards). */
+  const memoryVariants = new Map<string, Group[]>();
   const base = new Map<string, Group>();
   const byName = new Map<string, GpuBenchmarkRecord[]>();
 
@@ -94,6 +97,10 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
       identity.memoryGb === null
         ? groupFor(base, identity.key)
         : groupFor(withMemory, `${identity.key}-${identity.memoryGb}gb`);
+    if (identity.memoryGb !== null) {
+      const variants = memoryVariants.get(identity.key) ?? [];
+      if (!variants.includes(target)) memoryVariants.set(identity.key, [...variants, target]);
+    }
     (isLaptopRecord(record, identity) ? target.laptop : target.desktop).push(entry);
   }
 
@@ -107,8 +114,13 @@ export function createGpuMatcher(snapshot: BenchmarkSnapshot<GpuBenchmarkRecord>
         ? undefined
         : withMemory.get(`${identity.key}-${identity.memoryGb}gb`);
     const baseGroup = base.get(identity.key);
-    if (memoryGroup === undefined && baseGroup === undefined) return null;
+    const unstated =
+      identity.memoryGb === null && baseGroup === undefined
+        ? memoryVariants.get(identity.key)
+        : undefined;
+    if (memoryGroup === undefined && baseGroup === undefined && unstated === undefined) return null;
     const pick = (side: "laptop" | "desktop"): Entry[] => {
+      if (unstated !== undefined) return unstated.flatMap((group) => group[side]);
       const fromMemory = memoryGroup?.[side] ?? [];
       return fromMemory.length > 0 ? fromMemory : (baseGroup?.[side] ?? []);
     };

@@ -39,7 +39,7 @@ const formFactorOf = (tile: Tile): FormFactor =>
  *
  * Floors at the time the yardstick was introduced: CPU labels 231/250, GPU labels 121/195, tile CPUs 52/106, tile GPUs 44/106.
  */
-const FLOOR = { cpuLabels: 232, gpuLabels: 121, tileCpus: 53, tileGpus: 44 } as const;
+const FLOOR = { cpuLabels: 232, gpuLabels: 153, tileCpus: 53, tileGpus: 48 } as const;
 
 describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
   "idealo vocabulary against PassMark data",
@@ -82,8 +82,11 @@ describe.skipIf(!existsSync(cpuPath) || !existsSync(gpuPath))(
     });
 
     it("resolves tile GPUs from a characteristics fragment with the category's form factor", () => {
+      // PassMark's GPU list also holds integrated GPUs named after their CPU ("Ryzen 7 6800H"); CPU fragments are not GPU text.
       const resolved = tiles.filter((tile) =>
-        tile.characteristics.some((text) => gpuRecordFor(text, formFactorOf(tile)) !== null),
+        tile.characteristics.some(
+          (text) => cpuRecordFor(text) === null && gpuRecordFor(text, formFactorOf(tile)) !== null,
+        ),
       );
       expect(resolved.length).toBeGreaterThanOrEqual(FLOOR.tileGpus);
     });

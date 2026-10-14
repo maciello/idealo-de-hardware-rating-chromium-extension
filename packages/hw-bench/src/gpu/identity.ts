@@ -83,8 +83,43 @@ const arc = regexExtractor(
 );
 
 const irisXe = regexExtractor(
-  /(?<![a-z0-9])(?:intel\s+)?iris\s+xe(?:\s+(max)(?:\s+(\d{3}))?)?(?![a-z0-9+])/,
+  /(?<![a-z0-9])(?:intel\s+)?(?:iris\s+)?xe(?:\s+(max)(?:\s+(\d{3}))?)?(?![a-z0-9+-])/,
   (m) => ({ vendor: "Intel", family: "Iris Xe", model: words(m[1] && "MAX", m[2]) }),
+);
+
+const hdGraphics = regexExtractor(
+  /(?<![a-z0-9])(?<!(?:radeon|ati|amd)\s+)(?:intel\s+)?hd(?:\s+graphics)?\s+(p?\d{3,4})(?![a-z0-9+])/,
+  (m) => ({ vendor: "Intel", family: "HD Graphics", model: upper(m[1]) }),
+);
+
+const iris = regexExtractor(
+  /(?<![a-z0-9])(?:intel\s+)?iris(?:\s+(plus|pro))?(?:\s+graphics)?\s+(p?\d{3,4})(?![a-z0-9+])/,
+  (m) => ({ vendor: "Intel", family: words("Iris", m[1] && titleCase(m[1])), model: upper(m[2]) }),
+);
+
+/** Ada workstation parts: "RTX 2000 Ada" ≡ PassMark "RTX 2000 Ada Generation [Laptop GPU]". */
+const rtxAda = regexExtractor(
+  /(?<![a-z0-9])rtx\s+(\d{3,4}e?)\s+ada(?:\s+generation)?(?![a-z0-9+])/,
+  (m) => ({ vendor: "NVIDIA", family: "RTX Ada", model: upper(m[1]) }),
+);
+
+/** Ampere workstation parts, also written "Quadro RTX A4000". */
+const rtxA = regexExtractor(/(?<![a-z0-9])(?:quadro\s+)?rtx\s+(a\d{3,4}h?)(?![a-z0-9+])/, (m) => ({
+  vendor: "NVIDIA",
+  family: "RTX",
+  model: upper(m[1]),
+}));
+
+/** "RTX PRO" is Blackwell-only branding, so the architecture word is optional. */
+const rtxPro = regexExtractor(
+  /(?<![a-z0-9])rtx\s+pro\s+(\d{3,4})(?:[\s[(]+blackwell(?:\s+generation)?[\])]?)?(?![a-z0-9+])/,
+  (m) => ({ vendor: "NVIDIA", family: "RTX PRO", model: `${m[1] ?? ""} Blackwell` }),
+);
+
+/** Turing workstation parts "T1200", "Quadro T400"; a bare "T400" only counts as the whole name. */
+const quadroT = regexExtractor(
+  /(?:(?<![a-z0-9])(?:nvidia\s+)?quadro\s+|(?<![a-z0-9])nvidia\s+|^)(t\d{3,4})(?![a-z0-9+])/,
+  (m) => ({ vendor: "NVIDIA", family: "T", model: upper(m[1]) }),
 );
 
 const uhd = regexExtractor(
@@ -92,7 +127,20 @@ const uhd = regexExtractor(
   (m) => ({ vendor: "Intel", family: "UHD Graphics", model: m[1] ?? "" }),
 );
 
-const EXTRACTORS: readonly Extractor[] = [geforce, radeonRx, radeonIntegrated, arc, irisXe, uhd];
+const EXTRACTORS: readonly Extractor[] = [
+  geforce,
+  radeonRx,
+  radeonIntegrated,
+  arc,
+  irisXe,
+  hdGraphics,
+  iris,
+  uhd,
+  rtxAda,
+  rtxA,
+  rtxPro,
+  quadroT,
+];
 
 /** Memory sizes, in GB. "16384 MB" -> 16. */
 const MEMORY_GB = /\(?\s*\b(\d{1,3})\s*gb\b\s*\)?/;
@@ -118,7 +166,8 @@ function takeMemoryGb(text: string): { text: string; memoryGb: number | null } {
 
 /**
  * Finds the GPU model inside an idealo spec value or title ("NVIDIA GeForce RTX 4060 (8GB)").
- * Covers GeForce RTX/GTX/GT/MX, Radeon RX, integrated Radeon nnnM/S, Intel Arc, Iris Xe and UHD.
+ * Covers GeForce RTX/GTX/GT/MX, RTX Ada/A/PRO and Turing T workstation parts, Radeon RX, integrated Radeon nnnM/S,
+ * Intel Arc, Iris (Xe/Plus/Pro), HD and UHD.
  * Marker words (Laptop GPU, Mobile, Max-Q) and memory sizes are reported separately, never part of `key`.
  * Returns null for anything else rather than guessing.
  */

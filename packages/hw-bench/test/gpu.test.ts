@@ -19,6 +19,28 @@ describe("extractGpuIdentity", () => {
     ["Intel Arc 140V GPU", "arc-140v", null, false],
     ["Intel Iris Xe Graphics", "iris-xe", null, false],
     ["Intel UHD Graphics 770", "uhd-graphics-770", null, false],
+    ["Intel HD Graphics 630", "hd-graphics-630", null, false],
+    ["Intel HD 630", "hd-graphics-630", null, false],
+    ["Intel HD Graphics P4600", "hd-graphics-p4600", null, false],
+    ["Intel Iris Plus Graphics 655", "iris-plus-655", null, false],
+    ["Intel Iris Pro Graphics 6200", "iris-pro-6200", null, false],
+    ["Intel Iris Graphics 540", "iris-540", null, false],
+    ["Intel Xe Graphics", "iris-xe", null, false],
+    ["Intel Iris Xe Graphics", "iris-xe", null, false],
+    ["Intel Iris Xe MAX Graphics", "iris-xe-max", null, false],
+    ["NVIDIA RTX 2000 Ada", "rtx-ada-2000", null, false],
+    ["RTX 2000 Ada Generation Laptop GPU", "rtx-ada-2000", null, true],
+    ["NVIDIA RTX 2000E Ada Generation", "rtx-ada-2000e", null, false],
+    ["NVIDIA RTX A500", "rtx-a500", null, false],
+    ["NVIDIA Quadro RTX A4000", "rtx-a4000", null, false],
+    ["RTX A2000 8GB Laptop GPU", "rtx-a2000", 8, true],
+    ["NVIDIA RTX PRO 2000 [Blackwell]", "rtx-pro-2000-blackwell", null, false],
+    ["NVIDIA RTX Pro 2000", "rtx-pro-2000-blackwell", null, false],
+    ["RTX PRO 2000 Blackwell Generation Laptop GPU", "rtx-pro-2000-blackwell", null, true],
+    ["NVIDIA T1200", "t-t1200", null, false],
+    ["NVIDIA Quadro T400", "t-t400", null, false],
+    ["T550 Laptop GPU", "t-t550", null, true],
+    ["Quadro T1000 with Max-Q Design", "t-t1000", null, true],
   ])("%s -> %s", (text, key, memoryGb, laptop) => {
     const identity = extractGpuIdentity(text);
     expect(identity?.key).toBe(key);
@@ -30,6 +52,17 @@ describe("extractGpuIdentity", () => {
     expect(extractGpuIdentity("GeForce RTX 3050 OEM")?.residual).toBe("oem");
     expect(extractGpuIdentity("Radeon 610M Ryzen 5 7645HX")?.residual).not.toBe("");
     expect(extractGpuIdentity("NVIDIA GeForce RTX 4060 (8GB)")?.residual).toBe("");
+  });
+
+  it("does not read other vendors' or other products' look-alikes as the new families", () => {
+    expect(extractGpuIdentity("AMD Radeon HD 5500")).toBeNull();
+    expect(extractGpuIdentity("ATI HD 4850")).toBeNull();
+    expect(extractGpuIdentity("Lenovo ThinkPad T480")).toBeNull();
+    expect(extractGpuIdentity("T14 Gen 3")).toBeNull();
+    expect(extractGpuIdentity("Intel Iris Graphics")).toBeNull();
+    expect(extractGpuIdentity("Intel HD Graphics")).toBeNull();
+    expect(extractGpuIdentity("Intel Xe-LPG")).toBeNull();
+    expect(extractGpuIdentity("RTX PRO")).toBeNull();
   });
 
   it("returns null instead of guessing", () => {
@@ -155,5 +188,135 @@ describe("createGpuMatcher", () => {
       status: "matched",
       record: { name: "GeForce RTX 9080 Laptop GPU" },
     });
+  });
+});
+
+describe("createGpuMatcher on workstation and Intel naming", () => {
+  const matcher = createGpuMatcher(
+    snapshotOf(
+      { name: "Intel HD 630", cat: "Unknown", g3d: "1,111" },
+      { name: "Intel HD Graphics 620", cat: "Unknown", g3d: "917" },
+      { name: "Intel HD 5500", cat: "Unknown", g3d: "596" },
+      { name: "Intel Iris Plus 655", cat: "Unknown", g3d: "1,723" },
+      { name: "Intel Iris Xe", cat: "Unknown", g3d: "2,587" },
+      { name: "Intel Iris Xe MAX", cat: "Unknown", g3d: "1,760" },
+      { name: "RTX 2000 Ada Generation", cat: "Unknown", g3d: "16,926" },
+      { name: "RTX 2000 Ada Generation Laptop GPU", cat: "Mobile", g3d: "14,816" },
+      { name: "RTX 2000 Ada Generation Embedded GPU", cat: "Desktop", g3d: "13,243" },
+      { name: "RTX 2000E Ada Generation", cat: "Desktop", g3d: "15,466" },
+      { name: "RTX 500 Ada Generation Laptop GPU", cat: "Mobile", g3d: "11,196" },
+      { name: "RTX A500 Embedded GPU", cat: "Desktop", g3d: "6,099" },
+      { name: "RTX A500 Laptop GPU", cat: "Mobile", g3d: "6,567" },
+      { name: "RTX A4000", cat: "Workstation", g3d: "19,311" },
+      { name: "RTX A4000 Laptop GPU", cat: "Mobile, Workstation", g3d: "14,505" },
+      { name: "RTX A4000H", cat: "Desktop", g3d: "16,768" },
+      { name: "Quadro RTX 4000", cat: "Workstation", g3d: "14,841" },
+      { name: "RTX PRO 2000 Blackwell", cat: "Desktop", g3d: "20,273" },
+      { name: "RTX PRO 2000 Blackwell Generation Laptop GPU", cat: "Mobile", g3d: "16,505" },
+      { name: "RTX PRO 2000 Blackwell Embedded GPU", cat: "Desktop", g3d: "16,242" },
+      { name: "RTX PRO 6000 Blackwell Server Edition", cat: "Desktop", g3d: "31,099" },
+      { name: "RTX PRO 6000 Blackwell Workstation Edition", cat: "Desktop", g3d: "37,605" },
+      { name: "NVIDIA T1200 Laptop GPU", cat: "Mobile, Workstation", g3d: "7,816" },
+      { name: "T550 Laptop GPU", cat: "Mobile", g3d: "4,727" },
+      { name: "T400", cat: "Unknown", g3d: "3,615" },
+      { name: "T400 4GB", cat: "Unknown", g3d: "3,810" },
+      { name: "ABIT Siluro T400", cat: "Unknown", g3d: "4" },
+      { name: "NVIDIA T1000", cat: "Workstation", g3d: "7,660" },
+      { name: "Quadro T1000", cat: "Mobile", g3d: "6,530" },
+      { name: "Radeon HD 5500", cat: "Unknown", g3d: "300" },
+      { name: "GeForce RTX 9070 Ti 8GB", cat: "Desktop", g3d: "30,001" },
+      { name: "GeForce RTX 9070 Ti 16GB", cat: "Desktop", g3d: "31,002" },
+      { name: "GeForce RTX 9070 Ti 16GB Laptop GPU", cat: "Mobile", g3d: "25,003" },
+    ),
+  );
+  const nameOf = (text: string, formFactor: "laptop" | "desktop" | "unknown" = "unknown") => {
+    const result = matcher.match(text, { formFactor });
+    if (result.status === "matched") return result.record.name;
+    if (result.status === "ambiguous") return result.candidates.map((c) => c.name);
+    return null;
+  };
+
+  it("reads Intel HD, Iris Plus and Xe marketing names as PassMark's shorter names", () => {
+    expect(nameOf("Intel HD Graphics 630")).toBe("Intel HD 630");
+    expect(nameOf("Intel HD 630")).toBe("Intel HD 630");
+    expect(nameOf("Intel HD Graphics 620")).toBe("Intel HD Graphics 620");
+    expect(nameOf("Intel HD Graphics 5500")).toBe("Intel HD 5500");
+    expect(nameOf("Intel Iris Plus Graphics 655")).toBe("Intel Iris Plus 655");
+    expect(nameOf("Intel Xe Graphics")).toBe("Intel Iris Xe");
+    expect(nameOf("Intel Iris Xe Graphics")).toBe("Intel Iris Xe");
+    expect(nameOf("Intel Iris Xe MAX Graphics")).toBe("Intel Iris Xe MAX");
+  });
+
+  it("leaves generic or absent Intel labels unmatched", () => {
+    expect(nameOf("Intel HD Graphics")).toBeNull();
+    expect(nameOf("Intel HD Graphics 600")).toBeNull();
+    expect(nameOf("Intel Iris Graphics")).toBeNull();
+    expect(nameOf("Intel Iris Plus Graphics")).toBeNull();
+    expect(nameOf("Intel Iris Plus Graphics 640")).toBeNull();
+    expect(nameOf("Intel Arc Graphics")).toBeNull();
+  });
+
+  it("never turns an AMD Radeon HD into an Intel HD of the same number", () => {
+    expect(nameOf("AMD Radeon HD 5500")).toBe("Radeon HD 5500");
+    expect(nameOf("AMD Radeon HD 630")).toBeNull();
+  });
+
+  it("picks RTX Ada by form factor and keeps E and Embedded parts apart", () => {
+    expect(nameOf("NVIDIA RTX 2000 Ada", "laptop")).toBe("RTX 2000 Ada Generation Laptop GPU");
+    expect(nameOf("NVIDIA RTX 2000 Ada", "desktop")).toBe("RTX 2000 Ada Generation");
+    expect(nameOf("NVIDIA RTX 2000 Ada", "unknown")).toEqual([
+      "RTX 2000 Ada Generation",
+      "RTX 2000 Ada Generation Laptop GPU",
+    ]);
+    expect(nameOf("NVIDIA RTX 2000E Ada Generation")).toBe("RTX 2000E Ada Generation");
+    expect(nameOf("NVIDIA RTX 500 Ada", "laptop")).toBe("RTX 500 Ada Generation Laptop GPU");
+    expect(nameOf("NVIDIA RTX 3000 Ada", "laptop")).toBeNull();
+    expect(nameOf("NVIDIA RTX 2000", "laptop")).toBeNull();
+  });
+
+  it("matches RTX A-series, also when idealo writes Quadro RTX A4000", () => {
+    expect(nameOf("NVIDIA RTX A500", "laptop")).toBe("RTX A500 Laptop GPU");
+    expect(nameOf("NVIDIA Quadro RTX A4000", "desktop")).toBe("RTX A4000");
+    expect(nameOf("NVIDIA Quadro RTX A4000", "laptop")).toBe("RTX A4000 Laptop GPU");
+    expect(nameOf("NVIDIA RTX A4000H")).toBe("RTX A4000H");
+  });
+
+  it("keeps Turing Quadro RTX apart from the A-series", () => {
+    expect(nameOf("NVIDIA Quadro RTX 4000")).toBe("Quadro RTX 4000");
+    expect(nameOf("NVIDIA Quadro RTX 4000", "laptop")).toBe("Quadro RTX 4000");
+  });
+
+  it("treats the architecture word of RTX PRO as optional and picks by form factor", () => {
+    expect(nameOf("NVIDIA RTX PRO 2000 [Blackwell]", "laptop")).toBe(
+      "RTX PRO 2000 Blackwell Generation Laptop GPU",
+    );
+    expect(nameOf("NVIDIA RTX Pro 2000", "desktop")).toBe("RTX PRO 2000 Blackwell");
+    expect(nameOf("NVIDIA RTX PRO 2000 Blackwell", "desktop")).toBe("RTX PRO 2000 Blackwell");
+  });
+
+  it("leaves RTX PRO models with only edition-qualified records unmatched", () => {
+    expect(nameOf("NVIDIA RTX PRO 6000")).toBeNull();
+    expect(nameOf("NVIDIA RTX PRO 6000 Blackwell")).toBeNull();
+  });
+
+  it("matches Turing T-series with and without the Quadro or NVIDIA prefix", () => {
+    expect(nameOf("NVIDIA T1200", "laptop")).toBe("NVIDIA T1200 Laptop GPU");
+    expect(nameOf("NVIDIA T550")).toBe("T550 Laptop GPU");
+    expect(nameOf("NVIDIA Quadro T400")).toBe("T400");
+    expect(nameOf("NVIDIA T1000", "laptop")).toBe("Quadro T1000");
+    expect(nameOf("NVIDIA T1000", "desktop")).toBe("NVIDIA T1000");
+    expect(nameOf("NVIDIA T1100")).toBeNull();
+  });
+
+  it("returns ambiguous for a model that only exists per memory size", () => {
+    expect(nameOf("NVIDIA GeForce RTX 9070 Ti", "desktop")).toEqual([
+      "GeForce RTX 9070 Ti 16GB",
+      "GeForce RTX 9070 Ti 8GB",
+    ]);
+    expect(nameOf("NVIDIA GeForce RTX 9070 Ti", "laptop")).toBe(
+      "GeForce RTX 9070 Ti 16GB Laptop GPU",
+    );
+    expect(nameOf("NVIDIA GeForce RTX 9070 Ti 8GB", "desktop")).toBe("GeForce RTX 9070 Ti 8GB");
+    expect(nameOf("NVIDIA GeForce RTX 9070 Ti 24GB", "desktop")).toBeNull();
   });
 });
