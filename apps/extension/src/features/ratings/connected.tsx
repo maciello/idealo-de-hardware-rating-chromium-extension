@@ -1,7 +1,7 @@
 import type { Signal } from "@idealo-hw/sensors";
 import { type ChipInput, useHoverPopover } from "./controller";
 import type { GpuReading } from "./model";
-import { RatingChip } from "./view/RatingChip";
+import { RatingChip } from "./view/chip/RatingChip";
 import { cardViewOf, chipViewOf } from "./view-model";
 
 export type ConnectedRatingChipProps = Omit<ChipInput, "gpu" | "signals"> & {

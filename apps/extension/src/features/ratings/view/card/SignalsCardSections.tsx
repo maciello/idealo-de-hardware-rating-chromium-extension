@@ -1,5 +1,5 @@
-import { RATINGS_COPY } from "../copy";
-import type { SignalsCardView } from "../view-model";
+import { RATINGS_COPY } from "../../copy";
+import type { SignalsCardView } from "../../view-model";
 
 /** The card's product sections: the flags worst first, then the features; an empty one is absent. */
 export function SignalsCardSections({ signals }: { signals: SignalsCardView }) {

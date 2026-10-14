@@ -1,5 +1,5 @@
 import { IconFlag } from "@tabler/icons-react";
-import type { SignalsChipModel } from "../view-model";
+import type { SignalsChipModel } from "../../view-model";
 
 /** The product's signals on the chip: the older-memory tag, then the count of its other red and amber flags. */
 export function SignalsChip({ model }: { model: SignalsChipModel }) {

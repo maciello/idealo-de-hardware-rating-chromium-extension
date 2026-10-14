@@ -1,7 +1,7 @@
-import { RATINGS_COPY } from "../copy";
-import type { CardView } from "../view-model";
+import { RATINGS_COPY } from "../../copy";
+import type { CardView } from "../../view-model";
 import { CardRow } from "./CardRow";
-import { GpuCardSections } from "./gpu/GpuCardSections";
+import { GpuCardSections } from "./GpuCardSections";
 import { SignalsCardSections } from "./SignalsCardSections";
 
 /** The card under a chip: the CPU block, the GPU blocks, the product's flags and features, and the import footnote with a settings link. */

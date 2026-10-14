@@ -1,5 +1,5 @@
 import type { GpuCardSection } from "../../view-model";
-import { CardRow } from "../CardRow";
+import { CardRow } from "./CardRow";
 
 /** The card's GPU sections: the line's GPU, then the CPU's iGPU when a dedicated card took the line. */
 export function GpuCardSections({ sections }: { sections: readonly GpuCardSection[] }) {

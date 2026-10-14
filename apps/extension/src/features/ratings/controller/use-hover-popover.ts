@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CLOSE_DELAY_MS, OPEN_DELAY_MS } from "../config";
-import type { PopoverControl } from "../view/popover-control";
+import type { PopoverControl } from "../view-model";
 
 /**
  * Open state of the chip's card: hover opens after a short delay, leaving closes after a longer

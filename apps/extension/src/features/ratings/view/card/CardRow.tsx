@@ -1,5 +1,5 @@
-import { Meter } from "../../../ui";
-import type { CardRow as CardRowModel } from "../view-model";
+import { Meter } from "../../../../ui";
+import type { CardRow as CardRowModel } from "../../view-model";
 
 /** One label/value row of the card, with an optional percentile meter beneath. */
 export function CardRow({

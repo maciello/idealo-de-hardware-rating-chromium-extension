@@ -1,10 +1,9 @@
 import { Popover } from "@mantine/core";
-import { CARD_OFFSET_PX, CARD_TRANSITION_MS, CARD_WIDTH_PX } from "../config";
-import type { CardView, ChipView } from "../view-model";
+import { CARD_OFFSET_PX, CARD_TRANSITION_MS, CARD_WIDTH_PX } from "../../config";
+import type { CardView, ChipView, PopoverControl } from "../../view-model";
+import { RatingCard } from "../card/RatingCard";
 import { CpuChipLine } from "./CpuChipLine";
-import { GpuChipLine } from "./gpu/GpuChipLine";
-import type { PopoverControl } from "./popover-control";
-import { RatingCard } from "./RatingCard";
+import { GpuChipLine } from "./GpuChipLine";
 import { SignalsChip } from "./SignalsChip";
 
 export interface RatingChipProps {

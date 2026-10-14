@@ -1,8 +1,8 @@
 import { IconFlame, IconLeaf } from "@tabler/icons-react";
 import type { ReactNode } from "react";
-import { Meter } from "../../../ui";
-import { RATINGS_COPY } from "../copy";
-import type { ChipModel } from "../view-model";
+import { Meter } from "../../../../ui";
+import { RATINGS_COPY } from "../../copy";
+import type { ChipModel } from "../../view-model";
 
 /**
  * The CPU line of the chip; without a model (ambiguous match) it only says the CPU is unresolved.

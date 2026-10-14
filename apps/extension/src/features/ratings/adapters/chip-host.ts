@@ -1,7 +1,7 @@
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
 import { HOST_TAG_PREFIX, ROOT_STYLES, tokenCss } from "../../../ui/theme";
-import { CHIP_STYLES } from "../view/chip-styles";
+import { CHIP_STYLES } from "../view/chip/styles";
 
 export type ChipPlacement = "corner" | "inline";
 
