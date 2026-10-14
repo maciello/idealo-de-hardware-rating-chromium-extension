@@ -5,7 +5,7 @@ export default defineConfig({
   manifest: {
     name: "idealo Hardware Rating",
     description: "Benchmark ratings and batch filters for idealo.de hardware listings.",
-    permissions: ["storage", "unlimitedStorage"],
-    host_permissions: ["https://www.idealo.de/*"],
+    permissions: ["storage", "unlimitedStorage", "identity"],
+    host_permissions: ["https://www.idealo.de/*", "https://openrouter.ai/*"],
   },
 });

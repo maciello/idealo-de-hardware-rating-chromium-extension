@@ -4,6 +4,7 @@ import { cpuSnapshotItem, gpuSnapshotItem } from "../storage/items";
 import { CpuSnapshotSchema, GpuSnapshotSchema } from "../storage/schemas";
 import { CaptureCard } from "./CaptureCard";
 import { ImportCard } from "./ImportCard";
+import { OpenRouterCard } from "./OpenRouterCard";
 import { StrategiesCard } from "./StrategiesCard";
 
 export function OptionsApp() {
@@ -29,6 +30,7 @@ export function OptionsApp() {
           schema={GpuSnapshotSchema}
         />
         <StrategiesCard />
+        <OpenRouterCard />
         <CaptureCard />
       </Stack>
     </Container>
