@@ -19,16 +19,23 @@ adr.0008:
       observed:
         - "GET /suggest?q=<text>&max=10 -> JSON product and query suggestions with OffersOfProduct URLs"
         - "4x POST to obfuscated path /VlzSZFrXQ-8-_VLmYKNKlQwtVKs/... -> 202, empty body"
-      conclusion: listing grid and filter sidebar are server-rendered; no product/filter JSON over fetch/XHR on this flow; obfuscated POSTs are likely a bot-manager sensor, so patching fetch/XHR on every page is a detection risk
+      conclusion_falsified: "'listing is server-rendered, no product JSON' was wrong; see finding devtools-2026-10-14"
+      still_holds: obfuscated POSTs are likely a bot-manager sensor, so patching fetch/XHR on every page is a detection risk
     - id: capture-2026-10-14-product-pages
       source: user capture export, 6 OffersOfProduct pages opened from Notebooks search
       observed:
         - "GET /price-chart/sites/1/products/<productId>/history?period=3M -> {siteId, startDate, data: [{x: YYYY-MM-DD, y: <euro cents>, date: [y, m, d]}]}; days without data omitted"
         - "POST /offerpage/api/sponsored-slider -> {items: [{offer: {productId, title, variantName, price (de-DE string), shopName, relocateUrl (categoryId=3751), ...}}]}; ads, request body not captured"
-        - "no spec/offer-list JSON; Produktdetails block is server-rendered"
       conclusion: price history is a clean same-origin GET keyed by productId (the id in OffersOfProduct/<id>_ URLs); calling it from listing tiles would be extra requests, so it stays unused until a feature needs it and no_extra_requests_to_idealo is revisited
+    - id: devtools-2026-10-14
+      source: user DevTools screenshot, Notebooks search "laptop 32GB"
+      observed:
+        - "GET searchResult?categoryId=3751&locale=de_DE&pageIndex=1&query=<text>&delphiQuery=<text> -> JSON with offers (shopInfo, shippingCosts, deliveryInformation, leadoutHref, energyInfo, ...)"
+      gap: extension capture did not record it; host, content-type, initiator and whether page 0 also loads via JSON unknown
+      consequence: searchResult JSON is the candidate primary source for listing tiles; capture filter (same-origin + json content-type) is suspect until a HAR shows the request's real shape
   unknowns:
     - filter-definition endpoint URL/shape (not observable from build env; idealo.de blocked)
+    - full searchResult request/response shape (needs sanitized HAR)
     - DOM location of spec table (Prozessor/Grafikkarte) on product pages (text shape known from fixture captiva-r10-1257ge.spec.txt)
     - valid price-chart period values besides 3M
     - meaning of opaque URL suffix like "oE0oJ1"
