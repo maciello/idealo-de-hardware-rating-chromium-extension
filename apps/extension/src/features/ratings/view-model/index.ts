@@ -4,4 +4,5 @@ export { type ChipView, chipViewOf } from "./chip-view";
 export * from "./cpu";
 export * from "./gpu";
 export { meterSegments, topPercent } from "./percentile";
+export { ratingDisplay, ratingExplanation } from "./rating-text";
 export * from "./signals";

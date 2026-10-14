@@ -23,7 +23,7 @@ export interface GpuRateOptions {
 /**
  * Rates a GPU match result like the CPU engine rates a CPU: a matched record as is, an ambiguous one by its weakest
  * candidate (`gpuScoreBounds` min), so a rating never promises more than the worst card the text could mean.
- * Ratings of an ambiguous match say so in their explanation. Null for no_match.
+ * The result says so with `lowerBound` and `variants`, which belong to every rating in it. Null for no_match.
  */
 export function rateGpuMatch(
   strategies: readonly GpuRatingStrategy[],
@@ -43,11 +43,6 @@ export function rateGpuMatch(
     formFactor,
     ...(options.priceEur === undefined ? {} : { priceEur: options.priceEur }),
   };
-  const note = ` Lower bound: the text matches ${bounds.variants.length} cards (${bounds.variants.join(", ")}); this is the weakest.`;
-  const ratings = strategies.flatMap((strategy) => {
-    const rating = strategy.rate(input);
-    if (rating === null) return [];
-    return [lowerBound ? { ...rating, explanation: rating.explanation + note } : rating];
-  });
+  const ratings = strategies.flatMap((strategy) => strategy.rate(input) ?? []);
   return { record, lowerBound, variants: bounds.variants, formFactor, ratings };
 }

@@ -1,17 +1,15 @@
-import { formatInteger } from "../format";
-import type { Rating } from "../strategy";
-import { percentileDisplay, percentileRank } from "./rank";
+import type { PointsMetric, Rating, RatingCohort, RatingGroup } from "../strategy";
+import { percentileRank } from "./rank";
 
 export interface CohortPercentileInput {
   readonly strategyId: string;
-  /** Name of the ranked score, e.g. "CPU Mark", "G3D Mark". */
-  readonly metric: string;
+  readonly metric: PointsMetric;
   readonly score: number;
   readonly sorted: readonly number[];
-  /** Plural noun of the compared group, e.g. "laptop CPUs"; must name the group `sorted` was built from. */
-  readonly noun: string;
-  /** `describeCohort` output, e.g. " first seen 2022 or later". */
-  readonly cohortText: string;
+  /** The group `sorted` was built from. */
+  readonly group: RatingGroup;
+  /** What the group's records were limited to. */
+  readonly cohort: RatingCohort;
 }
 
 /** Rating of `score` within a cohort's sorted scores; null for an empty cohort. Shared by every metric. */
@@ -19,9 +17,13 @@ export function cohortPercentileRating(input: CohortPercentileInput): Rating | n
   const value = percentileRank(input.sorted, input.score);
   if (value === null) return null;
   return {
+    kind: "percentile",
     strategyId: input.strategyId,
     value,
-    display: percentileDisplay(value),
-    explanation: `${input.metric} ${formatInteger(input.score)} is at the ${formatInteger(value)}th percentile of ${formatInteger(input.sorted.length)} ${input.noun}${input.cohortText} in the imported snapshot.`,
+    metric: input.metric,
+    score: input.score,
+    sampleSize: input.sorted.length,
+    group: input.group,
+    cohort: input.cohort,
   };
 }

@@ -1,8 +1,7 @@
 import type { BenchmarkSnapshot, CpuBenchmarkRecord } from "../../benchmark";
 import type { FormFactor } from "../../identity";
-import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY, describeCohort } from "../cohort";
+import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY } from "../cohort";
 import { classifyCpu } from "../device-class";
-import { formatInteger } from "../format";
 import { cohortPercentileRating, type Pool, poolOf } from "../percentile";
 import type { Rating, RatingStrategy } from "../strategy";
 
@@ -23,7 +22,7 @@ export function segmentPercentile(
   policy: CohortPolicy = DEFAULT_COHORT_POLICY,
 ): RatingStrategy {
   const cohort = createCohort(snapshot.records, (record) => record.cpuMark, policy);
-  const cohortText = describeCohort(cohort, formatInteger);
+  const limits = { sinceYear: cohort.sinceYear, minScore: cohort.minScore };
   const laptopMarks: number[] = [];
   const desktopMarks: number[] = [];
   for (const record of snapshot.records) {
@@ -32,8 +31,8 @@ export function segmentPercentile(
     if (membership.laptop) laptopMarks.push(record.cpuMark);
     if (membership.desktop) desktopMarks.push(record.cpuMark);
   }
-  const laptopPool = poolOf(laptopMarks, "laptop CPUs");
-  const desktopPool = poolOf(desktopMarks, "desktop CPUs");
+  const laptopPool = poolOf(laptopMarks, "laptop");
+  const desktopPool = poolOf(desktopMarks, "desktop");
   const poolFor = (cpu: CpuBenchmarkRecord, formFactor: FormFactor): Pool | null => {
     if (formFactor === "laptop") return laptopPool;
     if (formFactor === "desktop") return desktopPool;
@@ -50,11 +49,11 @@ export function segmentPercentile(
       if (pool === null) return null;
       return cohortPercentileRating({
         strategyId: SEGMENT_PERCENTILE_ID,
-        metric: "CPU Mark",
+        metric: "cpu_mark",
         score: cpu.cpuMark,
         sorted: pool.sorted,
-        noun: pool.noun,
-        cohortText,
+        group: pool.group,
+        cohort: limits,
       });
     },
   };

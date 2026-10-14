@@ -191,9 +191,11 @@ describe("gpuCardSections", () => {
 });
 
 describe("gpuValueText and chipAria", () => {
-  it("falls back to the strategy's own display for unknown strategies", () => {
-    expect(gpuValueText({ strategyId: "future", value: 1, display: "X1", explanation: "" })).toBe(
-      "X1",
+  it("falls back to the rating kind's own display for unknown strategies", () => {
+    const base = { strategyId: "future", metric: "g3d_mark" } as const;
+    expect(gpuValueText({ ...base, kind: "score", value: 16_000, subject: "" })).toBe("16.000");
+    expect(gpuValueText({ ...base, kind: "per_euro", value: 20, score: 1, priceEur: 1 })).toBe(
+      "20,0/€",
     );
   });
 

@@ -36,7 +36,7 @@ entities:
     def: Port. Turns (product, BenchmarkRecord, context) into a Rating. Several adapters coexist for comparison.
   term.rating:
     name: Rating
-    def: Output of one RatingStrategy - numeric value, short label, explanation of inputs.
+    def: Output of one RatingStrategy - a discriminated union (score, per_euro, percentile) holding the exact value and the inputs behind it. No display text; the consumer words and formats it.
   term.badge:
     name: Badge
     def: UI element injected next to a product on Listing/ProductPage showing one or more Ratings.

@@ -11,7 +11,7 @@ const partSignatureOf = (part: GpuPart): string => {
   const rated =
     rating === null
       ? "unrated"
-      : `${rating.record.id}:${rating.formFactor}:${rating.lowerBound ? "lb" : "ex"}:${valuesOf(rating.ratings)}`;
+      : `${rating.record.id}:${rating.formFactor}:${rating.lowerBound ? `lb:${rating.variants.join("|")}` : "ex"}:${valuesOf(rating.ratings)}`;
   return `${part.kind}:${part.name}:${rated}:${memorySignatureOf(part)}:${part.approximated ? "ap" : "-"}`;
 };
 

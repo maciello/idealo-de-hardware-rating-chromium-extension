@@ -32,10 +32,11 @@ const record: CpuBenchmarkRecord = {
   samples: 10,
 };
 const numberRating: Rating = {
+  kind: "score",
   strategyId: "raw_multithread_score",
   value: 10_000,
-  display: "10.000",
-  explanation: "",
+  metric: "cpu_mark",
+  subject: "",
 };
 const matched = (ratings: number): ItemRating => ({
   status: "matched",

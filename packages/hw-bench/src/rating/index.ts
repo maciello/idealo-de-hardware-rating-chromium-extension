@@ -5,7 +5,6 @@ export {
   createCohort,
   type DatedRecord,
   DEFAULT_COHORT_POLICY,
-  describeCohort,
 } from "./cohort";
 export {
   createStrategies,
@@ -36,15 +35,18 @@ export {
 export {
   type CohortPercentileInput,
   cohortPercentileRating,
-  percentileDisplay,
   percentileRank,
 } from "./percentile";
 export {
   type GpuRatingInput,
   type GpuRatingStrategy,
   type PeerSample,
+  type PointsMetric,
   type Rating,
+  type RatingCohort,
+  type RatingGroup,
   type RatingInput,
+  type RatingMetric,
   type RatingStrategy,
   type ScoreStrategySpec,
   scoreStrategy,

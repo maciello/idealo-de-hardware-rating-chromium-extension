@@ -2,6 +2,7 @@ import type { Signal } from "@idealo-hw/sensors";
 import { RATINGS_COPY } from "../../copy";
 import { type MatchedRating, MULTI, PAGE_RANK, ROW_ORDER, SEGMENT } from "../../model";
 import type { CardRow } from "../card-row";
+import { ratingExplanation } from "../rating-text";
 import { describeSignal, evidenceTitle } from "../signals";
 import { findRating } from "./find-rating";
 import { pageMeter, segmentMeter, segmentNoun } from "./meter";
@@ -24,7 +25,7 @@ export function cardRows(rating: MatchedRating, signals: readonly Signal[]): Car
       id,
       label: RATINGS_COPY.rowLabels[id] ?? id,
       value: valueText(r, rating.pageRank),
-      title: r.explanation,
+      title: ratingExplanation(r),
       meter: meter ? { filled: meter.filled, text: meter.context } : null,
     });
   }
@@ -34,7 +35,7 @@ export function cardRows(rating: MatchedRating, signals: readonly Signal[]): Car
       id: SEGMENT,
       label: RATINGS_COPY.rowLabels[SEGMENT] ?? SEGMENT,
       value: valueText(segmentRating, null),
-      title: segmentRating.explanation,
+      title: ratingExplanation(segmentRating),
       meter: segment
         ? { filled: segment.filled, text: RATINGS_COPY.segmentRowContext(segmentNoun(rating)) }
         : null,

@@ -10,8 +10,13 @@ describe("peerPercentile", () => {
     const rating = peerPercentile.rate({ cpu: cpuRecord({ cpuMark: 25_000 }), peers });
     expect(rating).toMatchObject({
       strategyId: "peer_percentile_on_listing",
+      kind: "percentile",
       value: 75,
-      display: "P75",
+      metric: "cpu_mark",
+      score: 25_000,
+      sampleSize: 4,
+      group: "listing",
+      cohort: null,
     });
   });
 

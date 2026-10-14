@@ -1,5 +1,4 @@
-import { formatInteger } from "../format";
-import { percentileDisplay, percentileRank } from "../percentile";
+import { percentileRank } from "../percentile";
 import type { Rating, RatingStrategy } from "../strategy";
 
 const MIN_PEERS = 2;
@@ -16,10 +15,14 @@ export const peerPercentile: RatingStrategy = {
     const value = percentileRank(marks, cpu.cpuMark);
     if (value === null) return null;
     return {
+      kind: "percentile",
       strategyId: PEERPERCENTILE_ID,
       value,
-      display: percentileDisplay(value),
-      explanation: `CPU Mark ${formatInteger(cpu.cpuMark)} ranks at the ${formatInteger(value)}th percentile of ${marks.length} products in this listing.`,
+      metric: "cpu_mark",
+      score: cpu.cpuMark,
+      sampleSize: marks.length,
+      group: "listing",
+      cohort: null,
     };
   },
 };

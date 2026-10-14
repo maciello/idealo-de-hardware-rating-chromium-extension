@@ -42,7 +42,6 @@ describe("rateGpuMatch", () => {
       "gpu_g3d_percentile",
     ]);
     expect(result?.ratings[0]?.value).toBe(36_000);
-    expect(result?.ratings[0]?.explanation).not.toContain("Lower bound");
   });
 
   it("rates an ambiguous match by its weakest candidate, as gpuScoreBounds does", () => {
@@ -53,7 +52,10 @@ describe("rateGpuMatch", () => {
     expect(result?.record.name).toBe("GeForce RTX 9070 Ti 8GB");
     expect(result?.ratings[0]?.value).toBe(gpuScoreBounds(match)?.g3dMark.min);
     expect(result?.variants).toEqual(["GeForce RTX 9070 Ti 16GB", "GeForce RTX 9070 Ti 8GB"]);
-    for (const rating of result?.ratings ?? []) expect(rating.explanation).toContain("Lower bound");
+    expect(result?.ratings.map((r) => r.strategyId)).toEqual([
+      "gpu_g3d_score",
+      "gpu_g3d_percentile",
+    ]);
   });
 
   it("gives no percentile when the form factor is unknown, but still the scores", () => {
@@ -104,23 +106,22 @@ describe.skipIf(!haveData("passmark_gpu.csv"))("GPU ratings on PassMark data", (
     expect(rtx.value).toBeGreaterThan(uhd.value + 40);
     expect(rtx.value).toBeGreaterThan(60);
     expect(uhd.value).toBeLessThan(25);
-    expect(rtx.explanation).toContain("laptop GPUs");
-    expect(uhd.explanation).toContain("laptop GPUs");
-    expect(rtx.explanation).toContain("first seen 20");
+    expect(rtx).toMatchObject({ group: "laptop" });
+    expect(uhd).toMatchObject({ group: "laptop" });
+    expect(rtx).toMatchObject({ cohort: { sinceYear: expect.any(Number) } });
   });
 
   it("puts a desktop RTX 4090 near the top of the desktop cohort", () => {
     const rtx = percentile("NVIDIA GeForce RTX 4090", "desktop");
     expect(rtx.value).toBeGreaterThan(95);
-    expect(rtx.explanation).toContain("desktop GPUs");
-    expect(rtx.explanation).not.toContain("laptop");
+    expect(rtx).toMatchObject({ group: "desktop" });
   });
 
   it("ranks the same text against the cohort of the page's form factor", () => {
     const desktop = percentile("RTX 4090", "desktop");
     const laptop = percentile("RTX 4090", "laptop");
-    expect(desktop.explanation).toContain("desktop GPUs");
-    expect(laptop.explanation).toContain("laptop GPUs");
+    expect(desktop).toMatchObject({ group: "desktop" });
+    expect(laptop).toMatchObject({ group: "laptop" });
     expect(rate("RTX 4090", "desktop").record.name).not.toBe(
       rate("RTX 4090", "laptop").record.name,
     );

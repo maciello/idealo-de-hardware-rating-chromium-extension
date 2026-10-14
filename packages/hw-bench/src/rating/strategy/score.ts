@@ -1,11 +1,9 @@
-import { formatInteger } from "../format";
-import type { Rating, RatingStrategy } from "./port";
+import type { Rating, RatingMetric, RatingStrategy } from "./port";
 
 export interface ScoreStrategySpec<I> {
   readonly id: string;
   readonly label: string;
-  /** Names the score in the explanation: "PassMark <what> of <subject>: <score>.". */
-  readonly what: string;
+  readonly metric: RatingMetric;
   readonly subject: (input: I) => string;
   readonly score: (input: I) => number;
 }
@@ -15,12 +13,12 @@ export const scoreStrategy = <I>(spec: ScoreStrategySpec<I>): RatingStrategy<I> 
   id: spec.id,
   label: spec.label,
   rate(input): Rating {
-    const value = spec.score(input);
     return {
+      kind: "score",
       strategyId: spec.id,
-      value,
-      display: formatInteger(value),
-      explanation: `PassMark ${spec.what} of ${spec.subject(input)}: ${formatInteger(value)}.`,
+      value: spec.score(input),
+      metric: spec.metric,
+      subject: spec.subject(input),
     };
   },
 });

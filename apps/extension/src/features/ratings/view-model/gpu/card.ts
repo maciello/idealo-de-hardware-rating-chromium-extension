@@ -1,6 +1,7 @@
 import { RATINGS_COPY } from "../../copy";
 import { GPU_PERCENTILE, GPU_VALUE_ORDER, type GpuPart, type GpuReading } from "../../model";
 import type { CardRow } from "../card-row";
+import { lowerBoundNote, ratingExplanation } from "../rating-text";
 import { memoryText } from "./memory-text";
 import { findGpuRating, gpuMeter } from "./meter";
 import { gpuValueText } from "./value-text";
@@ -17,7 +18,7 @@ export function gpuCardRows(part: GpuPart, idPrefix = ""): CardRow[] {
         id: idPrefix + id,
         label: RATINGS_COPY.gpuRowLabels[id] ?? id,
         value: gpuValueText(rating),
-        title: rating.explanation,
+        title: ratingExplanation(rating) + (gpu?.lowerBound ? lowerBoundNote(gpu.variants) : ""),
         meter:
           id === GPU_PERCENTILE && meter
             ? { filled: meter.filled, text: RATINGS_COPY.segmentRowContext(meter.noun) }

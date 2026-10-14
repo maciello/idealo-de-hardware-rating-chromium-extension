@@ -1,10 +1,16 @@
-import { type CohortPolicy, DEFAULT_COHORT_POLICY, passmarkCpuSource } from "@idealo-hw/hw-bench";
+import {
+  type CohortPolicy,
+  DEFAULT_COHORT_POLICY,
+  passmarkCpuSource,
+  type Rating,
+} from "@idealo-hw/hw-bench";
 import { describe, expect, it } from "vitest";
 import {
   createRatingEngine,
   resolveEnabledStrategyIds,
   STRATEGY_CATALOG,
 } from "../../../../../src/features/ratings/model";
+import { ratingExplanation } from "../../../../../src/features/ratings/view-model";
 
 const row = (id: number, name: string, cpumark: string) => ({
   id: String(id),
@@ -32,6 +38,12 @@ const snapshot = passmarkCpuSource.parse(
   }),
 );
 const allIds = STRATEGY_CATALOG.map((s) => s.id);
+
+const explanationOf = (rated: { ratings: readonly Rating[] }): string => {
+  const [first] = rated.ratings;
+  if (first === undefined) throw new Error("expected a rating");
+  return ratingExplanation(first);
+};
 
 describe("createRatingEngine", () => {
   const engine = createRatingEngine(snapshot, allIds);
@@ -168,14 +180,14 @@ describe("createRatingEngine device class", () => {
   it("ranks a CPU that PassMark files as Desktop against laptop CPUs on a laptop page", () => {
     const laptop = rate("laptop");
     expect(laptop.formFactor).toBe("laptop");
-    expect(laptop.ratings[0]?.explanation).toContain("laptop CPUs");
+    expect(explanationOf(laptop)).toContain("laptop CPUs");
     expect(laptop.ratings[0]?.value).toBeGreaterThan(rate("desktop").ratings[0]?.value ?? 100);
   });
 
   it("ranks it against desktop CPUs on a desktop page", () => {
     const desktop = rate("desktop");
     expect(desktop.formFactor).toBe("desktop");
-    expect(desktop.ratings[0]?.explanation).toContain("desktop CPUs");
+    expect(explanationOf(desktop)).toContain("desktop CPUs");
   });
 
   describe("without a form factor", () => {
@@ -189,14 +201,14 @@ describe("createRatingEngine device class", () => {
       const chip = "Notebook Qualcomm Snapdragon X Elite X1E78100";
       const unknown = rateChip(chip);
       expect(unknown.formFactor).toBe("unknown");
-      expect(unknown.ratings[0]?.explanation).toContain("laptop CPUs");
+      expect(explanationOf(unknown)).toContain("laptop CPUs");
       expect(unknown.ratings[0]?.value).toBe(rateChip(chip, "laptop").ratings[0]?.value);
     });
 
     it("uses the set a chip is in alone: a desktop-only chip ranks against desktop CPUs", () => {
       const unknown = rateChip("PC Intel Core i5-13400");
       expect(unknown.formFactor).toBe("unknown");
-      expect(unknown.ratings[0]?.explanation).toContain("desktop CPUs");
+      expect(explanationOf(unknown)).toContain("desktop CPUs");
       expect(unknown.ratings[0]?.value).toBe(
         rateChip("PC Intel Core i5-13400", "desktop").ratings[0]?.value,
       );

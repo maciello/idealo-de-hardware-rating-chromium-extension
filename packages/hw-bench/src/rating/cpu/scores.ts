@@ -1,4 +1,3 @@
-import { formatInteger } from "../format";
 import {
   type Rating,
   type RatingInput,
@@ -12,7 +11,7 @@ const MULTITHREADSCORE_ID = "raw_multithread_score";
 export const multiThreadScore: RatingStrategy = scoreStrategy<RatingInput>({
   id: MULTITHREADSCORE_ID,
   label: "Multi-thread score",
-  what: "CPU Mark (multi-thread)",
+  metric: "cpu_mark",
   subject: ({ cpu }) => cpu.name,
   score: ({ cpu }) => cpu.cpuMark,
 });
@@ -25,10 +24,11 @@ export const singleThreadScore: RatingStrategy = {
   rate({ cpu }): Rating | null {
     if (cpu.singleThreadMark === null) return null;
     return {
+      kind: "score",
       strategyId: SINGLETHREADSCORE_ID,
       value: cpu.singleThreadMark,
-      display: formatInteger(cpu.singleThreadMark),
-      explanation: `PassMark single-thread rating of ${cpu.name}: ${formatInteger(cpu.singleThreadMark)}.`,
+      metric: "cpu_single",
+      subject: cpu.name,
     };
   },
 };
@@ -37,6 +37,7 @@ const VALUEPEREURO_ID = "value_per_euro";
 
 export const valuePerEuro: RatingStrategy = valuePerEuroStrategy<RatingInput>({
   id: VALUEPEREURO_ID,
-  metric: "CPU Mark",
+  name: "CPU Mark",
+  metric: "cpu_mark",
   score: ({ cpu }) => cpu.cpuMark,
 });

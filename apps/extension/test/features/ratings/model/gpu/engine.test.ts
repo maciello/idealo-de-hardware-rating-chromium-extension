@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { GpuReading, ItemRating } from "../../../../../src/features/ratings/model";
 import { createGpuEngine } from "../../../../../src/features/ratings/model";
+import { gpuCardRows, ratingExplanation } from "../../../../../src/features/ratings/view-model";
 import { GPU_SPECS, type GpuSpec, gpuSnapshotOf } from "../../gpu-snapshot";
 
 const engine = createGpuEngine(gpuSnapshotOf(...GPU_SPECS));
@@ -15,6 +16,12 @@ const laptop = (text: string, title = "Notebook"): Query => ({
 });
 const ratingOf = (reading: GpuReading | null, id: string) =>
   reading?.primary.rating?.ratings.find((r) => r.strategyId === id);
+
+const wordsOf = (reading: GpuReading | null, id: string): string => {
+  const rating = ratingOf(reading, id);
+  if (rating === undefined) throw new Error(`no ${id} rating`);
+  return ratingExplanation(rating);
+};
 
 describe("createGpuEngine: the dedicated card", () => {
   it("reads the card from a spec fragment and ranks it against the page's laptop GPUs", () => {
@@ -44,7 +51,7 @@ describe("createGpuEngine: the dedicated card", () => {
     const onDesktop = rateOne({ ...query, formFactor: "desktop" });
     expect(onLaptop?.primary.name).toBe("GeForce RTX 4060 Laptop GPU");
     expect(onDesktop?.primary.name).toBe("GeForce RTX 4060");
-    expect(ratingOf(onDesktop, "gpu_g3d_percentile")?.explanation).toContain("desktop GPUs");
+    expect(wordsOf(onDesktop, "gpu_g3d_percentile")).toContain("desktop GPUs");
   });
 
   it("reads the datasheet's graphics row on product pages", () => {
@@ -69,7 +76,9 @@ describe("createGpuEngine: the dedicated card", () => {
     expect(gpu?.primary.name).toBe("GeForce RTX 4060 Laptop GPU");
     expect(gpu?.primary.rating?.variants).toHaveLength(2);
     expect(ratingOf(gpu, "gpu_g3d_percentile")).toBeUndefined();
-    expect(ratingOf(gpu, "gpu_g3d_score")?.explanation).toContain("Lower bound");
+    if (gpu === null) throw new Error("expected a GPU line");
+    const row = gpuCardRows(gpu.primary).find((r) => r.id === "gpu_g3d_score");
+    expect(row?.title).toContain("Lower bound: the text matches 2 cards (");
   });
 });
 
@@ -86,7 +95,7 @@ describe("createGpuEngine: GPU or iGPU", () => {
     expect(gpu?.primary).toMatchObject({ kind: "integrated", name: "Intel Arc 140V GPU" });
     expect(gpu?.companion).toBeNull();
     expect(ratingOf(gpu, "gpu_g3d_score")?.value).toBe(2_900);
-    expect(ratingOf(gpu, "gpu_g3d_percentile")?.explanation).toContain("of 5 laptop GPUs");
+    expect(wordsOf(gpu, "gpu_g3d_percentile")).toContain("of 5 laptop GPUs");
   });
 
   it.each([

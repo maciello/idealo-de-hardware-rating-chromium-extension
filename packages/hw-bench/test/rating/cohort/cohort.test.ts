@@ -87,7 +87,7 @@ describe("segmentPercentile with a cohort", () => {
   it("ranks against recent CPUs by default and names the cutoff", () => {
     const rating = segmentPercentile(snapshot).rate({ cpu });
     expect(rating?.value).toBe(50);
-    expect(rating?.explanation).toContain("first seen 2021 or later");
+    expect(rating).toMatchObject({ cohort: { sinceYear: 2021, minScore: null } });
   });
 
   it("reproduces the full-history ranking with no cutoff", () => {
@@ -143,20 +143,20 @@ describe.skipIf(!haveData("passmark_cpu.json", "passmark_gpu.csv"))(
       expect(ryzen.segments[0]).toBe("desktop");
       const laptop = strategy.rate({ cpu: ryzen, formFactor: "laptop" });
       const desktop = strategy.rate({ cpu: ryzen, formFactor: "desktop" });
-      expect(laptop?.explanation).toContain("laptop CPUs");
-      expect(desktop?.explanation).toContain("desktop CPUs");
+      expect(laptop).toMatchObject({ group: "laptop" });
+      expect(desktop).toMatchObject({ group: "desktop" });
       expect(laptop?.value).toBeGreaterThan(desktop?.value ?? Number.NaN);
       // A chip that ships in both classes has no class of its own: no rating without a page form factor.
       expect(strategy.rate({ cpu: ryzen })).toBeNull();
 
       const celeron = cpuNamed("Intel Celeron N5095 @ 2.00GHz");
-      expect(strategy.rate({ cpu: celeron, formFactor: "laptop" })?.explanation).toContain(
-        "laptop CPUs",
-      );
+      expect(strategy.rate({ cpu: celeron, formFactor: "laptop" })).toMatchObject({
+        group: "laptop",
+      });
       const ultra = cpuNamed("Intel Core Ultra 9 285H");
-      expect(strategy.rate({ cpu: ultra, formFactor: "desktop" })?.explanation).toContain(
-        "desktop CPUs",
-      );
+      expect(strategy.rate({ cpu: ultra, formFactor: "desktop" })).toMatchObject({
+        group: "desktop",
+      });
     });
 
     it("applies to GPU records the same way", () => {

@@ -145,10 +145,26 @@ describe("chipModel and cardRows", () => {
     expect(rows[0]).toMatchObject({ value: "top 33%", meter: { filled: 4 } });
   });
 
-  it("falls back to the strategy's own display for unknown strategies", () => {
+  it("falls back to the rating kind's own display for unknown strategies", () => {
+    const base = { strategyId: "future", metric: "cpu_mark" } as const;
+    expect(valueText({ ...base, kind: "score", value: 28_501, subject: "" }, null)).toBe("28.501");
     expect(
-      valueText({ strategyId: "future", value: 1, display: "X1", explanation: "" }, null),
-    ).toBe("X1");
+      valueText({ ...base, kind: "per_euro", value: 17.62, score: 1, priceEur: 1 }, null),
+    ).toBe("17,6/€");
+    expect(
+      valueText(
+        {
+          ...base,
+          kind: "percentile",
+          value: 76.5,
+          score: 1,
+          sampleSize: 4,
+          group: "listing",
+          cohort: null,
+        },
+        null,
+      ),
+    ).toBe("P77");
   });
 });
 

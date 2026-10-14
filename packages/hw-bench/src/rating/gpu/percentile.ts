@@ -1,7 +1,6 @@
 import type { BenchmarkSnapshot, GpuBenchmarkRecord } from "../../benchmark";
-import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY, describeCohort } from "../cohort";
+import { type CohortPolicy, createCohort, DEFAULT_COHORT_POLICY } from "../cohort";
 import { classifyGpu } from "../device-class";
-import { formatInteger } from "../format";
 import { cohortPercentileRating, type Pool, poolOf } from "../percentile";
 import type { GpuRatingStrategy } from "../strategy";
 
@@ -23,7 +22,7 @@ export function gpuPercentile(
   policy: CohortPolicy = DEFAULT_COHORT_POLICY,
 ): GpuRatingStrategy {
   const cohort = createCohort(snapshot.records, (record) => record.g3dMark, policy);
-  const cohortText = describeCohort(cohort, formatInteger);
+  const limits = { sinceYear: cohort.sinceYear, minScore: cohort.minScore };
   const marks: Record<"laptop" | "desktop", number[]> = { laptop: [], desktop: [] };
   for (const record of snapshot.records) {
     if (!cohort.includes(record)) continue;
@@ -32,8 +31,8 @@ export function gpuPercentile(
     if (membership.desktop) marks.desktop.push(record.g3dMark);
   }
   const pools: Readonly<Record<"laptop" | "desktop", Pool>> = {
-    laptop: poolOf(marks.laptop, "laptop GPUs"),
-    desktop: poolOf(marks.desktop, "desktop GPUs"),
+    laptop: poolOf(marks.laptop, "laptop"),
+    desktop: poolOf(marks.desktop, "desktop"),
   };
 
   return {
@@ -44,11 +43,11 @@ export function gpuPercentile(
       const pool = pools[formFactor];
       return cohortPercentileRating({
         strategyId: GPU_PERCENTILE_ID,
-        metric: "G3D Mark",
+        metric: "g3d_mark",
         score: gpu.g3dMark,
         sorted: pool.sorted,
-        noun: pool.noun,
-        cohortText,
+        group: pool.group,
+        cohort: limits,
       });
     },
   };

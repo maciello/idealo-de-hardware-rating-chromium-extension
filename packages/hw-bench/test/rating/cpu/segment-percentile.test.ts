@@ -58,16 +58,16 @@ describe("segmentPercentile", () => {
     const laptop = rateNamed("AMD EPYC 9654", 2_000, "laptop");
     const desktop = rateNamed("AMD EPYC 9654", 2_000, "desktop");
     expect(laptop?.value).toBeCloseTo((2 / 3) * 100, 9);
-    expect(laptop?.explanation).toContain("of 3 laptop CPUs");
+    expect(laptop).toMatchObject({ group: "laptop", sampleSize: 3 });
     expect(desktop?.value).toBeCloseTo((4 / 6) * 100, 9);
-    expect(desktop?.explanation).toContain("of 6 desktop CPUs");
+    expect(desktop).toMatchObject({ group: "desktop", sampleSize: 6 });
     expect(rateNamed("AMD EPYC 9654", 2_000, "unknown")).toBeNull();
   });
 
   it("keeps server, phone and multi-socket results out of both pools", () => {
     expect(rateNamed("Intel Core i5-12400", 100_000, "laptop")?.value).toBe(100);
     expect(rateNamed("Intel Core i5-12400", 100_000, "desktop")?.value).toBe(100);
-    expect(rateNamed("Intel Core i5-12400", 5_000, "desktop")?.explanation).toContain("of 6 ");
+    expect(rateNamed("Intel Core i5-12400", 5_000, "desktop")).toMatchObject({ sampleSize: 6 });
   });
 
   it("returns null when the snapshot has no member of the page's class", () => {

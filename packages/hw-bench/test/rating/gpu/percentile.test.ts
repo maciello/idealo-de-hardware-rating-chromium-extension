@@ -20,40 +20,37 @@ describe("gpuPercentile sets", () => {
     const rating = rate(rtx9060Laptop, "laptop");
     // set [2500, 6700, 16000, 26000]: 16000 beats two and counts itself, inclusive: 3 / 4.
     expect(rating?.value).toBe(75);
-    expect(rating?.explanation).toContain("of 4 laptop GPUs");
-    expect(rating?.explanation).toContain("first seen 2020 or later");
-    expect(rating?.explanation).not.toContain("desktop");
+    expect(rating).toMatchObject({ group: "laptop", sampleSize: 4, cohort: { sinceYear: 2020 } });
   });
 
   it("ranks against DesktopGpu for a desktop page, without laptop discrete cards", () => {
     const rating = rate(rtx9060, "desktop");
     // set [1900, 2500, 6700, 19000, 30000, 36000]: 19000 beats three and counts itself: 4 / 6.
     expect(rating?.value).toBeCloseTo((4 / 6) * 100, 9);
-    expect(rating?.explanation).toContain("of 6 desktop GPUs");
-    expect(rating?.explanation).not.toContain("laptop");
+    expect(rating).toMatchObject({ group: "desktop", sampleSize: 6 });
   });
 
   it("lets the page decide the set, not the record", () => {
     const asLaptop = rate(rtx9060, "laptop");
     const asDesktop = rate(rtx9060, "desktop");
-    expect(asLaptop?.explanation).toContain("laptop GPUs");
-    expect(asDesktop?.explanation).toContain("desktop GPUs");
+    expect(asLaptop).toMatchObject({ group: "laptop" });
+    expect(asDesktop).toMatchObject({ group: "desktop" });
     expect(asLaptop?.value).not.toBe(asDesktop?.value);
   });
 
   it("counts an iGPU that ships in both classes once in each set and a desktop-only iGPU in DesktopGpu only", () => {
     const iris = recordNamed(specs, "Intel Iris Xe");
     const uhd = recordNamed(specs, "Intel UHD Graphics 770");
-    expect(rate(iris, "laptop")?.explanation).toContain("of 4 laptop GPUs");
-    expect(rate(iris, "desktop")?.explanation).toContain("of 6 desktop GPUs");
-    expect(rate(uhd, "laptop")?.explanation).toContain("of 4 laptop GPUs");
+    expect(rate(iris, "laptop")).toMatchObject({ group: "laptop", sampleSize: 4 });
+    expect(rate(iris, "desktop")).toMatchObject({ group: "desktop", sampleSize: 6 });
+    expect(rate(uhd, "laptop")).toMatchObject({ group: "laptop", sampleSize: 4 });
     expect(rate(uhd, "desktop")?.value).toBeCloseTo((1 / 6) * 100, 9);
   });
 
   it("keeps virtual and vGPU records out of both sets, yet rates them when the page asks", () => {
     const vgpu = recordNamed(specs, "A40-12Q");
-    expect(rate(vgpu, "laptop")?.explanation).toContain("of 4 laptop GPUs");
-    expect(rate(vgpu, "desktop")?.explanation).toContain("of 6 desktop GPUs");
+    expect(rate(vgpu, "laptop")).toMatchObject({ group: "laptop", sampleSize: 4 });
+    expect(rate(vgpu, "desktop")).toMatchObject({ group: "desktop", sampleSize: 6 });
   });
 
   it("rates nothing without a known form factor", () => {
@@ -66,8 +63,7 @@ describe("gpuPercentile sets", () => {
     const recent = rate(old, "laptop");
     expect(recent?.value).toBe(25);
     const all = gpuPercentile(snapshot, NO_CUTOFF).rate({ gpu: old, formFactor: "laptop" });
-    expect(all?.explanation).toContain("of 5 laptop GPUs");
-    expect(all?.explanation).not.toContain("first seen");
+    expect(all).toMatchObject({ group: "laptop", sampleSize: 5, cohort: { sinceYear: null } });
     expect(all?.value).toBe(40);
   });
 

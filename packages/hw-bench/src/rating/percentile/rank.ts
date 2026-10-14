@@ -9,6 +9,3 @@ export function percentileRank(sortedAscending: readonly number[], value: number
   // SAFETY: quantileRankSorted only reads its array; simple-statistics types the parameter as mutable.
   return quantileRankSorted(sortedAscending as number[], value) * 100;
 }
-
-/** Badge text of a percentile rating, the one place the 0-100 value becomes display text: 77.4 -> "P77". */
-export const percentileDisplay = (value: number): string => `P${Math.round(value)}`;

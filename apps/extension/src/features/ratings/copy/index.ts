@@ -106,4 +106,5 @@ export const RATINGS_COPY = {
 } as const;
 
 export { EVIDENCE_COPY } from "./evidence";
+export { RATING_TEXT } from "./rating";
 export { SIGNAL_DETAILS, SIGNAL_LABELS } from "./signals";

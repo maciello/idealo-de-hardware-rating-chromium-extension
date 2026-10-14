@@ -2,8 +2,12 @@ export type {
   GpuRatingInput,
   GpuRatingStrategy,
   PeerSample,
+  PointsMetric,
   Rating,
+  RatingCohort,
+  RatingGroup,
   RatingInput,
+  RatingMetric,
   RatingStrategy,
 } from "./port";
 export { type ScoreStrategySpec, scoreStrategy } from "./score";
