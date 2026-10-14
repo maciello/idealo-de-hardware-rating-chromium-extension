@@ -39,6 +39,13 @@ const CsrItemSchema = z.object({
 const CsrResponseSchema = z.object({
   items: z.array(CsrItemSchema),
   filterGroups: z.array(CsrFilterGroupSchema).default([]),
+  priceRanges: z
+    .object({
+      dynamicRange: z
+        .object({ fromPrice: z.number().nonnegative(), toPrice: z.number().nonnegative() })
+        .nullish(),
+    })
+    .nullish(),
   selectedFilters: z.array(z.object({ id: numericString.pipe(FilterIdSchema) })).default([]),
   metadata: z.object({ search: z.object({ resultCount: count.nullish() }).nullish() }).nullish(),
 });
@@ -66,8 +73,17 @@ export interface SearchResultPage {
   readonly catalog: FilterCatalog;
   /** Filters active for this result, in page order. */
   readonly selected: readonly FilterId[];
+  /** Cheapest and dearest price (EUR) in the current result set, for a price slider's range. */
+  readonly priceBounds: { readonly min: number; readonly max: number } | null;
   readonly resultCount: number | null;
 }
+
+const priceBounds = (
+  range: { fromPrice: number; toPrice: number } | null | undefined,
+): SearchResultPage["priceBounds"] =>
+  range == null || range.toPrice < range.fromPrice
+    ? null
+    : { min: range.fromPrice, max: range.toPrice };
 
 const KINDS: Readonly<Record<string, ListingItemKind>> = { PRODUCT: "product", OFFER: "offer" };
 
@@ -99,6 +115,7 @@ export function parseSearchResult(json: unknown, categoryId: CategoryId): Search
       manufacturers: [],
     },
     selected: response.selectedFilters.map((f) => f.id),
+    priceBounds: priceBounds(response.priceRanges?.dynamicRange),
     resultCount: response.metadata?.search?.resultCount ?? null,
   };
 }

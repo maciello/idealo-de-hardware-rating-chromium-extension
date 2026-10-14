@@ -1,0 +1,1414 @@
+{
+  "3751": {
+    "items": [],
+    "filterGroups": [
+      {
+        "id": "1006",
+        "name": "Prozessor",
+        "filters": [
+          {
+            "id": "107301240",
+            "name": "AMD Ryzen 5 150",
+            "hits": 75
+          },
+          {
+            "id": "106655872",
+            "name": "AMD Ryzen 5 220",
+            "hits": 13
+          },
+          {
+            "id": "106745466",
+            "name": "AMD Ryzen 5 230",
+            "hits": 40
+          },
+          {
+            "id": "107122466",
+            "name": "AMD Ryzen 5 240",
+            "hits": 1
+          },
+          {
+            "id": "3035459",
+            "name": "AMD Ryzen 5 3500U",
+            "hits": 146
+          }
+        ]
+      },
+      {
+        "id": "27570",
+        "name": "RAM",
+        "filters": [
+          {
+            "id": "7612865",
+            "name": "1 GB",
+            "hits": 1
+          },
+          {
+            "id": "101486653",
+            "name": "2 GB",
+            "hits": 13
+          },
+          {
+            "id": "7612868",
+            "name": "4 GB",
+            "hits": 66
+          },
+          {
+            "id": "7612871",
+            "name": "8 GB",
+            "hits": 650
+          },
+          {
+            "id": "7612873",
+            "name": "12 GB",
+            "hits": 18
+          },
+          {
+            "id": "7612874",
+            "name": "16 GB",
+            "hits": 2231
+          },
+          {
+            "id": "7612876",
+            "name": "24 GB",
+            "hits": 62
+          },
+          {
+            "id": "7612877",
+            "name": "32 GB",
+            "hits": 10647
+          },
+          {
+            "id": "104371836",
+            "name": "36 GB",
+            "hits": 1
+          },
+          {
+            "id": "101486654",
+            "name": "40 GB",
+            "hits": 43
+          },
+          {
+            "id": "7612878",
+            "name": "48 GB",
+            "hits": 65
+          },
+          {
+            "id": "7612879",
+            "name": "64 GB",
+            "hits": 693
+          },
+          {
+            "id": "104371837",
+            "name": "96 GB",
+            "hits": 100
+          },
+          {
+            "id": "101486655",
+            "name": "128 GB",
+            "hits": 589
+          }
+        ]
+      },
+      {
+        "id": "16732",
+        "name": "Serie",
+        "filters": [
+          {
+            "id": "1113663",
+            "name": "Acer Aspire",
+            "hits": 319
+          },
+          {
+            "id": "1114970",
+            "name": "Acer Aspire Switch",
+            "hits": 6
+          },
+          {
+            "id": "1337554",
+            "name": "Acer Extensa",
+            "hits": 324
+          },
+          {
+            "id": "1099813",
+            "name": "Acer Nitro",
+            "hits": 299
+          },
+          {
+            "id": "1099913",
+            "name": "Acer Predator",
+            "hits": 98
+          }
+        ]
+      },
+      {
+        "id": "19463",
+        "name": "Displaygröße",
+        "filters": [
+          {
+            "id": "2125110",
+            "name": "10 Zoll",
+            "hits": 17
+          },
+          {
+            "id": "209169",
+            "name": "11 Zoll",
+            "hits": 87
+          },
+          {
+            "id": "245840",
+            "name": "12 Zoll",
+            "hits": 117
+          },
+          {
+            "id": "1039485",
+            "name": "13 Zoll",
+            "hits": 5341
+          },
+          {
+            "id": "1039487",
+            "name": "14 Zoll",
+            "hits": 18470
+          },
+          {
+            "id": "699493",
+            "name": "15 Zoll",
+            "hits": 15004
+          },
+          {
+            "id": "1568565",
+            "name": "16 Zoll",
+            "hits": 4135
+          },
+          {
+            "id": "1039484",
+            "name": "17 Zoll",
+            "hits": 2864
+          },
+          {
+            "id": "2816164",
+            "name": "ab 18 Zoll",
+            "hits": 865
+          }
+        ]
+      },
+      {
+        "id": "30113",
+        "name": "Akkulaufzeit",
+        "filters": [
+          {
+            "id": "795130",
+            "name": "bis 8 h",
+            "hits": 427
+          },
+          {
+            "id": "795129",
+            "name": "8 bis 10 h",
+            "hits": 564
+          },
+          {
+            "id": "795132",
+            "name": "10 bis 12 h",
+            "hits": 425
+          },
+          {
+            "id": "10083785",
+            "name": "12 bis 14 h",
+            "hits": 209
+          },
+          {
+            "id": "5431890",
+            "name": "ab 14 h",
+            "hits": 889
+          }
+        ]
+      },
+      {
+        "id": "4569",
+        "name": "Bildwiederholungsrate",
+        "filters": [
+          {
+            "id": "101484106",
+            "name": "60 Hz",
+            "hits": 4827
+          },
+          {
+            "id": "101867787",
+            "name": "90 Hz",
+            "hits": 8
+          },
+          {
+            "id": "101484109",
+            "name": "120 Hz",
+            "hits": 1031
+          },
+          {
+            "id": "101484110",
+            "name": "144 Hz",
+            "hits": 879
+          },
+          {
+            "id": "101694164",
+            "name": "165 Hz",
+            "hits": 547
+          },
+          {
+            "id": "106577857",
+            "name": "180 Hz",
+            "hits": 180
+          },
+          {
+            "id": "101484111",
+            "name": "240 Hz",
+            "hits": 622
+          },
+          {
+            "id": "104237681",
+            "name": "250 Hz",
+            "hits": 1
+          },
+          {
+            "id": "101484112",
+            "name": "300 Hz",
+            "hits": 96
+          },
+          {
+            "id": "101694165",
+            "name": "360 Hz",
+            "hits": 2
+          }
+        ]
+      },
+      {
+        "id": "21959",
+        "name": "Festplattenspeicher",
+        "filters": [
+          {
+            "id": "1092678",
+            "name": "500 GB",
+            "hits": 2
+          },
+          {
+            "id": "129980",
+            "name": "1 TB",
+            "hits": 11
+          },
+          {
+            "id": "10083783",
+            "name": "2 TB",
+            "hits": 5
+          },
+          {
+            "id": "5428381",
+            "name": "ab 2 TB",
+            "hits": 8
+          }
+        ]
+      },
+      {
+        "id": "19562",
+        "name": "Festplattentyp",
+        "filters": [
+          {
+            "id": "2425023",
+            "name": "Flash-Speicher",
+            "hits": 145
+          },
+          {
+            "id": "2425024",
+            "name": "Hybrid-Festplatte",
+            "hits": 2
+          },
+          {
+            "id": "2425027",
+            "name": "PCIe-SSD-Festplatte",
+            "hits": 2284
+          },
+          {
+            "id": "2425026",
+            "name": "SATA-Festplatte",
+            "hits": 108
+          },
+          {
+            "id": "758790",
+            "name": "SSD-Festplatte",
+            "hits": 50904
+          }
+        ]
+      },
+      {
+        "id": "27400",
+        "name": "Gewicht",
+        "filters": [
+          {
+            "id": "10083787",
+            "name": "bis 1 kg",
+            "hits": 101
+          },
+          {
+            "id": "241701",
+            "name": "1 bis 1,5 kg",
+            "hits": 1419
+          },
+          {
+            "id": "241705",
+            "name": "1,5 bis 2 kg",
+            "hits": 2213
+          },
+          {
+            "id": "1092709",
+            "name": "2 bis 2,5 kg",
+            "hits": 1063
+          },
+          {
+            "id": "758740",
+            "name": "ab 2,5 kg",
+            "hits": 1023
+          }
+        ]
+      },
+      {
+        "id": "14670",
+        "name": "Grafikkarte",
+        "filters": [
+          {
+            "id": "104019454",
+            "name": "AMD Radeon 610M",
+            "hits": 4
+          },
+          {
+            "id": "103511893",
+            "name": "AMD Radeon 660M",
+            "hits": 33
+          },
+          {
+            "id": "103494209",
+            "name": "AMD Radeon 680M",
+            "hits": 38
+          },
+          {
+            "id": "104407091",
+            "name": "AMD Radeon 740M",
+            "hits": 20
+          },
+          {
+            "id": "104414702",
+            "name": "AMD Radeon 760M",
+            "hits": 16
+          }
+        ]
+      },
+      {
+        "id": "31502",
+        "name": "Grafikspeicher",
+        "filters": [
+          {
+            "id": "106351679",
+            "name": "1 GB",
+            "hits": 1
+          },
+          {
+            "id": "106351680",
+            "name": "2 GB",
+            "hits": 172
+          },
+          {
+            "id": "106351681",
+            "name": "3 GB",
+            "hits": 9
+          },
+          {
+            "id": "106351682",
+            "name": "4 GB",
+            "hits": 540
+          },
+          {
+            "id": "106351683",
+            "name": "6 GB",
+            "hits": 220
+          },
+          {
+            "id": "106351684",
+            "name": "8 GB",
+            "hits": 2538
+          },
+          {
+            "id": "106351686",
+            "name": "12 GB",
+            "hits": 343
+          },
+          {
+            "id": "106351687",
+            "name": "16 GB",
+            "hits": 1217
+          },
+          {
+            "id": "106585584",
+            "name": "24 GB",
+            "hits": 182
+          }
+        ]
+      },
+      {
+        "id": "15206",
+        "name": "Helligkeit",
+        "filters": [
+          {
+            "id": "107211045",
+            "name": "bis 320 cd/m²",
+            "hits": 1951
+          },
+          {
+            "id": "107592578",
+            "name": "320 bis 430 cd/m²",
+            "hits": 1333
+          },
+          {
+            "id": "107592579",
+            "name": "430 bis 540 cd/m²",
+            "hits": 1416
+          },
+          {
+            "id": "107458175",
+            "name": "540 bis 1100 cd/m²",
+            "hits": 609
+          },
+          {
+            "id": "107458176",
+            "name": "ab 1100 cd/m²",
+            "hits": 23
+          }
+        ]
+      },
+      {
+        "id": "17951",
+        "name": "Markteinführung",
+        "filters": [
+          {
+            "id": "1654052",
+            "name": "2012",
+            "hits": 2
+          },
+          {
+            "id": "2406452",
+            "name": "2013",
+            "hits": 1
+          },
+          {
+            "id": "2324831",
+            "name": "2014",
+            "hits": 2
+          },
+          {
+            "id": "1549570",
+            "name": "2015",
+            "hits": 5
+          },
+          {
+            "id": "1549572",
+            "name": "2016",
+            "hits": 3
+          },
+          {
+            "id": "6220375",
+            "name": "2017",
+            "hits": 22
+          },
+          {
+            "id": "6179123",
+            "name": "2018",
+            "hits": 87
+          },
+          {
+            "id": "9846829",
+            "name": "2019",
+            "hits": 781
+          },
+          {
+            "id": "10496082",
+            "name": "2020",
+            "hits": 1579
+          },
+          {
+            "id": "101619626",
+            "name": "2021",
+            "hits": 1325
+          },
+          {
+            "id": "102619467",
+            "name": "2022",
+            "hits": 294
+          },
+          {
+            "id": "103965373",
+            "name": "2023",
+            "hits": 993
+          },
+          {
+            "id": "104834213",
+            "name": "2024",
+            "hits": 2742
+          },
+          {
+            "id": "106481165",
+            "name": "2025",
+            "hits": 2659
+          },
+          {
+            "id": "107229877",
+            "name": "2026",
+            "hits": 2132
+          }
+        ]
+      },
+      {
+        "id": "productType",
+        "name": "Notebook-Typ",
+        "filters": [
+          {
+            "id": "1476666",
+            "name": "Business Notebook",
+            "hits": 35078
+          },
+          {
+            "id": "1826835",
+            "name": "Chromebook",
+            "hits": 145
+          },
+          {
+            "id": "783154",
+            "name": "Convertible Notebook",
+            "hits": 2717
+          },
+          {
+            "id": "1466479",
+            "name": "Gaming Notebook",
+            "hits": 3111
+          },
+          {
+            "id": "1477757",
+            "name": "Multimedia Notebook",
+            "hits": 12394
+          },
+          {
+            "id": "903271",
+            "name": "Netbook",
+            "hits": 61
+          },
+          {
+            "id": "1870816",
+            "name": "Ultrabook",
+            "hits": 646
+          }
+        ]
+      },
+      {
+        "id": "21702",
+        "name": "SSD-Speicher",
+        "filters": [
+          {
+            "id": "2682409",
+            "name": "bis 128 GB",
+            "hits": 16
+          },
+          {
+            "id": "2682412",
+            "name": "128 GB",
+            "hits": 4680
+          },
+          {
+            "id": "2682414",
+            "name": "250 GB",
+            "hits": 514
+          },
+          {
+            "id": "2682415",
+            "name": "256 GB",
+            "hits": 10255
+          },
+          {
+            "id": "2989815",
+            "name": "500 GB",
+            "hits": 1218
+          },
+          {
+            "id": "2682416",
+            "name": "512 GB",
+            "hits": 13988
+          },
+          {
+            "id": "2682401",
+            "name": "1 TB",
+            "hits": 14260
+          },
+          {
+            "id": "10074036",
+            "name": "2 TB",
+            "hits": 7711
+          },
+          {
+            "id": "101484114",
+            "name": "3 TB",
+            "hits": 47
+          },
+          {
+            "id": "106340799",
+            "name": "4 TB",
+            "hits": 3887
+          },
+          {
+            "id": "106340800",
+            "name": "ab 4 TB",
+            "hits": 1623
+          }
+        ]
+      }
+    ],
+    "priceRanges": {
+      "dynamicRange": {
+        "fromPrice": 26,
+        "toPrice": 11917
+      }
+    }
+  },
+  "3020": {
+    "items": [],
+    "filterGroups": [
+      {
+        "id": "productType",
+        "name": "PC-Typ",
+        "filters": [
+          {
+            "id": "4487778",
+            "name": "Aufrüstkit",
+            "hits": 207
+          },
+          {
+            "id": "971768",
+            "name": "Barebone",
+            "hits": 519
+          },
+          {
+            "id": "953430",
+            "name": "Gaming-PC",
+            "hits": 23907
+          },
+          {
+            "id": "1405106",
+            "name": "Komplett-PC",
+            "hits": 4644
+          },
+          {
+            "id": "720310",
+            "name": "Mini-PC",
+            "hits": 3278
+          },
+          {
+            "id": "817094",
+            "name": "Multimedia-PC",
+            "hits": 3532
+          },
+          {
+            "id": "5871036",
+            "name": "Office-PC",
+            "hits": 29624
+          },
+          {
+            "id": "720314",
+            "name": "Thin Client",
+            "hits": 110
+          },
+          {
+            "id": "1016264",
+            "name": "Workstation",
+            "hits": 2911
+          }
+        ]
+      },
+      {
+        "id": "19537",
+        "name": "RAM",
+        "filters": [
+          {
+            "id": "762000",
+            "name": "0 GB",
+            "hits": 10
+          },
+          {
+            "id": "336990",
+            "name": "0,5 GB",
+            "hits": 7
+          },
+          {
+            "id": "2517397",
+            "name": "1 GB",
+            "hits": 47
+          },
+          {
+            "id": "94134",
+            "name": "2 GB",
+            "hits": 68
+          },
+          {
+            "id": "2517401",
+            "name": "4 GB",
+            "hits": 5333
+          },
+          {
+            "id": "3526048",
+            "name": "8 GB",
+            "hits": 6036
+          },
+          {
+            "id": "3525998",
+            "name": "12 GB",
+            "hits": 18
+          },
+          {
+            "id": "107083116",
+            "name": "16 GB",
+            "hits": 13385
+          },
+          {
+            "id": "2517403",
+            "name": "24 GB",
+            "hits": 79
+          },
+          {
+            "id": "2517404",
+            "name": "32 GB",
+            "hits": 17262
+          },
+          {
+            "id": "107083119",
+            "name": "36 GB",
+            "hits": 12
+          },
+          {
+            "id": "107083120",
+            "name": "48 GB",
+            "hits": 437
+          },
+          {
+            "id": "107083121",
+            "name": "64 GB",
+            "hits": 3533
+          },
+          {
+            "id": "107083122",
+            "name": "96 GB",
+            "hits": 416
+          },
+          {
+            "id": "107083123",
+            "name": "128 GB",
+            "hits": 307
+          },
+          {
+            "id": "107083125",
+            "name": "256 GB",
+            "hits": 27
+          }
+        ]
+      },
+      {
+        "id": "30158",
+        "name": "Grafikkarte",
+        "filters": [
+          {
+            "id": "10099749",
+            "name": "AMD Radeon 540X",
+            "hits": 2
+          },
+          {
+            "id": "106763265",
+            "name": "AMD Radeon 610M",
+            "hits": 10
+          },
+          {
+            "id": "104188472",
+            "name": "AMD Radeon 660M",
+            "hits": 6
+          },
+          {
+            "id": "104219065",
+            "name": "AMD Radeon 680M",
+            "hits": 74
+          },
+          {
+            "id": "104892855",
+            "name": "AMD Radeon 740M",
+            "hits": 114
+          }
+        ]
+      },
+      {
+        "id": "30162",
+        "name": "Anzahl Prozessorkerne",
+        "filters": [
+          {
+            "id": "758325",
+            "name": "10-Core",
+            "hits": 1897
+          },
+          {
+            "id": "2107941",
+            "name": "12-Core",
+            "hits": 2537
+          },
+          {
+            "id": "8955304",
+            "name": "14-Core",
+            "hits": 1427
+          },
+          {
+            "id": "758326",
+            "name": "16-Core",
+            "hits": 2075
+          },
+          {
+            "id": "8947485",
+            "name": "18-Core",
+            "hits": 1001
+          },
+          {
+            "id": "103090550",
+            "name": "20-Core",
+            "hits": 2301
+          },
+          {
+            "id": "102110773",
+            "name": "24-Core",
+            "hits": 2543
+          },
+          {
+            "id": "104270225",
+            "name": "30-Core",
+            "hits": 20
+          },
+          {
+            "id": "101751718",
+            "name": "32-Core",
+            "hits": 5
+          },
+          {
+            "id": "104270226",
+            "name": "5-Core",
+            "hits": 10
+          },
+          {
+            "id": "1507971",
+            "name": "6-Core",
+            "hits": 5541
+          },
+          {
+            "id": "1610983",
+            "name": "8-Core",
+            "hits": 7369
+          },
+          {
+            "id": "1140884",
+            "name": "Dual-Core",
+            "hits": 137
+          },
+          {
+            "id": "1140885",
+            "name": "Quad-Core",
+            "hits": 922
+          },
+          {
+            "id": "1140886",
+            "name": "Single-Core",
+            "hits": 6
+          }
+        ]
+      },
+      {
+        "id": "21437",
+        "name": "Anzahl Threads",
+        "filters": [
+          {
+            "id": "5416423",
+            "name": "1",
+            "hits": 1
+          },
+          {
+            "id": "5416424",
+            "name": "2",
+            "hits": 29
+          },
+          {
+            "id": "5416426",
+            "name": "4",
+            "hits": 484
+          },
+          {
+            "id": "104272018",
+            "name": "5",
+            "hits": 1
+          },
+          {
+            "id": "5416427",
+            "name": "6",
+            "hits": 67
+          },
+          {
+            "id": "5416428",
+            "name": "8",
+            "hits": 562
+          },
+          {
+            "id": "7685773",
+            "name": "10",
+            "hits": 310
+          },
+          {
+            "id": "5416429",
+            "name": "12",
+            "hits": 5444
+          },
+          {
+            "id": "106390764",
+            "name": "14",
+            "hits": 607
+          },
+          {
+            "id": "5416430",
+            "name": "16",
+            "hits": 8483
+          },
+          {
+            "id": "105462778",
+            "name": "18",
+            "hits": 979
+          },
+          {
+            "id": "8230939",
+            "name": "20",
+            "hits": 2710
+          },
+          {
+            "id": "105462779",
+            "name": "22",
+            "hits": 37
+          },
+          {
+            "id": "5416425",
+            "name": "24",
+            "hits": 4036
+          },
+          {
+            "id": "8952465",
+            "name": "28",
+            "hits": 1276
+          },
+          {
+            "id": "8947488",
+            "name": "32",
+            "hits": 1809
+          },
+          {
+            "id": "102110423",
+            "name": "48",
+            "hits": 3
+          },
+          {
+            "id": "101751804",
+            "name": "64",
+            "hits": 5
+          }
+        ]
+      },
+      {
+        "id": "30160",
+        "name": "Festplattenkapazität (GB)",
+        "filters": [
+          {
+            "id": "105574905",
+            "name": "500 GB",
+            "hits": 3605
+          }
+        ]
+      },
+      {
+        "id": "30148",
+        "name": "Festplattenkapazität (TB)",
+        "filters": [
+          {
+            "id": "10088420",
+            "name": "1 TB",
+            "hits": 3955
+          },
+          {
+            "id": "10088423",
+            "name": "2 TB",
+            "hits": 6894
+          },
+          {
+            "id": "10088430",
+            "name": "4 TB",
+            "hits": 163
+          },
+          {
+            "id": "10088962",
+            "name": "5 TB",
+            "hits": 1
+          },
+          {
+            "id": "10088961",
+            "name": "6 TB",
+            "hits": 2
+          },
+          {
+            "id": "10088960",
+            "name": "8 TB",
+            "hits": 8
+          }
+        ]
+      },
+      {
+        "id": "19562",
+        "name": "Festplattentyp",
+        "filters": [
+          {
+            "id": "3022287",
+            "name": "Flash-Speicher",
+            "hits": 90
+          },
+          {
+            "id": "2528489",
+            "name": "HDD-Festplatte",
+            "hits": 1426
+          },
+          {
+            "id": "3085782",
+            "name": "M.2 SSD",
+            "hits": 9963
+          },
+          {
+            "id": "102208569",
+            "name": "ohne Festplatte",
+            "hits": 49
+          },
+          {
+            "id": "2528490",
+            "name": "SSD-Festplatte",
+            "hits": 51252
+          }
+        ]
+      },
+      {
+        "id": "15869",
+        "name": "Grafikspeicher",
+        "filters": [
+          {
+            "id": "9537023",
+            "name": "12 GB",
+            "hits": 3177
+          },
+          {
+            "id": "8532550",
+            "name": "8 GB",
+            "hits": 16873
+          },
+          {
+            "id": "720303",
+            "name": "1 GB",
+            "hits": 45
+          },
+          {
+            "id": "838654",
+            "name": "2 GB",
+            "hits": 95
+          },
+          {
+            "id": "720297",
+            "name": "3 GB",
+            "hits": 2
+          },
+          {
+            "id": "786134",
+            "name": "4 GB",
+            "hits": 5201
+          },
+          {
+            "id": "2098333",
+            "name": "6 GB",
+            "hits": 346
+          },
+          {
+            "id": "720300",
+            "name": "Shared Memory",
+            "hits": 24108
+          },
+          {
+            "id": "104373535",
+            "name": "10 GB",
+            "hits": 29
+          },
+          {
+            "id": "104373536",
+            "name": "16 GB",
+            "hits": 8552
+          },
+          {
+            "id": "104373537",
+            "name": "20 GB",
+            "hits": 32
+          },
+          {
+            "id": "104373546",
+            "name": "24 GB",
+            "hits": 51
+          },
+          {
+            "id": "106547442",
+            "name": "32 GB",
+            "hits": 6126
+          }
+        ]
+      },
+      {
+        "id": "8861",
+        "name": "Netzteil",
+        "filters": [
+          {
+            "id": "103958153",
+            "name": "bis 260 Watt",
+            "hits": 3
+          },
+          {
+            "id": "107567454",
+            "name": "520 bis 690 Watt",
+            "hits": 2
+          },
+          {
+            "id": "107790062",
+            "name": "690 bis 800 Watt",
+            "hits": 1144
+          },
+          {
+            "id": "100499033",
+            "name": "ab 800 Watt",
+            "hits": 1012
+          }
+        ]
+      },
+      {
+        "id": "30147",
+        "name": "Prozessor",
+        "filters": [
+          {
+            "id": "103382032",
+            "name": "AMD Ryzen 5 5500",
+            "hits": 1024
+          },
+          {
+            "id": "103390228",
+            "name": "AMD Ryzen 5 5600",
+            "hits": 289
+          },
+          {
+            "id": "102108472",
+            "name": "AMD Ryzen 5 5600G",
+            "hits": 238
+          },
+          {
+            "id": "101504315",
+            "name": "AMD Ryzen 5 5600X",
+            "hits": 268
+          },
+          {
+            "id": "104371861",
+            "name": "AMD Ryzen 5 7500F",
+            "hits": 643
+          }
+        ]
+      },
+      {
+        "id": "8832",
+        "name": "RAM Typ",
+        "filters": [
+          {
+            "id": "2532985",
+            "name": "DDR3",
+            "hits": 25638
+          },
+          {
+            "id": "3124544",
+            "name": "DDR3L",
+            "hits": 21
+          },
+          {
+            "id": "4654277",
+            "name": "DDR4",
+            "hits": 18481
+          },
+          {
+            "id": "104230626",
+            "name": "DDR5",
+            "hits": 14916
+          }
+        ]
+      },
+      {
+        "id": "16732",
+        "name": "Serie",
+        "filters": [
+          {
+            "id": "985617",
+            "name": "Acer Aspire",
+            "hits": 46
+          },
+          {
+            "id": "1608641",
+            "name": "Acer Nitro",
+            "hits": 34
+          },
+          {
+            "id": "1152749",
+            "name": "Acer Predator",
+            "hits": 66
+          },
+          {
+            "id": "1608700",
+            "name": "Acer Revo",
+            "hits": 48
+          },
+          {
+            "id": "985619",
+            "name": "Acer Veriton",
+            "hits": 776
+          }
+        ]
+      },
+      {
+        "id": "15675",
+        "name": "Speichertakt",
+        "filters": [
+          {
+            "id": "107635069",
+            "name": "2666 bis 4800 MHz",
+            "hits": 7
+          },
+          {
+            "id": "107635070",
+            "name": "4800 bis 6000 MHz",
+            "hits": 1528
+          },
+          {
+            "id": "107305647",
+            "name": "6000 bis 6400 MHz",
+            "hits": 1027
+          },
+          {
+            "id": "103329677",
+            "name": "ab 6400 MHz",
+            "hits": 93
+          }
+        ]
+      },
+      {
+        "id": "21702",
+        "name": "SSD-Speicher",
+        "filters": [
+          {
+            "id": "3724753",
+            "name": "bis 128 GB",
+            "hits": 67
+          },
+          {
+            "id": "3724756",
+            "name": "128 GB",
+            "hits": 102
+          },
+          {
+            "id": "105574869",
+            "name": "240 GB",
+            "hits": 5450
+          },
+          {
+            "id": "3724757",
+            "name": "250 GB",
+            "hits": 2086
+          },
+          {
+            "id": "3724758",
+            "name": "256 GB",
+            "hits": 644
+          },
+          {
+            "id": "105574870",
+            "name": "480 GB",
+            "hits": 5432
+          },
+          {
+            "id": "4587252",
+            "name": "500 GB",
+            "hits": 5671
+          },
+          {
+            "id": "105574871",
+            "name": "512 GB",
+            "hits": 3033
+          },
+          {
+            "id": "105574873",
+            "name": "768 GB",
+            "hits": 2
+          },
+          {
+            "id": "9536603",
+            "name": "1 TB",
+            "hits": 18173
+          },
+          {
+            "id": "105574877",
+            "name": "1512 GB",
+            "hits": 2
+          },
+          {
+            "id": "107345674",
+            "name": "2 TB",
+            "hits": 16575
+          },
+          {
+            "id": "105574879",
+            "name": "2512 GB",
+            "hits": 4
+          },
+          {
+            "id": "105574880",
+            "name": "3 TB",
+            "hits": 6
+          },
+          {
+            "id": "105574881",
+            "name": "4 TB",
+            "hits": 1290
+          },
+          {
+            "id": "105574882",
+            "name": "6 TB",
+            "hits": 3
+          },
+          {
+            "id": "105574883",
+            "name": "8 TB",
+            "hits": 82
+          },
+          {
+            "id": "107345675",
+            "name": "16 TB",
+            "hits": 8
+          }
+        ]
+      }
+    ],
+    "priceRanges": {
+      "dynamicRange": {
+        "fromPrice": 27,
+        "toPrice": 43280
+      }
+    }
+  }
+}

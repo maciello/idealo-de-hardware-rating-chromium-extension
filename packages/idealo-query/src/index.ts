@@ -11,6 +11,18 @@ export {
   parseMcpSearchResponseCatalog,
 } from "./catalog";
 export {
+  allAtLeast,
+  allAtMost,
+  type Facet,
+  type FacetGroup,
+  type FacetOption,
+  facetsOf,
+  type Interval,
+  type LabelFacet,
+  type ModelFacet,
+  type NumericFacet,
+} from "./facets";
+export {
   type CategoryId,
   categoryId,
   type FilterId,
