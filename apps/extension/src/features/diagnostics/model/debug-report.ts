@@ -25,7 +25,7 @@ const DataStatusSchema = z.object({
  * from named inputs in `buildDebugReport`: there is no path from storage to this file that is not
  * an allowlisted field, so keys, tokens, benchmark records and page HTML cannot leak into it.
  */
-export const DebugReportSchema = z.object({
+const DebugReportSchema = z.object({
   extensionVersion: z.string(),
   userAgent: z.string(),
   settings: z.object({

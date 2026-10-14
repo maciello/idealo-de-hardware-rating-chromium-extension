@@ -56,7 +56,7 @@ export async function toCapturedResponse(
  * Observes fetch/XHR responses on this page. Never answers a request itself, so traffic passes
  * through untouched (ADR 0008: read-only). Only injected while capture mode is on.
  */
-export function startNetworkTap(emit: (response: CapturedResponse) => void): () => void {
+function startNetworkTap(emit: (response: CapturedResponse) => void): () => void {
   const interceptor = new BatchInterceptor({
     name: "idealo-hw-network-tap",
     interceptors: [new FetchInterceptor(), new XMLHttpRequestInterceptor()],

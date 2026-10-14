@@ -57,8 +57,7 @@ export const CpuRowSchema: z.ZodType<CpuBenchmarkRecord> = z
     }),
   );
 
-export const cpuRecordKey = (record: CpuBenchmarkRecord): string =>
-  `${record.id}x${record.socketCount}`;
+const cpuRecordKey = (record: CpuBenchmarkRecord): string => `${record.id}x${record.socketCount}`;
 
 /** PassMark CPU list, JSON (`{data: []}`) or CSV. Duplicates are keyed by (id, cpuCount). */
 export const passmarkCpuSource: BenchmarkSource<CpuBenchmarkRecord> = createTableSource({

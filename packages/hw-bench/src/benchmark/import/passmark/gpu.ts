@@ -57,7 +57,7 @@ export const GpuRowSchema: z.ZodType<GpuBenchmarkRecord> = z
     }),
   );
 
-export const gpuRecordKey = (record: GpuBenchmarkRecord): string => String(record.id);
+const gpuRecordKey = (record: GpuBenchmarkRecord): string => String(record.id);
 
 /** PassMark GPU list, JSON or CSV. */
 export const passmarkGpuSource: BenchmarkSource<GpuBenchmarkRecord> = createTableSource({

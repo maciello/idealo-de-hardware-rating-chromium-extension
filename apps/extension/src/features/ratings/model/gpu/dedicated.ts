@@ -11,7 +11,7 @@ import {
 type GpuMatch = MatchResult<GpuBenchmarkRecord>;
 
 /** A dedicated card the text names: the match, and the source it was read from. */
-export interface DedicatedFound {
+interface DedicatedFound {
   readonly match: GpuMatch;
   readonly source: string;
 }

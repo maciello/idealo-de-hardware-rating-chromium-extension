@@ -11,7 +11,7 @@ export const MAX_SNAPSHOT_BYTES = 5 * 1024 * 1024;
 const MAX_DATA_JSON_CHARS = 2_000_000;
 
 /** Tag-name prefix of the custom elements the extension injects into the page. */
-export const DEFAULT_HOST_PREFIX = "idealo-hw-";
+const DEFAULT_HOST_PREFIX = "idealo-hw-";
 
 const isJson = (text: string): boolean => {
   const first = text.trimStart()[0];

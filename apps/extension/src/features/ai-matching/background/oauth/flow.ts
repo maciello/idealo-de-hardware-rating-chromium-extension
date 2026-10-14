@@ -10,7 +10,7 @@ import type { OAuthError, OAuthErrorKind } from "../../../../contracts";
  * memory for the duration of one flow) already binds the returned `code` to this client.
  */
 
-export const OPENROUTER_AUTH_URL = "https://openrouter.ai/auth";
+const OPENROUTER_AUTH_URL = "https://openrouter.ai/auth";
 export const OPENROUTER_KEYS_URL = "https://openrouter.ai/api/v1/auth/keys";
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: OAuthError };

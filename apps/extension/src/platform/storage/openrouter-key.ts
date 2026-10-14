@@ -9,7 +9,7 @@ import { aiTestResultItem, openrouterStatusItem } from "./items/ai";
  * scripts' isolated world, so the guard is the import graph; test/openrouter-key-isolation.test.ts
  * enforces it.)
  */
-export const OpenRouterCredentialsSchema = z.object({
+const OpenRouterCredentialsSchema = z.object({
   key: z.string().min(1),
   userId: z.string().min(1),
   obtainedAt: z.iso.datetime(),
