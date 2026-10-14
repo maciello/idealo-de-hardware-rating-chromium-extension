@@ -13,6 +13,7 @@
     "fixtures": "node test/fixtures/build-idealo-ssr.ts"
   },
   "dependencies": {
+    "@idealo-hw/decide": "workspace:*",
     "@idealo-hw/hw-bench": "workspace:*",
     "@idealo-hw/idealo-query": "workspace:*",
     "@mantine/core": "^9.7.2",

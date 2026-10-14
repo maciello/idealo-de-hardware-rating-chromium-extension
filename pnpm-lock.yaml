@@ -20,6 +20,9 @@ importers:
 
   apps/extension:
     dependencies:
+      '@idealo-hw/decide':
+        specifier: workspace:*
+        version: link:../../packages/decide
       '@idealo-hw/hw-bench':
         specifier: workspace:*
         version: link:../../packages/hw-bench

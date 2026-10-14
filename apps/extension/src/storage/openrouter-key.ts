@@ -1,5 +1,6 @@
 import { storage } from "@wxt-dev/storage";
 import { z } from "zod";
+import { aiTestResultItem } from "./ai-test-result";
 import { NOT_CONNECTED, type OpenRouterStatus, openrouterStatusItem } from "./openrouter-status";
 
 /**
@@ -42,5 +43,6 @@ export async function saveOpenRouterCredentials(
 /** Local delete only; the key itself stays valid at openrouter.ai until the user revokes it. */
 export async function clearOpenRouterCredentials(): Promise<void> {
   await openrouterStatusItem.setValue(NOT_CONNECTED);
+  await aiTestResultItem.removeValue();
   await openrouterKeyItem.removeValue();
 }

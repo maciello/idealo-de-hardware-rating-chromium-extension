@@ -1,5 +1,6 @@
 import { type BrowserContext, expect, type Page, test, type Worker } from "@playwright/test";
 import { extensionIdOf, launchWithExtension } from "./launch";
+import { shot } from "./site";
 
 /** The slice of the extension API used inside `worker.evaluate` (e2e has no chrome typings). */
 declare const chrome: {
@@ -8,6 +9,8 @@ declare const chrome: {
 };
 
 const KEYS_URL = "https://openrouter.ai/api/v1/auth/keys";
+const SYSTEMONE_URL = "https://openrouter.ai/api/v1/systemone";
+const SERVED_MODEL = "typesafe/jev-1.13-20260917";
 const KEY = "sk-or-test";
 
 let context: BrowserContext;
@@ -15,6 +18,13 @@ let extensionId: string;
 let worker: Worker;
 let exchangeBodies: unknown[];
 let exchangeStatus: number;
+let jevStatus: number;
+let jevRequests: { authorization: string | undefined; body: JevRequest }[];
+
+interface JevRequest {
+  model: string;
+  questions: { pick: { criteria: Record<string, string> } };
+}
 
 /**
  * openrouter.ai is unreachable from the sandbox, so the two network edges are stubbed:
@@ -57,11 +67,43 @@ test.beforeAll(async () => {
       body: JSON.stringify({ key: KEY, user_id: "user_test" }),
     });
   });
+  // Jev answers the probe correctly: picks the option described as the model number named in the state.
+  await context.route(SYSTEMONE_URL, async (route) => {
+    const body = route.request().postDataJSON() as JevRequest;
+    jevRequests.push({ authorization: route.request().headers().authorization, body });
+    if (jevStatus !== 200) {
+      return route.fulfill({
+        status: jevStatus,
+        body: JSON.stringify({ error: "invalid api key" }),
+      });
+    }
+    const criteria = body.questions.pick.criteria;
+    const choice = Object.keys(criteria).find((k) => criteria[k] === "Intel Core i5-13400") ?? "";
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        model: SERVED_MODEL,
+        answers: {
+          pick: {
+            type: "choice",
+            choice,
+            confidence: 0.98,
+            probabilities: Object.fromEntries(
+              Object.keys(criteria).map((k) => [k, k === choice ? 0.98 : 0.01]),
+            ),
+          },
+        },
+        usage: { input_tokens: 1, output_tokens: 1 },
+      }),
+    });
+  });
 });
 
 test.beforeEach(() => {
   exchangeBodies = [];
   exchangeStatus = 200;
+  jevStatus = 200;
+  jevRequests = [];
 });
 
 test.afterAll(async () => {
@@ -126,5 +168,44 @@ test("openrouter: user cancel and exchange failure are reported, nothing is stor
   await expect(page.getByTestId("openrouter-error")).toContainText("HTTP 500");
   await expect(page.getByTestId("openrouter-status")).toHaveText("Not connected");
   expect(await storedValue("openrouterKey")).toBeNull();
+  await page.close();
+});
+
+test("openrouter: the test button runs one Jev probe and shows pick, latency and served model", async () => {
+  const page = await openOptions();
+  await expect(page.getByTestId("openrouter-test")).toBeDisabled();
+
+  await stubAuthFlow("approve");
+  await page.getByTestId("openrouter-connect").click();
+  await expect(page.getByTestId("openrouter-status")).toHaveText("Connected");
+  await expect(page.getByTestId("openrouter-test")).toBeEnabled();
+
+  await page.getByTestId("openrouter-test").click();
+  const result = page.getByTestId("openrouter-test-result");
+  await expect(result).toContainText(
+    /Working: picked Intel Core i5-13400 in \d+ ms, model typesafe\/jev-1\.13-20260917/,
+  );
+  expect(jevRequests).toHaveLength(1);
+  expect(jevRequests[0]?.authorization).toBe(`Bearer ${KEY}`);
+  expect(jevRequests[0]?.body.model).toBe("typesafe/jev-1.13");
+  expect(await storedValue("aiTestResult")).toMatchObject({
+    ok: true,
+    picked: "Intel Core i5-13400",
+    model: SERVED_MODEL,
+  });
+  expect(await page.content()).not.toContain(KEY);
+  await shot(page, "options-ai-test");
+
+  jevStatus = 401;
+  await page.getByTestId("openrouter-test").click();
+  await expect(result).toContainText("Failed:");
+  await expect(result).toContainText("401");
+  expect(await page.content()).not.toContain(KEY);
+  expect(JSON.stringify(await storedValue("aiTestResult"))).not.toContain(KEY);
+
+  await page.getByTestId("openrouter-disconnect").click();
+  await expect(page.getByTestId("openrouter-status")).toHaveText("Not connected");
+  await expect(result).toHaveCount(0);
+  expect(await storedValue("aiTestResult")).toBeNull();
   await page.close();
 });
