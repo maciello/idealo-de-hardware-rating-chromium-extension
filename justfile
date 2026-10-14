@@ -39,6 +39,11 @@ build:
 e2e:
     pnpm --filter @idealo-hw/extension e2e
 
+# Live smoke run on www.idealo.de with the private PassMark export in data/; writes e2e/artifacts/live.json. LIVE_PAGES=<comma list of idealo paths> overrides the pages.
+e2e-live:
+    pnpm --filter @idealo-hw/extension exec wxt build
+    cd apps/extension && LIVE=1 pnpm exec playwright test --config e2e/playwright.config.ts live.spec.ts
+
 # Extension dev server with HMR.
 dev:
     pnpm --filter @idealo-hw/extension dev

@@ -23,10 +23,12 @@ function findChromium(): string | undefined {
     .find((candidate) => existsSync(candidate));
 }
 
-export async function launchWithExtension(): Promise<BrowserContext> {
+/** `userAgent` overrides the HeadlessChrome token, which idealo's bot protection answers with 403. */
+export async function launchWithExtension(userAgent?: string): Promise<BrowserContext> {
   const executablePath = findChromium();
   return chromium.launchPersistentContext("", {
     ...(executablePath ? { executablePath } : { channel: "chromium" }),
+    ...(userAgent ? { userAgent } : {}),
     headless: true,
     viewport: { width: 1280, height: 900 },
     args: [`--disable-extensions-except=${EXTENSION_DIR}`, `--load-extension=${EXTENSION_DIR}`],
