@@ -1,6 +1,6 @@
+import { type Combine, METRIC, type Metric } from "@idealo-hw/idealo-query";
 import { SegmentedControl, Stack, Text } from "@mantine/core";
 import { REQUIREMENTS_COPY } from "../copy";
-import { type Combine, METRIC, type Metric } from "../model";
 import type { CpuBlockModel } from "../view-model";
 import { ScoreSlider } from "./ScoreSlider";
 

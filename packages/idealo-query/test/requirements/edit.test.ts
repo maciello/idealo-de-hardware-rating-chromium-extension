@@ -1,15 +1,15 @@
-import { RequirementsSchema } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
 import {
   emptyRequirements,
   isEmpty,
   METRIC,
+  RequirementsSchema,
   setCombine,
   setLabels,
   setMinimum,
   setNumeric,
   setPriceRange,
-} from "../../../../src/features/requirements/model";
+} from "../../src/index";
 
 describe("requirement updates", () => {
   it("sets and clears numeric bounds, dropping an empty requirement", () => {

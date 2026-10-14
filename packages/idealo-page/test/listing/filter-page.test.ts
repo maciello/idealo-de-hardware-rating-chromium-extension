@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { categoryId, filterId } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { filterPageOf, guessCategoryId, toSearchUrl } from "../../src/listing/filter-page";
+import { filterPageOf, guessCategoryId } from "../../src/listing/filter-page";
 
 const doc = (links: string[]): Document =>
   new DOMParser().parseFromString(
@@ -54,18 +54,5 @@ describe("filterPageOf", () => {
     expect(
       filterPageOf("https://www.idealo.de/preisvergleich/OffersOfProduct/1_a.html", doc([])),
     ).toBeNull();
-  });
-});
-
-describe("toSearchUrl", () => {
-  it("drops filters and category", () => {
-    const page = filterPageOf(`${SEARCH}`, doc([]));
-    const query = {
-      ...(page?.query as NonNullable<typeof page>["query"]),
-      filterIds: [filterId("1")],
-    };
-    expect(toSearchUrl(query)).toBe(
-      "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=laptop%2032GB",
-    );
   });
 });

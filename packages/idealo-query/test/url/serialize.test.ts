@@ -3,6 +3,7 @@ import {
   filterId,
   type IdealoQuery,
   manufacturerId,
+  toSearchUrl,
   toWebUrl,
   UnrepresentableQueryError,
 } from "../../src/index";
@@ -50,5 +51,28 @@ describe("toWebUrl", () => {
     const query = { ...base, manufacturerIds: [manufacturerId("88")] };
     expect(() => toWebUrl(query)).toThrow(UnrepresentableQueryError);
     expect(() => toWebUrl(query, { catalog })).toThrow(UnrepresentableQueryError);
+  });
+});
+
+describe("toSearchUrl", () => {
+  const base: IdealoQuery = { categoryId: CATEGORY, filterIds: [], manufacturerIds: [] };
+
+  it("keeps text, price and sort and drops filters and category", () => {
+    const query: IdealoQuery = {
+      ...base,
+      filterIds: ids("1"),
+      text: "laptop 32GB",
+      price: { min: 500 },
+      sort: "price",
+    };
+    expect(toSearchUrl(query)).toBe(
+      "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?p=500.0-&q=laptop%2032GB&sortKey=price",
+    );
+  });
+
+  it("writes the bare search page for a query without text, price and sort", () => {
+    expect(toSearchUrl(base)).toBe(
+      "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html",
+    );
   });
 });

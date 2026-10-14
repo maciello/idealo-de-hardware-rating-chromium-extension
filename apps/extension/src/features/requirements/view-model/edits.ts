@@ -1,5 +1,4 @@
-import type { NumericFacet, PriceRange } from "@idealo-hw/idealo-query";
-import type { Bound, Combine, Metric } from "../model";
+import type { Bound, Combine, Metric, NumericFacet, PriceRange } from "@idealo-hw/idealo-query";
 
 /** What the controls can do to the requirements; each call reports the whole next value. */
 export interface RequirementEdits {

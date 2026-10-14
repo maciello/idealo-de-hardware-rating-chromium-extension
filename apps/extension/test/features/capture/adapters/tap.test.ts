@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  isIdealoHost,
   type ObservedResponse,
   toCapturedResponse,
 } from "../../../../src/features/capture/adapters/tap";
@@ -20,20 +19,6 @@ const observed = (over: Partial<ObservedResponse> & { body?: string }): Observed
     ...rest,
   };
 };
-
-describe("isIdealoHost", () => {
-  it.each([
-    ["www.idealo.de", true],
-    ["idealo.de", true],
-    ["api.idealo.com", true],
-    ["a.b.idealo.de", true],
-    ["idealo.de.evil.example", false],
-    ["notidealo.de", false],
-    ["example.com", false],
-  ])("%s -> %s", (host, expected) => {
-    expect(isIdealoHost(host)).toBe(expected);
-  });
-});
 
 describe("toCapturedResponse", () => {
   it("captures JSON from another idealo subdomain, resolving relative urls", async () => {

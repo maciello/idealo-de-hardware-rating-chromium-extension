@@ -1,6 +1,6 @@
-import type { FacetOption, FacetPlan } from "@idealo-hw/idealo-query";
+import type { Bound, FacetOption, FacetPlan } from "@idealo-hw/idealo-query";
 import { REQUIREMENTS_COPY } from "../copy";
-import { axisOf, type Bound, type NumericControl, snapDown, snapUp } from "../model";
+import { axisOf, type NumericControl, snapDown, snapUp } from "../model";
 import { formatMeasure, labelledMarks } from "./measure";
 import { statusLine } from "./status";
 

@@ -1,7 +1,9 @@
+import { IDEALO_MATCH_PATTERNS } from "@idealo-hw/idealo-query/url/constants";
+
 export const TAP_SCRIPT_ID = "idealo-hw-network-tap";
 /** Where WXT builds `entrypoints/network-tap.content.ts` (registration: "runtime"). */
 export const TAP_SCRIPT_FILE = "content-scripts/network-tap.js";
-export const TAP_MATCHES: string[] = ["https://www.idealo.de/*"];
+export const TAP_MATCHES: string[] = [...IDEALO_MATCH_PATTERNS];
 
 /** The slice of `chrome.scripting` used here, so tests can fake it. */
 export interface ScriptingPort {

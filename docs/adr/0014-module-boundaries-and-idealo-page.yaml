@@ -11,7 +11,7 @@ adr.0014:
     target_layering:
       packages:
         hw-bench: PassMark benchmark model, import, CPU/GPU identity, matching, rating strategies
-        idealo-query: query model, URL grammar, catalog and facets, requirements planning, wire parsing; no DOM, no fetch
+        idealo-query: query model, URL grammar and search urls, idealo origin, match patterns and host check (side-effect-free subpaths url/constants and url/host for build-time and MAIN-world use), catalog and facets, requirements edits and planning, wire parsing; no DOM, no fetch
         idealo-page: DOM reading of idealo pages behind the PageAdapter port; no extension APIs, no React
         decide: LLM-assisted choice behind the Decider port; the Typesafe AI SDK only in jev/client.ts
         edges: [decide -> hw-bench, decide -> idealo-query, idealo-page -> idealo-query, extension -> every package]

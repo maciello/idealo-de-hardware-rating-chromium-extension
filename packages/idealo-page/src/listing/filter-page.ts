@@ -5,7 +5,7 @@ import {
   emptyQuery,
   type IdealoQuery,
   parseIdealoUrl,
-  SEARCH_PATHNAME,
+  toSearchUrl,
   toWebUrl,
 } from "@idealo-hw/idealo-query";
 import { embeddedListing } from "./embedded";
@@ -42,19 +42,6 @@ export function guessCategoryId(doc: ParentNode): CategoryId | null {
 }
 
 const PLACEHOLDER_CATEGORY = categoryId("0");
-
-/** Search-page url from the text, price and sort of a query (filters and category are dropped). */
-export function toSearchUrl(query: IdealoQuery): string {
-  const url = new URL(toWebUrl({ ...emptyQuery(PLACEHOLDER_CATEGORY), ...pick(query) }));
-  url.pathname = SEARCH_PATHNAME;
-  return url.toString();
-}
-
-const pick = ({ text, price, sort }: IdealoQuery): Partial<IdealoQuery> => ({
-  ...(text === undefined ? {} : { text }),
-  ...(price === undefined ? {} : { price }),
-  ...(sort === undefined ? {} : { sort }),
-});
 
 /**
  * Category and search pages get a filter builder; everything else gets none. A search page that

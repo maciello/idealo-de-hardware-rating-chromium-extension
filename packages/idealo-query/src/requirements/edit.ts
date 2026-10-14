@@ -1,14 +1,9 @@
-import {
-  type LabelFacet,
-  type ModelFacet,
-  type NumericFacet,
-  type PriceRange,
-  type Requirements,
-  RequirementsSchema,
-} from "@idealo-hw/idealo-query";
-import type { Metric } from "./scorer";
+import type { LabelFacet, ModelFacet, NumericFacet } from "../catalog";
+import type { PriceRange } from "../query";
+import type { Metric } from "./metric";
+import { type ModelRequirement, type Requirements, RequirementsSchema } from "./schema";
 
-export type Combine = "all" | "any";
+export type Combine = ModelRequirement["combine"];
 export type Bound = { min?: number | undefined; max?: number | undefined };
 
 export const emptyRequirements = (): Requirements => RequirementsSchema.parse({});

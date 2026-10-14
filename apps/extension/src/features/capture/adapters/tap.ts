@@ -1,12 +1,9 @@
+import { isIdealoHost } from "@idealo-hw/idealo-query/url/host";
 import { BatchInterceptor } from "@mswjs/interceptors";
 import { FetchInterceptor } from "@mswjs/interceptors/fetch/web";
 import { XMLHttpRequestInterceptor } from "@mswjs/interceptors/XMLHttpRequest/web";
 import { MAX_BODY_CHARS } from "../config";
 import { type CapturedResponse, isJsonText, TAP_SOURCE, type TapMessage } from "../model/protocol";
-
-/** idealo.de / idealo.com and any of their subdomains (api.idealo.de, www.idealo.com, ...). */
-export const isIdealoHost = (hostname: string): boolean =>
-  /(^|\.)idealo\.(de|com)$/i.test(hostname);
 
 const hostOf = (url: string, base: string): string | null => {
   try {

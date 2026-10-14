@@ -1,5 +1,5 @@
+import type { Bound } from "@idealo-hw/idealo-query";
 import { RangeSlider, Slider } from "@mantine/core";
-import type { Bound } from "../model";
 import type { NumericSliderModel } from "../view-model";
 import { SliderField } from "./SliderField";
 
