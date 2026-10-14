@@ -8,13 +8,16 @@ import { exportDebugReport } from "../diagnostics/export";
 import { OpenRouterConnectedRow } from "../features/ai-matching";
 import { BenchmarkSummary, useBenchmarkSummary } from "../features/benchmark-data";
 import { CaptureConnectedRow } from "../features/capture";
+import {
+  DEFAULT_PRIMARY_ID,
+  PRIMARY_CHOICES,
+  resolveEnabledStrategyIds,
+} from "../features/ratings";
 import { recordError } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
 import { settingsItem } from "../platform/storage";
 import { useStorageItem } from "../platform/storage/use-storage-item";
 import { activateTab, findTargetTab, openOptions, type TargetTab } from "../platform/tabs";
-import { resolveEnabledStrategyIds } from "../ratings/engine";
-import { DEFAULT_PRIMARY_ID, PRIMARY_CHOICES } from "../ratings/present";
 import { LabeledRow, StatusNote } from "../ui";
 
 function BenchmarkRow() {

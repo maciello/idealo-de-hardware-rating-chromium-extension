@@ -49,7 +49,7 @@ adr.0016:
         - "iGPU: shared"
       parser: hw-bench graphicsMemoryOf, built on the existing memoryAfter size parser of gpu/identity; the extension holds no regex for it
       igpu_rule: an iGPU always says shared, even when the tile states a size, because idealo writes "Shared Memory" for integrated graphics and a stated size belongs to a card (seen on the real-markup fixture, where a card the snapshot lacks left an iGPU line next to "8 GB GDDR6")
-      formatting: ui/format formatMemorySize (de-DE, binary units); copy strings in ratings/gpu-copy.ts
+      formatting: ui/format formatMemorySize (de-DE, binary units); copy strings in features/ratings/copy.ts
   data_policy:
     committed: GPU names, rule ids, caveats, evidence URLs, confidence
     never_committed: PassMark scores and sample counts, data/idealo-mcp-labels.json, anything from data/
@@ -68,4 +68,4 @@ adr.0016:
     - a PassMark GPU CSV that lacks a rule's row shows that iGPU as unrated until imported
     - rules with proxy_row=true (Vega 7, Raphael 2 CU RDNA2) show the nearest PassMark row and the card says so
     - "Iris Xe and Arc on Meteor Lake need dual-channel memory to report as such (caveat only, not modelled)"
-    - the ratings split (refactor S3) can move gpu-engine.ts, gpu-dedicated.ts, gpu-integrated.ts, gpu-memory.ts, present-gpu*.ts and GpuParts.tsx as a unit
+    - the GPU line lives in features/ratings as one sub-domain: model/gpu (engine, dedicated, integrated, memory, sources, reading), view-model/gpu (line, card, meter, memory-text) and view/gpu

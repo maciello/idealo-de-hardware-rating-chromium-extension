@@ -151,13 +151,15 @@ module.exports = {
     },
     {
       name: "model-is-pure",
-      comment: "Model and view-model are pure: no UI, IO, platform or framework runtimes.",
+      comment:
+        "Model and view-model are pure: no UI components, IO, platform or framework runtimes. ui/format and ui/theme are pure functions and allowed.",
       severity: "warn",
       from: { path: "/features/[^/]+/(model|view-model)/" },
       to: {
         path: [
           "/features/[^/]+/(controller|adapters|view|background)/",
-          `${SRC}(platform|ui)/`,
+          `${SRC}platform/`,
+          `${SRC}ui/(index\\.ts|components|host)`,
           UI_RUNTIME,
         ],
       },

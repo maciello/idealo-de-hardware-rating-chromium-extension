@@ -7,12 +7,12 @@ import {
   idealoAdapter,
 } from "@idealo-hw/idealo-page";
 import { buildPageReport } from "../src/diagnostics/page-report";
+import { RATING_CARD_STYLES, startRatings } from "../src/features/ratings";
 import { startFilterBuilder } from "../src/filters/controller";
 import { rememberingCatalog } from "../src/filters/remembering-catalog";
 import { vocabularyStorage } from "../src/filters/vocabulary-storage";
 import { installGlobalErrorReporting } from "../src/platform/errors";
 import { onMessage } from "../src/platform/messaging";
-import { startRatings } from "../src/ratings/controller";
 import { mountOverlay, type Overlay } from "../src/ui/host";
 import { HOST_TAG_PREFIX } from "../src/ui/theme";
 
@@ -23,7 +23,7 @@ export default defineContentScript({
     // Created on first use, so pages with nothing to show get no overlay at all.
     let overlay: Promise<Overlay> | undefined;
     const getOverlay = (): Promise<Overlay> => {
-      overlay ??= mountOverlay(ctx);
+      overlay ??= mountOverlay(ctx, { css: RATING_CARD_STYLES });
       return overlay;
     };
 

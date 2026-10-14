@@ -4,7 +4,7 @@ import { createPortal, flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
-import { createHwTheme, HOST_TAG_PREFIX, OVERLAY_HOST_STYLES, Z_INDEX } from "../theme";
+import { createHwTheme, HOST_TAG_PREFIX, overlayHostStyles, Z_INDEX } from "../theme";
 import { mantineSheet } from "./mantine-sheet";
 import { createOverlayStore, type OverlayStore } from "./overlay-store";
 
@@ -78,8 +78,12 @@ export interface Overlay {
  * overlay is a direct child of <html>, position fixed, click-through, with its own shadow root.
  * One React root renders everything: chips are portaled into their tile hosts, so anchor and
  * dropdown share one provider and one open-state, while the dropdown lands in this layer.
+ * `options.css` is the stylesheet of the features that render into it (the rating card).
  */
-export async function mountOverlay(ctx: ContentScriptContext): Promise<Overlay> {
+export async function mountOverlay(
+  ctx: ContentScriptContext,
+  options: { css?: string } = {},
+): Promise<Overlay> {
   const store = createOverlayStore();
   let root: Root | undefined;
   let hostElement: HTMLElement | undefined;
@@ -92,7 +96,7 @@ export async function mountOverlay(ctx: ContentScriptContext): Promise<Overlay> 
     append: "last",
     inheritStyles: true,
     isolateEvents: true,
-    css: OVERLAY_HOST_STYLES,
+    css: overlayHostStyles(options.css),
     onMount(container, shadow, host) {
       if (mantineSheet) shadow.adoptedStyleSheets = [mantineSheet];
       hostElement = host;

@@ -1,4 +1,5 @@
 import { type PageReport, PageReportSchema } from "../contracts";
+import { resolveEnabledStrategyIds } from "../features/ratings";
 import { downloadJson } from "../platform/download";
 import { readErrorLog } from "../platform/errors";
 import { sendMessage } from "../platform/messaging";
@@ -12,7 +13,6 @@ import {
   loadSettings,
 } from "../platform/storage";
 import type { TargetTab } from "../platform/tabs";
-import { resolveEnabledStrategyIds } from "../ratings/engine";
 import { buildDebugReport, type DebugReport } from "./debug-report";
 
 async function readPage(
