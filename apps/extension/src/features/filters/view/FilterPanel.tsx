@@ -2,7 +2,7 @@ import { Accordion, Alert, Drawer, Stack, TextInput, Title } from "@mantine/core
 import { IconInfoCircle } from "@tabler/icons-react";
 import { ICON_SIZE } from "../../../ui";
 import { RequirementsSection } from "../../requirements";
-import { DRAWER_SIZE } from "../config";
+import { DRAWER_SIZE, NOTE_COLOR } from "../config";
 import { FILTERS_COPY } from "../copy";
 import type { FilterActions, FilterViewModel } from "../view-model";
 import { FilterFab } from "./FilterFab";
@@ -45,7 +45,7 @@ export function FilterPanel({ opened, model, actions }: FilterPanelProps) {
           {note !== null && (
             <Alert
               variant="light"
-              color="gray"
+              color={NOTE_COLOR}
               icon={<IconInfoCircle size={ICON_SIZE.s} />}
               data-testid={note.testId}
             >
