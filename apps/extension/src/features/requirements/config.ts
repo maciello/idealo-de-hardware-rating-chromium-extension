@@ -1,4 +1,5 @@
-import { METRIC, type Metric, type NumericControl } from "./model";
+import { METRIC, type Metric } from "@idealo-hw/idealo-query";
+import type { NumericControl } from "./model";
 
 /** Slider step per benchmark metric. */
 export const MIN_STEPS: Readonly<Record<Metric, number>> = {

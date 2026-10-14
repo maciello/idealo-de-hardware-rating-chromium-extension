@@ -1,15 +1,16 @@
 // @vitest-environment jsdom
 import {
   categoryId,
+  emptyRequirements,
   type FilterCatalog,
   filterId,
   planRequirements,
+  setNumeric,
 } from "@idealo-hw/idealo-query";
 import { MantineProvider } from "@mantine/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { RequirementsSection } from "../../../src/features/requirements/connected";
-import { emptyRequirements, setNumeric } from "../../../src/features/requirements/model";
 
 window.matchMedia = (query: string) =>
   ({

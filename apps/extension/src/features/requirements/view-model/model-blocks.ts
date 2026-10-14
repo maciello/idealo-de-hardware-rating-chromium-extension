@@ -1,13 +1,16 @@
-import type {
-  FacetGroup,
-  FacetPlan,
-  ModelFacet,
-  ModelScorer,
-  Requirements,
+import {
+  type Combine,
+  type FacetGroup,
+  type FacetPlan,
+  METRIC,
+  type Metric,
+  type ModelFacet,
+  type ModelScorer,
+  type Requirements,
 } from "@idealo-hw/idealo-query";
 import { MIN_STEPS } from "../config";
 import { REQUIREMENTS_COPY } from "../copy";
-import { type Combine, METRIC, type Metric, scoreSpan } from "../model";
+import { scoreSpan } from "../model";
 import { type ScoreSliderModel, scoreSliderModel } from "./score-slider";
 import { statusLine } from "./status";
 

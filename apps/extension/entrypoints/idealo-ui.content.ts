@@ -6,6 +6,7 @@ import {
   firstCatalog,
   idealoAdapter,
 } from "@idealo-hw/idealo-page";
+import { IDEALO_MATCH_PATTERNS } from "@idealo-hw/idealo-query/url/constants";
 import { buildPageReport } from "../src/features/diagnostics";
 import { RATING_CARD_STYLES, startRatings } from "../src/features/ratings";
 import { startFilterBuilder } from "../src/filters/controller";
@@ -17,7 +18,7 @@ import { mountOverlay, type Overlay } from "../src/ui/host";
 import { HOST_TAG_PREFIX } from "../src/ui/theme";
 
 export default defineContentScript({
-  matches: ["https://www.idealo.de/*"],
+  matches: [...IDEALO_MATCH_PATTERNS],
   main(ctx) {
     installGlobalErrorReporting("content");
     // Created on first use, so pages with nothing to show get no overlay at all.

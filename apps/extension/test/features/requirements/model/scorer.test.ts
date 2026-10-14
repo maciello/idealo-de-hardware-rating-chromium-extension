@@ -1,6 +1,7 @@
 import { passmarkCpuSource, passmarkGpuSource } from "@idealo-hw/hw-bench";
+import { METRIC } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { createModelScorer, METRIC, scoreSpan } from "../../../../src/features/requirements/model";
+import { createModelScorer, scoreSpan } from "../../../../src/features/requirements/model";
 import { group } from "../catalog-fixtures";
 
 describe("createModelScorer", () => {

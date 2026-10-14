@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./url/constants": "./src/url/constants.ts",
+    "./url/host": "./src/url/host.ts"
   },
   "scripts": {
     "typecheck": "tsc -p .",

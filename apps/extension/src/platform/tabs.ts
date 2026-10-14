@@ -1,12 +1,14 @@
+import { IDEALO_ORIGIN } from "@idealo-hw/idealo-query/url/constants";
+
 export interface TargetTab {
   id: number;
   url: string;
 }
 
-const IDEALO_ORIGIN = "https://www.idealo.de/";
+const IDEALO_PREFIX = `${IDEALO_ORIGIN}/`;
 
 const idealoTab = (tab: { id?: number | undefined; url?: string | undefined }): TargetTab | null =>
-  tab.id !== undefined && tab.url?.startsWith(IDEALO_ORIGIN) ? { id: tab.id, url: tab.url } : null;
+  tab.id !== undefined && tab.url?.startsWith(IDEALO_PREFIX) ? { id: tab.id, url: tab.url } : null;
 
 /**
  * The idealo tab the popup talks about. In a real popup that is the active tab of the window.
@@ -15,7 +17,7 @@ const idealoTab = (tab: { id?: number | undefined; url?: string | undefined }): 
  */
 export async function findTargetTab(): Promise<TargetTab | null> {
   if (await browser.tabs.getCurrent()) {
-    const tabs = await browser.tabs.query({ url: `${IDEALO_ORIGIN}*` });
+    const tabs = await browser.tabs.query({ url: `${IDEALO_PREFIX}*` });
     const newest = tabs.sort((a, b) => (b.lastAccessed ?? 0) - (a.lastAccessed ?? 0))[0];
     return newest ? idealoTab(newest) : null;
   }

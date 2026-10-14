@@ -1,7 +1,7 @@
 import type { FilterCatalog } from "../catalog";
-import type { ManufacturerId } from "../ids";
-import { foldManufacturers, type IdealoQuery, type PriceRange } from "../query";
-import { DEFAULT_ORIGIN } from "./constants";
+import { categoryId, type ManufacturerId } from "../ids";
+import { emptyQuery, foldManufacturers, type IdealoQuery, type PriceRange } from "../query";
+import { DEFAULT_ORIGIN, SEARCH_PATHNAME } from "./constants";
 
 export class UnrepresentableQueryError extends Error {
   constructor(readonly manufacturerIds: readonly ManufacturerId[]) {
@@ -36,4 +36,19 @@ export function toWebUrl(
   if (q.text) params.push(`q=${encodeURIComponent(q.text)}`);
   if (q.sort) params.push(`sortKey=${encodeURIComponent(q.sort)}`);
   return params.length > 0 ? `${path}?${params.join("&")}` : path;
+}
+
+const PLACEHOLDER_CATEGORY = categoryId("0");
+
+const searchParamsOf = ({ text, price, sort }: IdealoQuery): Partial<IdealoQuery> => ({
+  ...(text === undefined ? {} : { text }),
+  ...(price === undefined ? {} : { price }),
+  ...(sort === undefined ? {} : { sort }),
+});
+
+/** Search-page url from the text, price and sort of a query (filters and category are dropped). */
+export function toSearchUrl(query: IdealoQuery): string {
+  const url = new URL(toWebUrl({ ...emptyQuery(PLACEHOLDER_CATEGORY), ...searchParamsOf(query) }));
+  url.pathname = SEARCH_PATHNAME;
+  return url.toString();
 }

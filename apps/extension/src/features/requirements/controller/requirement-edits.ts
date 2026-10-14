@@ -1,13 +1,14 @@
-import type { PriceRange, Requirements } from "@idealo-hw/idealo-query";
 import {
   type Combine,
   METRIC,
+  type PriceRange,
+  type Requirements,
   setCombine,
   setLabels,
   setMinimum,
   setNumeric,
   setPriceRange,
-} from "../model";
+} from "@idealo-hw/idealo-query";
 import type { RequirementEdits } from "../view-model";
 
 export function createRequirementEdits(

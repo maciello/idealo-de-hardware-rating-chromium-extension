@@ -1,6 +1,5 @@
-import { facetsOf } from "@idealo-hw/idealo-query";
+import { emptyRequirements, facetsOf, setMinimum } from "@idealo-hw/idealo-query";
 import { describe, expect, it } from "vitest";
-import { emptyRequirements, setMinimum } from "../../../../src/features/requirements/model";
 import {
   buildRequirementsViewModel,
   type RequirementsViewInput,
