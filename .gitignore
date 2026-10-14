@@ -10,3 +10,6 @@ coverage/
 
 # locally installed skills (not part of this project)
 .claude/skills/claude-transcripts/
+
+# Agent worktrees (parallel refactor lanes); biome rejects their nested root config
+.claude/worktrees/
