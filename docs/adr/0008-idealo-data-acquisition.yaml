@@ -58,6 +58,15 @@ adr.0008:
         - "3751F7612877 (RAM 32 GB) 4319 hits; 3751F7612879 (64 GB) 1737; 3751F7612877-F7612879 -> redirect to 3751F7612877-7612879, 6056 hits = sum: one group ORs"
         - "3751F1466479 (Gaming Notebook) 4146; with RAM 32 GB -> canonical 3751F1466479-7612877 (ids sorted), 1114 hits: groups AND"
         - "mcp.idealo.com/mcp answers 401 without OAuth (DCR + PKCE browser login; trial 3 req/s, 500 calls/day)"
+    - id: mcp-2026-10-14
+      source: idealo MCP (trial, OAuth) search_products with includeCategories [3751] and [3020], get_product_details on one result; 3 calls
+      observed:
+        - "availableFilters[] = {attributeId, name, filters: [{filterId, content, amount}]}; filterId and label equal the web F-id and label for every option shared with the embedded payload (3751: 14 groups compared)"
+        - "no 100-option cap: Prozessor 280 (3751) / 272 (3020), Grafikkarte 148 / 172, Serie 101"
+        - "group names differ from the web payload: Produkttyp (attributeId 15583) = web Notebook-Typ (id productType); Grafikspeicher appears twice (15869 incl. 'Shared Memory', 31502)"
+        - "3751 lists 14 groups the web payload omits (Prozessortyp, Prozessor Codename, Display-Technologie, Betriebssystem, ...); still no RAM Typ group for notebooks"
+        - "results are variant products (name + nameDelta, productRef token, OffersOfProduct url); get_product_details.productSpecification.groups[].attributes[] carries Prozessor, Grafikkarte, RAM Typ (e.g. DDR5 on a notebook), Grafikspeichertyp as structured values"
+      conclusion: the MCP is the complete label source per category (dev-time vocabulary and blind tests); trial terms forbid storage and productive use, so MCP-derived label lists stay out of the repository (local scratch only) and the extension does not call it
   decision_update:
     product_page: datasheet table rows as "Label\tValue" spec text (hw-bench parseSpecBlock); title from h1#oopStage-title
     listing_tiles: DOM adapter over tile markup for placement and product id (data-wishlist-heart); spec text from the embedded payload when the tile id is in it, else the tile's main-details line (client-rendered pages)
@@ -66,7 +75,7 @@ adr.0008:
     capture_tap: debug only; records idealo hosts only so the 300-entry ring spans more pages
   unknowns:
     - filter-definition endpoint URL/shape (unobserved)
-    - how idealo exposes filters beyond the 100-per-group cap
+    - whether F-ids of options beyond the web's 100-per-group cap (listed only by the MCP) work in web URLs (unverified; ids share one space)
     - meaning of opaque URL suffix like "oE0oJ1"
   consequences:
     - FilterCatalog and spec extraction are ports; first real adapters written from capture-mode exports.
