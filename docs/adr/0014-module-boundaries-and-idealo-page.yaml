@@ -25,7 +25,7 @@ adr.0014:
         entrypoints: composition roots, no logic
       feature_layers:
         view: pure React over props and callbacks; imports view-model, model types, ui, contracts, react, mantine only
-        view_model: pure derivation for display
+        view_model: pure derivation for display; may call the pure ui/format and ui/theme functions, never ui components or host
         model: pure domain logic over packages, contracts and zod
         controller: hooks, state and IO orchestration
       secret_isolation: entrypoints/*.content.ts, popup and options cannot reach the OpenRouter key module or its key provider, transitively (adr.0012); the network tap in the MAIN world cannot reach storage, React, Mantine or ui

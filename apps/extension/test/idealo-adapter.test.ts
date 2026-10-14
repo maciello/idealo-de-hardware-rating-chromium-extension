@@ -10,7 +10,7 @@ import listingHtml from "@idealo-hw/idealo-page/fixtures/listing.html?raw";
 import ssrHtml from "@idealo-hw/idealo-page/fixtures/listing.idealo-ssr.html?raw";
 import productHtml from "@idealo-hw/idealo-page/fixtures/product.idealo-ssr.html?raw";
 import { describe, expect, it } from "vitest";
-import { createRatingEngine, STRATEGY_CATALOG } from "../src/ratings/engine";
+import { createRatingEngine, STRATEGY_CATALOG } from "../src/features/ratings/model";
 
 const load = (html: string): Document => new DOMParser().parseFromString(html, "text/html");
 

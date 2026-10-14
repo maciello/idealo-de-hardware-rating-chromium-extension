@@ -38,5 +38,5 @@ adr.0015:
     red_flags:
       catalog: "one rule per flag: {id, facts used, predicate, severity, rationale}; thresholds set from the datasheet sample (finding below)"
   consequences:
-    - the DDR4 chip tag (apps/extension ratings/ram-type.ts) becomes a red-flags rule
+    - the DDR4 chip tag (apps/extension features/ratings/model/cpu/ram-type.ts) becomes a red-flags rule
     - webcam (#7), baseline (#2) and profiles (#3) add sensors or options over the same facts
