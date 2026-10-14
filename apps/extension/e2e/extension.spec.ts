@@ -2,10 +2,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { ARTIFACTS_DIR, extensionIdOf, launchWithExtension } from "./launch";
+import { LISTING_HTML, PRODUCT_HTML } from "./site";
 
 const here = import.meta.dirname;
-const LISTING_HTML = readFileSync(resolve(here, "../test/fixtures/listing.html"), "utf8");
-const PRODUCT_HTML = readFileSync(resolve(here, "../test/fixtures/product.html"), "utf8");
 const CPU_FIXTURE = resolve(here, "fixtures/passmark-cpu.synthetic.json");
 const GPU_FIXTURE = resolve(here, "fixtures/passmark-gpu.synthetic.csv");
 const FILTERS_JSON = JSON.stringify({ filters: [{ id: 1234, name: "Intel" }] });

@@ -1,0 +1,22 @@
+{
+  "name": "@idealo-hw/idealo-page",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./fixtures/*": "./test/fixtures/*"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "vitest run",
+    "fixtures": "node test/fixtures/build-idealo-ssr.ts"
+  },
+  "dependencies": {
+    "@idealo-hw/idealo-query": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "jsdom": "^30.1.2"
+  }
+}

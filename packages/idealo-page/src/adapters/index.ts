@@ -1,0 +1,1 @@
+export { idealoAdapter } from "./composite";

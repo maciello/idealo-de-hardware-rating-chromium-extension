@@ -1,9 +1,7 @@
+import { PageKindSchema } from "@idealo-hw/idealo-page";
 import { z } from "zod";
 
 export const MAX_UNRATED = 20;
-
-export const PageKindSchema = z.enum(["listing", "product", "other"]);
-export type PageKind = z.infer<typeof PageKindSchema>;
 
 const count = z.number().int().nonnegative();
 

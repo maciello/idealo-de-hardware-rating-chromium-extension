@@ -69,10 +69,12 @@ export {
   DEFAULT_ORIGIN,
   type ParsedIdealoUrl,
   parseIdealoUrl,
+  SEARCH_PATHNAME,
   toWebUrl,
   UnrepresentableQueryError,
 } from "./url";
 export {
+  EMBEDDED_SEARCH_RESULT_MARKER,
   type EmbeddedSearchResult,
   type ListingItem,
   type ListingItemKind,

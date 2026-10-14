@@ -1,5 +1,5 @@
+import type { FilterCatalogSource } from "@idealo-hw/idealo-page";
 import { type FilterCatalog, mergeCatalogs, vocabularyOf } from "@idealo-hw/idealo-query";
-import type { FilterCatalogSource } from "./catalog-source";
 
 /** Port: the filter options seen so far per category, without hit counts. */
 export interface VocabularyStore {

@@ -5,13 +5,12 @@ import {
   passmarkCpuSource,
   productContextFromSpecs,
 } from "@idealo-hw/hw-bench";
+import { embeddedListing, idealoAdapter } from "@idealo-hw/idealo-page";
+import listingHtml from "@idealo-hw/idealo-page/fixtures/listing.html?raw";
+import ssrHtml from "@idealo-hw/idealo-page/fixtures/listing.idealo-ssr.html?raw";
+import productHtml from "@idealo-hw/idealo-page/fixtures/product.idealo-ssr.html?raw";
 import { describe, expect, it } from "vitest";
-import { embeddedListing } from "../src/page/embedded-listing";
-import { idealoAdapter } from "../src/page/idealo-adapter";
 import { createRatingEngine, STRATEGY_CATALOG } from "../src/ratings/engine";
-import listingHtml from "./fixtures/listing.html?raw";
-import ssrHtml from "./fixtures/listing.idealo-ssr.html?raw";
-import productHtml from "./fixtures/product.idealo-ssr.html?raw";
 
 const load = (html: string): Document => new DOMParser().parseFromString(html, "text/html");
 

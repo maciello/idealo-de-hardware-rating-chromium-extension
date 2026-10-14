@@ -9,12 +9,12 @@
     "zip": "wxt zip",
     "typecheck": "tsc -p . --noEmit",
     "postinstall": "wxt prepare",
-    "e2e": "wxt build && playwright test --config e2e/playwright.config.ts",
-    "fixtures": "node test/fixtures/build-idealo-ssr.ts"
+    "e2e": "wxt build && playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
     "@idealo-hw/decide": "workspace:*",
     "@idealo-hw/hw-bench": "workspace:*",
+    "@idealo-hw/idealo-page": "workspace:*",
     "@idealo-hw/idealo-query": "workspace:*",
     "@idealo-hw/sensors": "workspace:*",
     "@mantine/core": "^9.7.2",

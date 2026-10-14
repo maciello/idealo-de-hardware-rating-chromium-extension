@@ -89,6 +89,19 @@ module.exports = {
       from: { path: "^packages/idealo-page/src/" },
       to: { path: UI_RUNTIME },
     },
+    {
+      name: "idealo-page-only-idealo-query",
+      comment:
+        "idealo-page changes with idealo's markup only: it knows the query model, never benchmarks, sensors or the LLM.",
+      severity: "error",
+      from: { path: "^packages/idealo-page/" },
+      to: {
+        path: [
+          "^packages/(hw-bench|sensors|decide)/",
+          "node_modules/@idealo-hw/(hw-bench|sensors|decide)/",
+        ],
+      },
+    },
     // R7
     {
       name: "package-submodules-via-barrel",

@@ -1,7 +1,7 @@
+import type { PageKind, PageSnapshot } from "@idealo-hw/idealo-page";
 import type { AiTestResult } from "./ai-test-result";
 import type { ConnectResult } from "./oauth";
-import type { PageKind, PageReport } from "./page-report";
-import type { PageSnapshot } from "./page-snapshot";
+import type { PageReport } from "./page-report";
 
 /** What the content script knows about the tab it runs in. */
 export interface PageStats {
