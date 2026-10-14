@@ -1,18 +1,12 @@
-import type { GpuMatchRating } from "@idealo-hw/hw-bench";
 import { Popover } from "@mantine/core";
 import { IconFlame, IconLeaf } from "@tabler/icons-react";
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
 import { formatImportDate, Meter } from "../ui";
+import { Row } from "./CardRowView";
 import type { ItemRating } from "./engine";
-import {
-  AMBIGUOUS_CPU_ARIA,
-  type CardRow,
-  cardRows,
-  chipAria,
-  chipModel,
-  OLD_MEMORY_HINT,
-} from "./present";
-import { gpuCardHead, gpuCardRows, gpuLineModel } from "./present-gpu";
+import { GpuCardSections, GpuChipLine, gpuChipModel } from "./GpuParts";
+import type { GpuReading } from "./gpu-reading";
+import { AMBIGUOUS_CPU_ARIA, cardRows, chipAria, chipModel, OLD_MEMORY_HINT } from "./present";
 
 const OPEN_DELAY_MS = 80;
 const CLOSE_DELAY_MS = 150;
@@ -21,23 +15,6 @@ const CARD_WIDTH = 300;
 type Matched = Extract<ItemRating, { status: "matched" }>;
 type Ambiguous = Extract<ItemRating, { status: "ambiguous" }>;
 
-function Row({ row }: { row: CardRow }) {
-  return (
-    <div title={row.title} data-testid={`card-row-${row.id}`}>
-      <div className="hw-row__main">
-        <span className="hw-row__label">{row.label}</span>
-        <span className="hw-row__value">{row.value}</span>
-      </div>
-      {row.meter && (
-        <div className="hw-row__context">
-          <Meter filled={row.meter.filled} />
-          <span>{row.meter.text}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function CardBody({
   rating,
   gpu,
@@ -45,7 +22,7 @@ function CardBody({
   onOpenSettings,
 }: {
   rating: Matched | Ambiguous | null;
-  gpu: GpuMatchRating | null;
+  gpu: GpuReading | null;
   importedAt: string | null;
   onOpenSettings: () => void;
 }) {
@@ -58,20 +35,7 @@ function CardBody({
       </button>
     </div>
   );
-  const gpuHead = gpu ? gpuCardHead(gpu) : null;
-  const gpuSection = gpu && gpuHead && (
-    <div data-testid="card-gpu">
-      <div className="hw-card__head">
-        <div className="hw-card__title">{gpuHead.title}</div>
-        <div className="hw-card__sub">{gpuHead.sub}</div>
-      </div>
-      <div className="hw-card__rows">
-        {gpuCardRows(gpu).map((row) => (
-          <Row key={row.id} row={row} />
-        ))}
-      </div>
-    </div>
-  );
+  const gpuSection = gpu && <GpuCardSections gpu={gpu} />;
   if (rating === null) {
     return (
       <div className="hw-card" data-testid="rating-card">
@@ -117,7 +81,7 @@ function CardBody({
 export interface RatingChipProps {
   /** Null when only the GPU was recognised: the chip then shows the GPU line alone. */
   rating: Matched | Ambiguous | null;
-  gpu?: GpuMatchRating | null | undefined;
+  gpu?: GpuReading | null | undefined;
   primaryId: string;
   importedAt: string | null;
   onOpenSettings: () => void;
@@ -144,7 +108,7 @@ export function RatingChip({
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const model = rating?.status === "matched" ? chipModel(rating, primaryId) : null;
-  const gpuModel = gpu ? gpuLineModel(gpu) : null;
+  const gpuModel = gpuChipModel(gpu);
   const cpu = rating !== null && (rating.status === "ambiguous" || model !== null) ? rating : null;
   if (cpu === null && gpuModel === null) return null;
   const aria = chipAria([
@@ -239,21 +203,7 @@ export function RatingChip({
               )}
             </span>
           )}
-          {gpuModel && (
-            <span
-              className="hw-chip__line"
-              data-testid="chip-gpu"
-              {...(gpuModel.context ? { title: gpuModel.context } : {})}
-            >
-              {gpuModel.filled !== null && (
-                <Meter filled={gpuModel.filled} testId="chip-gpu-meter" />
-              )}
-              <span className="hw-chip__value" data-testid="chip-gpu-value">
-                {gpuModel.value}
-              </span>
-              <span className="hw-chip__label">{gpuModel.label}</span>
-            </span>
-          )}
+          {gpuModel && <GpuChipLine model={gpuModel} />}
         </button>
       </Popover.Target>
       <Popover.Dropdown
