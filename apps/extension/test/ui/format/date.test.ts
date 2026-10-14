@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatImportDate, formatShortDate } from "../../../src/ui/format";
+import { formatImportDate, formatLocalDateTime, formatShortDate } from "../../../src/ui/format";
 
 describe("de-DE date formatting", () => {
   it("formats the import date like idealo does, in UTC", () => {
@@ -13,5 +13,10 @@ describe("de-DE date formatting", () => {
     expect(formatShortDate(null)).toBeNull();
     expect(formatShortDate(undefined)).toBeNull();
     expect(formatShortDate("not a date")).toBeNull();
+  });
+
+  it("formats date and time in the browser's own locale", () => {
+    const iso = "2026-10-14T12:00:00.000Z";
+    expect(formatLocalDateTime(iso)).toBe(new Date(iso).toLocaleString());
   });
 });
