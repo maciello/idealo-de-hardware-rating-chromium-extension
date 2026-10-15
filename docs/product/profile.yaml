@@ -1,0 +1,93 @@
+# Product profile: who buys, what hurts, what relieves it, what to say and not say.
+# diataxis: reference | audience: agent writing README, store listing or any user-facing copy
+# relieved_by points at code (source of truth for wording: the copy.ts next to it) or says planned.
+# Quotes live in voc.yaml; this file cites them by id.
+entities:
+  segment.laptop_deal_hunter:
+    who: buys a laptop on idealo.de for work or study, cares about speed per euro, compares many offers
+    awareness: problem-aware; knows benchmark sites exist, does the lookups by hand
+    platform: Chromium browser (Brave, Chrome, Edge) on desktop
+
+  job.main:
+    statement: When I shop for a laptop on idealo, I want to see how fast each one is and drop the slow ones in one step, so I find a good deal in an evening instead of days.
+    evidence: [voc.owner.slider_wish, voc.owner.takes_days]
+  job.avoid_bad_buy:
+    statement: When a price looks good, I want to know what the spec sheet hides, so I don't buy a laptop that is slow, dim or stuck with too little RAM.
+
+  pain.no_visible_rating:
+    text: The listing shows a processor name, not how fast it is. Two laptops with the same brand tier can be far apart.
+    evidence: [voc.owner.no_glance_rating, voc.owner.nothing_visible, voc.owner.mid_cpu_looks_bad]
+    relieved_by: {feature: rating chip and card, code: apps/extension/src/features/ratings}
+  pain.reload_per_filter:
+    text: Every filter click reloads the page. A detailed search needs dozens of clicks, and widening a range means clicking again.
+    evidence: [voc.owner.reload_per_click, voc.owner.forty_filters]
+    relieved_by: {feature: filter builder builds one URL, opens it once, code: apps/extension/src/features/filters, adr: adr.0003}
+  pain.no_minimum_filter:
+    text: idealo has a separate box per RAM size, per processor, per screen size. No "at least" filter; nothing ranks processors.
+    evidence: [voc.owner.ram_tags, voc.owner.no_min_gb, voc.owner.slider_wish, voc.owner.ids_unfriendly]
+    relieved_by: {feature: requirement sliders select every matching option, code: apps/extension/src/features/requirements}
+  pain.manual_benchmark_roundtrip:
+    text: Checking one laptop means opening it, copying the CPU name, searching a benchmark site, noting the score, going back. With ten candidates nobody keeps it straight.
+    evidence: [voc.owner.one_by_one, voc.owner.juggle_ten]
+    relieved_by: {feature: rating on every tile plus rank on this page, code: apps/extension/src/features/ratings}
+  pain.hidden_spec_traps:
+    text: eMMC instead of SSD, 4 or 8 GB RAM, 720p or no webcam, old Wi-Fi, dim or low-res screen, no OS. Buried in the data sheet.
+    relieved_by: {feature: red flags with severity and a one-line reason, code: packages/sensors}
+    not_relieved: soldered vs upgradeable RAM, single-channel RAM, keyboard layout (planned GH #11)
+  pain.time_cost:
+    text: A careful search takes days.
+    evidence: [voc.owner.takes_days]
+    relieved_by: sum of the above; no measured time saving exists, so never state one
+  pain.wrong_match_trust:
+    text: A rating on the wrong chip (desktop score on a laptop) makes every rating suspect.
+    evidence: [voc.owner.desktop_for_laptop]
+    relieved_by: {feature: "unresolved CPU shows \"CPU ?\", several candidates flagged, laptop vs desktop GPU variant and percentile pool picked from the product type", code: packages/hw-bench/src/identity, adr: adr.0007}
+  pain.fake_discount:
+    text: A discount badge can be measured against one shop's high price; the same laptop was cheaper weeks earlier.
+    relieved_by: planned (deal score and price history, GH #9)
+  pain.spec_jargon:
+    text: Filters assume you know which spec matters.
+    evidence: [voc.web.jargon]
+    relieved_by: red-flag explanations in plain words; percentile meter instead of raw score
+
+  forces:
+    push: [pain.reload_per_filter, pain.manual_benchmark_roundtrip, pain.time_cost]
+    pull: [ratings visible on the results page, one-step "at least" filters, red flags before clicking]
+    anxiety:
+      - Is the rating for the right chip? (answer: unresolved shows "CPU ?", several candidates are flagged)
+      - Does it send my browsing anywhere? (answer: no extra idealo requests; optional AI matching sends titles to OpenRouter only after you connect it)
+      - Where does the benchmark data come from? (answer: you import it; nothing is bundled, adr.0006)
+    habit: tabs open on idealo, a benchmark site and Geizhals
+
+  alternative.geizhals:
+    what: deeper hardware filters, reportedly with minimum-spec settings
+    gap: different shop pool than idealo; no benchmark rating per listing
+    evidence_status: unverified (voc.web.geizhals_vs_idealo)
+  alternative.benchmark_sites:
+    what: PassMark and Notebookcheck charts, one CPU at a time
+    gap: separate site, manual roundtrip per product
+  alternative.price_history_tools:
+    what: idealo price history, Keepa (Amazon)
+    gap: price only, no spec filter
+  alternative.forums:
+    what: ask on mydealz or a hardware forum
+    gap: slow, answers point back to the filters
+
+  objection.passmark_import:
+    concern: I have to get the benchmark file myself.
+    answer: true; PassMark's terms restrict republishing it, so it is never bundled. One import, stored in the browser.
+  objection.not_in_store:
+    concern: Not in the Chrome Web Store.
+    answer: true; load unpacked from a local build.
+  objection.score_is_one_number:
+    concern: One benchmark does not capture cooling and power limits.
+    answer: true; the rating is the chip's average across PassMark submissions. Laptops with the same chip vary.
+
+  lexicon:
+    use: [processor, graphics, RAM, at least, at most, filter, red flag, rating, the page reloads, one by one, spec sheet, deal]
+    avoid: [seamless, powerful, effortless, unlock, AI-powered, smart, revolutionary, game-changer, supercharge, "in seconds", any time-saving number]
+    claims_policy:
+      - Only claim what the code does; cite the module above.
+      - No numbers about users, savings or speed-ups; none have been measured.
+      - No PassMark scores or idealo product data in public copy.
+      - Planned features are labelled planned.

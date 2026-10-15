@@ -1,0 +1,101 @@
+# Voice of customer: verbatim shopper language, the raw input for README, store listing and any later copy.
+# diataxis: reference | audience: agent writing user-facing copy
+# rules:
+#   quote: verbatim, never edited; gloss_en translates or clarifies.
+#   verified: true only when the quote was copied from the source page itself.
+#   unverified quotes never appear in public copy; they mark where to look.
+#   no PassMark scores, prices, product names or idealo MCP data here (adr.0006, adr.0008).
+entities:
+  voc.owner.no_glance_rating:
+    source: owner
+    quote: "I don't see how good something is at a glance"
+    pain: pain.no_visible_rating
+    verified: true
+  voc.owner.nothing_visible:
+    source: owner
+    quote: "theres nothing visible"
+    pain: pain.no_visible_rating
+    verified: true
+  voc.owner.mid_cpu_looks_bad:
+    source: owner
+    quote: "a MID cpu with a 8000-17000 rating doesnt look like its good"
+    gloss_en: a raw benchmark number means nothing without a scale next to it
+    pain: pain.no_visible_rating
+    verified: true
+  voc.owner.reload_per_click:
+    source: owner
+    quote: "you have to Select something and then you have to press OK and then it takes like five seconds to reload"
+    pain: pain.reload_per_filter
+    verified: true
+  voc.owner.forty_filters:
+    source: owner
+    quote: "when you have a complex search Then you have to select like twenty, thirty, forty different filters ... And sometimes then you have to change certain filters to like get a better range"
+    pain: pain.reload_per_filter
+    verified: true
+  voc.owner.ram_tags:
+    source: owner
+    quote: "theres like 100 different ram tags and all have different ids"
+    pain: pain.no_minimum_filter
+    verified: true
+  voc.owner.no_min_gb:
+    source: owner
+    quote: "theres no \"min GB\" option"
+    pain: pain.no_minimum_filter
+    verified: true
+  voc.owner.one_by_one:
+    source: owner
+    quote: "having to investigate every little product one after the other then checking it against cpubench and filtering it out or adding it to a subset"
+    pain: pain.manual_benchmark_roundtrip
+    verified: true
+  voc.owner.juggle_ten:
+    source: owner
+    quote: "a roundtrip to quickfilter cpus doesnt exist ... u have to juggle 10+ possible cpus and or product cards in ur mind"
+    pain: pain.manual_benchmark_roundtrip
+    verified: true
+  voc.owner.slider_wish:
+    source: owner
+    quote: "i want a min 20000+ multithreading rating (setting it with a slider) and it automatically selects all cpus that match"
+    gloss_en: the job statement in the owner's words; 20000 is the owner's example, not a recommendation
+    pain: pain.no_minimum_filter
+    verified: true
+  voc.owner.ids_unfriendly:
+    source: owner
+    quote: "typing in IDs is NOT human user-friendly"
+    pain: pain.no_minimum_filter
+    verified: true
+  voc.owner.takes_days:
+    source: owner
+    quote: "Usually it takes days to find a really good deal through careful investigation"
+    pain: pain.time_cost
+    verified: true
+  voc.owner.desktop_for_laptop:
+    source: owner
+    quote: "also its matching a desktop cpu for a laptop?"
+    gloss_en: trust breaks the moment a rating is attached to the wrong chip
+    pain: pain.wrong_match_trust
+    verified: true
+
+  voc.web.geizhals_vs_idealo:
+    source: gutefrage.net
+    url: "https://www.gutefrage.net/frage/idealo-vs-geizhals"
+    quote: "Bei Geizhals ist die Filterfunktion natürlich vielseitiger als bei Idealo. Aber dafür ist Idealo viel übersichtlicher."
+    gloss_en: Geizhals filters do more, idealo is easier to scan
+    pain: pain.no_minimum_filter
+    verified: false
+  voc.web.geizhals_hardware:
+    source: hardwaredealz.com forum
+    url: "https://www.hardwaredealz.com/forum/threads/geizhals-oder-idealo.57153/"
+    quote: "Ich finde Geizhals besser, was Hardware angeht ist es deutlich besser"
+    pain: pain.no_minimum_filter
+    verified: false
+  voc.web.jargon:
+    source: monsterdealz.de (editorial, not a shopper)
+    url: "https://www.monsterdealz.de/magazin/geizhals-billiger-de"
+    quote: "Wer nicht einordnen kann, ob er PCIe 4.0 oder 5.0 braucht, wird von der Auswahl eher ausgebremst als geführt."
+    gloss_en: spec filters slow down shoppers who cannot read the jargon
+    pain: pain.spec_jargon
+    verified: false
+
+research_gaps:
+  - No verified third-party quote yet for reload per click, tab juggling, benchmark lookups or time cost; the 2026-10 web pass could not fetch pages.
+  - Next pass: read gutefrage, hardwaredealz, hardwareluxx, ComputerBase and mydealz threads directly; copy quotes from the page, set verified true.

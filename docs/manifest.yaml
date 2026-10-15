@@ -21,3 +21,6 @@ docs:
   - adr/0016-igpu-from-cpu.yaml
   - adr/0017-anti-slop-oxlint-subset.yaml
   - adr/0018-packages-return-data.yaml
+  product:
+    voc: product/voc.yaml
+    profile: product/profile.yaml
