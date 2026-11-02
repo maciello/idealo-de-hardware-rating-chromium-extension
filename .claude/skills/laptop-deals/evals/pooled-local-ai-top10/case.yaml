@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: pooled-local-ai-top10
+expected_outcome: |
+  A single top 10 ranking that pools at least two different search angles (shared-memory chips, dedicated GPUs, business), states for each laptop how much memory a model could use (marked as an estimate) and where it comes from, shows which search angle found each laptop, and stays within 2.500 €.

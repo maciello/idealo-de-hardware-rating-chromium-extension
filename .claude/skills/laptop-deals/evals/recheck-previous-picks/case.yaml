@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: recheck-previous-picks
+expected_outcome: |
+  For both named laptops: still listed or not, current lowest price with shop, the 30-day low and how the price moved, and a verdict; then a short comparison with better current alternatives at a similar price with 32 GB RAM.
