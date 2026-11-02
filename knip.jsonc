@@ -18,6 +18,11 @@
       // DEFAULT_PRIMARY_ID = MULTI: the name says "the default choice" where MULTI says "which strategy".
       "ignoreIssues": { "src/features/ratings/model/cpu/strategy-ids.ts": ["duplicates"] }
     },
+    // src/main.ts is the entry named by the `deals` script; tests are entries too.
+    "apps/deal-cli": {
+      "entry": ["test/**/*.ts"],
+      "project": ["{src,test}/**/*.ts", "*.ts"]
+    },
     // Each package.json `exports` entry (the public barrel src/index.ts, subpath exports, test
     // fixtures) is an entry file, so its exports are public API for a later backend/MCP consumer
     // and are never reported. Everything below a barrel must be reachable from it or from a test.

@@ -1,0 +1,41 @@
+candidates:
+  - sku: CAM-1
+    name: Snapshot Z1
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/10.html
+    found_by: [compact]
+    fetched_at: "2026-10-30"
+    product_type: camera
+    offers:
+      - { shop: Alpha Shop, price_eur: 900, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP] }
+    extra: { sensor_mp: 24, optical_zoom_x: 3 }
+    features: [image_stabilisation, weather_sealed]
+  - sku: CAM-2
+    name: Snapshot Z2
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/20.html
+    found_by: [compact]
+    fetched_at: "2026-10-30"
+    product_type: camera
+    offers:
+      - { shop: Alpha Shop, price_eur: 700, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP] }
+    extra: { sensor_mp: 20, optical_zoom_x: 10 }
+    features: [image_stabilisation]
+  - sku: CAM-3
+    name: Snapshot Z3
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/30.html
+    found_by: [compact]
+    fetched_at: "2026-10-30"
+    product_type: camera
+    offers:
+      - { shop: Alpha Shop, price_eur: 800, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP] }
+    extra: { sensor_mp: 26, optical_zoom_x: 5 }
+    features: []
+  - sku: CAM-4
+    name: Snapshot Z4
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/40.html
+    found_by: [compact]
+    fetched_at: "2026-10-30"
+    product_type: camera
+    offers:
+      - { shop: Alpha Shop, price_eur: 600, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP] }
+    extra: { sensor_mp: 16, optical_zoom_x: 4 }
+    features: [weather_sealed]

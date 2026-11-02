@@ -1,0 +1,38 @@
+candidates:
+  # Same sku as in candidates-a.yaml, read earlier and through another search angle.
+  - sku: TB-PRO-14
+    name: Testbook Pro 14 (older read)
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9001.html
+    found_by: [local-ai]
+    fetched_at: "2026-10-28"
+    offers:
+      - { shop: Alpha Shop, price_eur: 1399, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV] }
+    notes: ["Seen in the local AI search too."]
+  - sku: TB-MAX-16
+    name: Testbook Max 16
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9004.html
+    found_by: [local-ai]
+    fetched_at: "2026-10-30"
+    product_type: multimedia
+    offers:
+      - { shop: Beta Store, price_eur: 1799, shipping_eur: 0, rating_avg: 4.5, rating_count: 800, marketplace: false, payments: [INV, PP, CBC] }
+    cpu: AMD Ryzen AI Max+ 395
+    gpu: AMD Radeon 8060S Graphics
+    ram_gb: 64
+    ssd_gb: 2048
+    display: { nits: 500 }
+    battery_wh: 80
+    weight_kg: 1.9
+  - sku: TB-GAME-16
+    name: Testbook Gamer 16
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9005.html
+    found_by: [local-ai]
+    fetched_at: "2026-10-30"
+    product_type: gaming
+    offers:
+      - { shop: Beta Store, price_eur: 1499, shipping_eur: 0, rating_avg: 4.5, rating_count: 800, marketplace: false, payments: [INV, PP, CBC] }
+    cpu: AMD Ryzen 7 7840HS
+    gpu: NVIDIA GeForce RTX 4060 Laptop GPU
+    vram_gb: 8
+    ram_gb: 16
+    weight_kg: 2.4

@@ -59,7 +59,7 @@ module.exports = {
       name: "pure-packages-no-platform",
       comment: "IO-free packages must not touch extension, UI or framework runtimes (adr.0005).",
       severity: "error",
-      from: { path: "^packages/(hw-bench|idealo-query|decide|sensors)/src/" },
+      from: { path: "^packages/(hw-bench|idealo-query|decide|sensors|deal-rank)/src/" },
       to: { path: UI_RUNTIME },
     },
     {
@@ -68,6 +68,14 @@ module.exports = {
         "Sensors take plain input; the extension maps benchmark records onto it (docs/adr/0015).",
       severity: "error",
       from: { path: "^packages/sensors/" },
+      to: { path: ["^packages/hw-bench/", "node_modules/@idealo-hw/hw-bench/"] },
+    },
+    {
+      name: "deal-rank-no-hw-bench",
+      comment:
+        "deal-rank takes benchmarks through its BenchmarkLookup port; apps/deal-cli adapts hw-bench onto it.",
+      severity: "error",
+      from: { path: "^packages/deal-rank/" },
       to: { path: ["^packages/hw-bench/", "node_modules/@idealo-hw/hw-bench/"] },
     },
     {

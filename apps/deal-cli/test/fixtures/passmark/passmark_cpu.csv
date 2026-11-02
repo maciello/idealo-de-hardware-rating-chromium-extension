@@ -1,0 +1,8 @@
+cat,cores,cpuCount,cpumark,date,family,href,id,logicals,name,output,powerPerf,price,rank,samples,secondaryCores,secondaryLogicals,socket,speed,tdp,thread,threadValue,turbo,value
+Laptop,8,1,"22,000",Mar 2023,,cpu.php?id=9101,9101,2,Intel Core Ultra 7 155H,True,NA,NA,100,900,0,0,Unknown,3000,28,"3,800",NA,4500,NA
+Laptop,8,1,"24,000",Mar 2023,,cpu.php?id=9102,9102,2,AMD Ryzen 7 7840HS,True,NA,NA,100,800,0,0,Unknown,3000,28,"3,500",NA,4500,NA
+Laptop,8,1,"55,000",Mar 2023,,cpu.php?id=9103,9103,2,AMD Ryzen AI Max+ 395,True,NA,NA,100,120,0,0,Unknown,3000,28,"4,000",NA,4500,NA
+Laptop,8,1,"14,000",Mar 2023,,cpu.php?id=9104,9104,2,Intel Core i5-1335U,True,NA,NA,100,700,0,0,Unknown,3000,28,"3,300",NA,4500,NA
+Laptop,8,1,"9,000",Mar 2023,,cpu.php?id=9105,9105,2,Intel Core i3-1215U,True,NA,NA,100,20,0,0,Unknown,3000,28,"2,900",NA,4500,NA
+Laptop,12,1,"28,000",Mar 2024,,cpu.php?id=9106,9106,1,Apple M4 Pro 12 Core,True,NA,NA,100,300,4,1,Unknown,3000,30,"3,900",NA,4500,NA
+Laptop,14,1,"33,000",Mar 2024,,cpu.php?id=9107,9107,1,Apple M4 Pro 14 Core,True,NA,NA,100,200,4,1,Unknown,3000,30,"3,950",NA,4500,NA

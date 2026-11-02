@@ -1,0 +1,49 @@
+candidates:
+  - sku: TB-PRO-14
+    name: Testbook Pro 14
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9001.html
+    found_by: [business]
+    fetched_at: "2026-10-30"
+    product_type: business
+    offers:
+      - { shop: Alpha Shop, price_eur: 1299, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP, CBC] }
+    cpu: Intel Core Ultra 7 155H
+    gpu: Intel Arc Graphics
+    ram_gb: 32
+    ssd_gb: 1024
+    display: { inches: 14, width_px: 2880, height_px: 1800, nits: 400, refresh_hz: 120, panel: [OLED, glänzend] }
+    webcam: { height_px: 1080, ir: true }
+    battery_wh: 70
+    weight_kg: 1.4
+    wifi_standard: Wi-Fi 7 (802.11be)
+    ports_text: 2x Thunderbolt 4, HDMI
+    price_history_cents: [139900, 139900, 129900, 129900, 134900, 129900]
+    notes: ["Found on page 1 of the business search."]
+  - sku: TB-AIR-13
+    name: Testbook Air 13
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9002.html
+    found_by: [business]
+    fetched_at: "2026-10-30"
+    product_type: business
+    offers:
+      - { shop: Market Seller, price_eur: 899, shipping_eur: 0, rating_avg: 3.2, rating_count: 12, marketplace: true, payments: [PP] }
+      - { shop: Alpha Shop, price_eur: 929, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV, PP] }
+    cpu: Intel Core i5-1335U
+    gpu: Intel Iris Xe Graphics
+    ram_gb: 16
+    ssd_gb: 512
+    display: { nits: 300, panel: [IPS, matt] }
+    webcam: { height_px: 720 }
+    battery_wh: 45
+    weight_kg: 1.2
+  - sku: TB-LITE-15
+    name: Testbook Light 15
+    url: https://www.idealo.de/preisvergleich/OffersOfProduct/9003.html
+    found_by: [business]
+    fetched_at: "2026-10-30"
+    product_type: business
+    offers:
+      - { shop: Alpha Shop, price_eur: 549, shipping_eur: 0, rating_avg: 4.7, rating_count: 5200, marketplace: false, payments: [INV] }
+    cpu: Intel Core i3-1215U
+    ram_gb: 8
+    weight_kg: 1.7

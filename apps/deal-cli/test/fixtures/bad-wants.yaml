@@ -1,0 +1,3 @@
+budget_eur: { max: 1000 }
+weights:
+  zoom: 2

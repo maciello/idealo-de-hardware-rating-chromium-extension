@@ -1,0 +1,14 @@
+top_n: 2
+budget_eur: { max: 1000 }
+custom_metrics:
+  - { key: sensor_mp, direction: higher, label: Sensor (MP) }
+  - { key: optical_zoom_x, direction: higher, label: Optical zoom (x) }
+weights:
+  sensor_mp: 3
+  optical_zoom_x: 2
+  price: 1
+must_have_features: [image_stabilisation]
+feature_weights:
+  weather_sealed: 1
+lenses:
+  - { id: compact, label: Compact cameras }

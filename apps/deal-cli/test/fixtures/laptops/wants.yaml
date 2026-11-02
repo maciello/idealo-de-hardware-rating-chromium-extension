@@ -1,0 +1,15 @@
+top_n: 3
+budget_eur: { min: 400, max: 1800 }
+hard:
+  ram_gb_min: 16
+  weight_kg_max: 2.0
+weights:
+  cpu_mark: 3
+  price: 3
+  ram_gb: 1
+  webcam_mp: 1
+  ai_memory_gb: 2
+  weight_kg: 1
+lenses:
+  - { id: business, label: Business laptops }
+  - { id: local-ai, label: Local AI chips }

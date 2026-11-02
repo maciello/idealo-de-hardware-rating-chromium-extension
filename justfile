@@ -67,3 +67,11 @@ e2e-live:
 # Extension dev server with HMR.
 dev:
     pnpm --filter @idealo-hw/extension dev
+
+# Rank laptop candidates from idealo MCP YAML files, e.g. `just deals rank --wants W.yaml --candidates A.yaml --candidates B.yaml --passmark-dir data --out OUTDIR`; writes OUTDIR/report.json and report.md. --passmark-dir is optional.
+deals *args:
+    apps/deal-cli/node_modules/.bin/tsx apps/deal-cli/src/main.ts {{args}}
+
+# Print the JSON Schema of the wants and candidates files (field reference for agents), generated from the zod schemas.
+deals-schema:
+    apps/deal-cli/node_modules/.bin/tsx apps/deal-cli/src/main.ts schema

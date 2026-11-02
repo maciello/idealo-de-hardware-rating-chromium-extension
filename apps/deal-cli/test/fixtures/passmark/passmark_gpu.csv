@@ -1,0 +1,6 @@
+bus,cat,coreClk,date,family,g2d,g3d,href,id,memClk,memSize,name,output,powerPerf,price,rank,samples,tdp,value
+PCIe 4.0 x8,Mobile,1500 MHz,Jun 2023,,"1,000","17,000",gpu.php?id=7101,7101,2000 MHz,8192 MB,GeForce RTX 4060 Laptop GPU,True,NA,NA,321,600,60,NA
+PCIe 4.0 x8,Mobile,1500 MHz,Jun 2023,,"1,000","9,000",gpu.php?id=7102,7102,2000 MHz,NA,Radeon 780M,True,NA,NA,321,500,60,NA
+PCIe 4.0 x8,Mobile,1500 MHz,Jun 2023,,"1,000","28,000",gpu.php?id=7103,7103,2000 MHz,NA,Radeon 8060S,True,NA,NA,321,90,60,NA
+PCIe 4.0 x8,Mobile,1500 MHz,Jun 2023,,"1,000","3,500",gpu.php?id=7104,7104,2000 MHz,NA,Intel Iris Xe,True,NA,NA,321,900,60,NA
+PCIe 4.0 x8,Mobile,1500 MHz,Jun 2023,,"1,000","6,000",gpu.php?id=7105,7105,2000 MHz,NA,Intel Arc,True,NA,NA,321,15,60,NA
