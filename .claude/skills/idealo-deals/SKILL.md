@@ -51,6 +51,7 @@ Work through `references/judgment.md`. If you correct a candidate (add a flag or
 
 ### 8. Answer
 - Lead with the pick and its price, then a ranked table with idealo links, total price and the columns that matter for this ask.
+- Laptops: the table always has CPU Mark and G3D Mark columns (write "missing" when report.json has none), plus webcam and RAM. Other categories: the custom metrics from wants.yaml.
 - One short block per pick: standouts, catches, 30-day price story, best and trusted offer.
 - Then a short "ruled out" table with reasons, then the recommendation.
 - Numbers come from report.json or tool output only. German number format (1.207,99 €). Say when prices were fetched; idealo prices move daily.
