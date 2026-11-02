@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: gaming-laptop-top5
+expected_outcome: |
+  A ranked top 5 of laptops at or under 1.800 € with a dedicated GPU, at least 16 GB RAM and a screen of 144 Hz or more, ranked mainly by graphics performance (G3D Mark) and price, each with idealo link, GPU and VRAM, refresh rate, and price context.

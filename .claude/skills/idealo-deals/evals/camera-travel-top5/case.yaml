@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: camera-travel-top5
+expected_outcome: |
+  A ranked top 5 of mirrorless camera offers between 800 and 1.500 € that include a lens and have image stabilisation, each with idealo link, price, key specs (sensor, weight), stabilisation status, and catches such as body-only listings.

@@ -1,9 +1,9 @@
 adr.0019:
-  title: Laptop deal ranking - the agent extracts, code ranks
+  title: idealo deal ranking - the agent extracts, code ranks
   status: accepted
   date: 2026-11-02
   context:
-    goal: an AI agent (Sonnet is enough) finds the best laptop deals on idealo.de for stated wants and returns a ranked top-N
+    goal: an AI agent (Sonnet is enough) finds the best deals on idealo.de for stated wants (laptops first, any category through custom metrics and features) and returns a ranked top-N
     observed: in manual sessions the agent did searching, spec reading, benchmark lookup, shipping math, 30-day price analysis and ranking by hand; arithmetic and bookkeeping were the error-prone, repeated parts
     constraint_mcp: the idealo MCP is an agent-side tool; scripts cannot call it, so tool output reaches code only through files the agent writes
     constraint_data: idealo MCP output and PassMark data stay out of the repo (adr.0006, adr.0008)
@@ -14,7 +14,7 @@ adr.0019:
     modules:
       packages/deal-rank: pure ranking core; benchmarks through a BenchmarkLookup port; returns data only (adr.0018)
       apps/deal-cli: YAML IO, hw-bench adapter for the port, de-DE report.md and report.json
-      skill: .claude/skills/laptop-deals (workflow, wants mapping, lenses, extraction form, judgment checklist)
+      skill: .claude/skills/idealo-deals (generic workflow and judgment checklist; laptop wants, lenses and extraction form; guide for other idealo categories)
     contract_source: zod schemas in packages/deal-rank; `just deals-schema` prints them as JSON Schema for agents
     lenses: several searches per request are pooled into one candidate set; each candidate keeps found_by; the report shows the top per lens
     ai_memory_estimate: dedicated VRAM, else floor(0.75 × RAM) on fast shared-memory chips (Ryzen AI Max / Radeon 8040S-8060S, Apple Pro/Max), else 0; always labelled an estimate

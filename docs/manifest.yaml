@@ -23,7 +23,7 @@ docs:
   - adr/0018-packages-return-data.yaml
   - adr/0019-laptop-deal-ranking.yaml
   skills:
-    laptop_deals: ../.claude/skills/laptop-deals/SKILL.md
+    idealo_deals: ../.claude/skills/idealo-deals/SKILL.md
   product:
     voc: product/voc.yaml
     profile: product/profile.yaml

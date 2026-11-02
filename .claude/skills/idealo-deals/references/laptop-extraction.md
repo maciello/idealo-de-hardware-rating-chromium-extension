@@ -25,6 +25,8 @@
 | `test_grade` | `testReports.summary.grade` | "1,8" → 1.8; absent → null |
 | `bargain_badge_pct` | `badges.bargain.discountRate` | number or null |
 | `price_history_cents` | `priceTrend.history[].price` | the integers in order |
+| `features` | spec lines, yes/no | lowercase snake_case, only when the SKU's spec says so: `numpad` ("Nummernblock"), `backlit_keyboard` ("beleuchtete Tastatur"), `fingerprint_reader`, `ir_camera` ("Infrarot"), `privacy_shutter`, `sd_reader` ("Kartenleser"), `ethernet` ("Ethernet"/"LAN"), `spill_resistant_keyboard` ("spritzwassergeschützt"). Use the same names the wants file uses. |
+| `extra` | any other figure the ask needs | snake_case key with unit, e.g. `color_gamut_srgb_pct`, `speaker_w`; declare the key in wants `custom_metrics` |
 | `agent_flags`, `notes` | your reading | see below |
 
 ## Agent flags and notes (the fuzzy part)
@@ -39,4 +41,4 @@
 idealo's `prosCons` often describe the whole series, not this SKU. Use them for notes and flags, never as spec values.
 
 ## Subagent brief (for fan-out of more than 6 products)
-> Load `mcp__idealo_de__get_product_details` with ToolSearch, call it once per productRef below (in parallel), and return ONLY a YAML document `candidates: [...]` that follows `just deals-schema` (candidates part) and the field table in `.claude/skills/laptop-deals/references/extraction.md`. Copy values exactly; use null for anything absent. found_by: [<lens>], fetched_at: <date>. Use no other tools and write no files. Refs: <list>
+> Load `mcp__idealo_de__get_product_details` with ToolSearch, call it once per productRef below (in parallel), and return ONLY a YAML document `candidates: [...]` that follows `just deals-schema` (candidates part) and the field table in `.claude/skills/idealo-deals/references/laptop-extraction.md`. Copy values exactly; use null for anything absent. found_by: [<lens>], fetched_at: <date>. Use no other tools and write no files. Refs: <list>
